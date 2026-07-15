@@ -1,0 +1,95 @@
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import './login.css'
+
+function Login() {
+  const navigate = useNavigate()
+  const [showPwd, setShowPwd] = useState(false)
+
+  function handleSubmit(e) {
+    e.preventDefault()
+    navigate('/')
+  }
+
+  return (
+    <>
+      <div className="bg"></div>
+      <div className="orb orb1"></div>
+      <div className="orb orb2"></div>
+      <div className="orb orb3"></div>
+
+      <div className="wrapper">
+        <div className="card">
+          <div className="corner tl"></div>
+          <div className="corner tr"></div>
+          <div className="corner bl"></div>
+          <div className="corner br"></div>
+
+          <div className="brand">
+            <div className="logo-icon">
+              <svg width="42" height="30" viewBox="0 0 42 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="cg" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stopColor="#c084fc" />
+                    <stop offset="100%" stopColor="#f0abfc" />
+                  </linearGradient>
+                </defs>
+                <path d="M6 8 C6 4 9 2 13 2 L16 2 L17 8 L25 8 L26 2 L29 2 C33 2 36 4 36 8
+                         L38 18 C39.5 24 37 28 33 28 C30 28 28 26 26 22 L16 22
+                         C14 26 12 28 9 28 C5 28 2.5 24 4 18 Z"
+                  fill="url(#cg)" opacity="0.15" stroke="url(#cg)" strokeWidth="1.4" />
+                <rect x="9" y="13" width="2" height="6" rx="1" fill="url(#cg)" />
+                <rect x="7" y="15" width="6" height="2" rx="1" fill="url(#cg)" />
+                <circle cx="30" cy="13" r="1.4" fill="#a855f7" />
+                <circle cx="33" cy="15.5" r="1.4" fill="#ec4899" />
+                <circle cx="30" cy="18" r="1.4" fill="#60a5fa" />
+                <circle cx="27" cy="15.5" r="1.4" fill="#34d399" />
+                <circle cx="15" cy="18" r="3" stroke="url(#cg)" strokeWidth="1.2" fill="rgba(168,85,247,.2)" />
+                <circle cx="25" cy="12" r="3" stroke="url(#cg)" strokeWidth="1.2" fill="rgba(168,85,247,.2)" />
+                <path d="M13 2 Q14 0 17 0 L25 0 Q28 0 29 2" stroke="url(#cg)" strokeWidth="1.2" fill="none" />
+                <circle cx="19.5" cy="15" r="1" fill="url(#cg)" opacity=".7" />
+                <circle cx="22.5" cy="15" r="1" fill="url(#cg)" opacity=".7" />
+              </svg>
+            </div>
+            <div className="brand-name">Fusion Luxury</div>
+            <div className="brand-title">GAME</div>
+          </div>
+
+          <div className="divider-line"></div>
+
+          <form onSubmit={handleSubmit}>
+            <div className="form-group">
+              <label htmlFor="username">Username</label>
+              <div className="input-wrap">
+                <input id="username" type="text" placeholder="Enter your username" autoComplete="off" />
+                <span className="input-icon">👤</span>
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="password">Password</label>
+              <div className="input-wrap">
+                <input id="password" type={showPwd ? 'text' : 'password'} placeholder="Enter your password" />
+                <span className="input-icon">🔒</span>
+                <button className="eye-btn" type="button" onClick={() => setShowPwd((s) => !s)} aria-label="Show/hide password">
+                  {showPwd ? '🙈' : '👁️'}
+                </button>
+              </div>
+              <div className="forgot-wrap">
+                <a href="#" className="forgot-link" onClick={(e) => e.preventDefault()}>Forgot Password?</a>
+              </div>
+            </div>
+
+            <button className="btn-login" type="submit">Sign In</button>
+
+            <button className="btn-create" type="button" onClick={() => navigate('/register')}>Create Account</button>
+          </form>
+
+          <p className="footer-note">18+ · Play responsibly · © 2026 Fusion Luxury Game</p>
+        </div>
+      </div>
+    </>
+  )
+}
+
+export default Login

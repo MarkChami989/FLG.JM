@@ -1,0 +1,61 @@
+header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  padding: 0 40px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(6, 3, 15, .55);
+  border-bottom: 1px solid rgba(124, 58, 237, .25);
+  backdrop-filter: blur(20px);
+}
+.brand { display: flex; align-items: center; gap: 14px; text-decoration: none; }
+.brand-logo {
+  width: 42px; height: 42px;
+  background: linear-gradient(145deg, #160830, #1a0540);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  border: 1.5px solid rgba(217, 70, 239, .5);
+  box-shadow: 0 0 16px rgba(217, 70, 239, .35);
+}
+.brand-sub {
+  font-family: 'Rajdhani', sans-serif; font-size: 9px; letter-spacing: 4px; text-transform: uppercase;
+  background: linear-gradient(90deg, var(--purple), var(--pink), var(--cyan));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.brand-name {
+  font-size: 18px; font-weight: 900; letter-spacing: 1px;
+  background: linear-gradient(90deg, #fff 30%, var(--pink));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+nav { display: flex; align-items: center; gap: 28px; }
+nav a {
+  font-size: 12px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--muted); text-decoration: none; transition: color .2s;
+}
+nav a:hover, nav a.active { color: #fff; }
+.btn-activity-nav {
+  padding: 9px 22px;
+  font-family: 'Rajdhani', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 2.5px;
+  text-transform: uppercase; color: #fff;
+  background: transparent;
+  border: 1.5px solid rgba(217, 70, 239, .45);
+  border-radius: 8px; cursor: pointer; transition: all .2s; margin-right: 10px;
+}
+.btn-activity-nav:hover, .btn-activity-nav.active-btn {
+  background: rgba(217, 70, 239, .15);
+  border-color: rgba(217, 70, 239, .9);
+  box-shadow: 0 0 14px rgba(217, 70, 239, .3);
+}
+.btn-login-nav {
+  padding: 9px 22px;
+  font-family: 'Rajdhani', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 2.5px;
+  text-transform: uppercase; color: #fff;
+  background: linear-gradient(135deg, var(--purple), var(--pink));
+  border: none; border-radius: 8px; cursor: pointer;
+  box-shadow: 0 0 16px rgba(217, 70, 239, .3);
+  transition: transform .15s, filter .2s;
+}
+.btn-login-nav:hover { transform: translateY(-1px); filter: brightness(1.15); }
