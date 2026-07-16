@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import Header from '../src/components/Header.jsx'
+import { api, CURRENT_USER } from './api.js'
 import './reserve.css'
 
 const BARS = [
@@ -8,9 +9,9 @@ const BARS = [
   { name: 'Bar 3', emoji: '🥂', sub: 'Champagne Room' },
 ]
 const ORDERS = [
-  { key: 'low', name: 'Low Order', price: '$80', icon: '🥂', sub: 'Light drinks & snacks' },
-  { key: 'med', name: 'Medium Order', price: '$160', icon: '🥃', sub: 'Premium selection' },
-  { key: 'high', name: 'High Order', price: '$300', icon: '👑', sub: 'Full luxury package' },
+  { key: 'low', name: 'Low Order', price: '$80', pay: 80, icon: '🥂', sub: 'Light drinks & snacks' },
+  { key: 'med', name: 'Medium Order', price: '$160', pay: 160, icon: '🥃', sub: 'Premium selection' },
+  { key: 'high', name: 'High Order', price: '$300', pay: 300, icon: '👑', sub: 'Full luxury package' },
 ]
 
 function Reserve() {
@@ -23,11 +24,27 @@ function Reserve() {
   const dtStr = date && time ? `${date} at ${time}` : date || time || '—'
   const showSummary = selBar || selOrder || date || time
 
-  function submitOrder(e) {
+  async function submitOrder(e) {
     e.preventDefault()
     if (!selBar) { alert('Please choose a bar.'); return }
     if (!selOrder) { alert('Please choose an order level.'); return }
     if (!date || !time) { alert('Please select a date and time.'); return }
+
+    try {
+      await api.bookings.create({
+        type: 'reserve-bar',
+        activity: `Reserve Bar – ${selBar}`,
+        user: CURRENT_USER,
+        date,
+        time,
+        pay: selOrder.pay,
+        paid: false,
+      })
+    } catch (err) {
+      alert(err.message || 'Could not complete reservation, please try again.')
+      return
+    }
+
     setShowSuccess(true)
   }
 
@@ -54,7 +71,7 @@ function Reserve() {
             <div className="block">
               <div className="block-label">Logged In As</div>
               <div className="input-wrap">
-                <input type="text" value="user123" readOnly style={{ cursor: 'default', color: 'rgba(245,158,11,.9)', fontWeight: 600, paddingRight: 130 }} />
+                <input type="text" value={CURRENT_USER} readOnly style={{ cursor: 'default', color: 'rgba(245,158,11,.9)', fontWeight: 600, paddingRight: 130 }} />
                 <span className="input-icon">👤</span>
                 <div className="logged-badge"><div className="logged-dot"></div> Logged In</div>
               </div>
@@ -105,7 +122,7 @@ function Reserve() {
 
             <div className={`summary${showSummary ? ' show' : ''}`}>
               <div className="summary-title">📋 Reservation Summary</div>
-              <div className="summary-row"><span className="summary-key">Guest</span><span className="summary-val">user123</span></div>
+              <div className="summary-row"><span className="summary-key">Guest</span><span className="summary-val">{CURRENT_USER}</span></div>
               <div className="summary-row"><span className="summary-key">Location</span><span className="summary-val">{selBar || '—'}</span></div>
               <div className="summary-row"><span className="summary-key">Order Level</span><span className="summary-val">{selOrder ? selOrder.name : '—'}</span></div>
               <div className="summary-row"><span className="summary-key">Date &amp; Time</span><span className="summary-val">{dtStr}</span></div>

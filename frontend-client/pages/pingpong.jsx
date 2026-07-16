@@ -1,35 +1,15 @@
 import { useEffect, useMemo, useState } from 'react'
 import Header from '../src/components/Header.jsx'
+import { api, CURRENT_USER } from './api.js'
 import './pingpong.css'
 
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 const DAYS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
-const TABLES = ['Table 1', 'Table 2', 'Table 3', 'Table 4']
+const TABLE_IDS = { 'Table 1': 'pp-t1', 'Table 2': 'pp-t2', 'Table 3': 'pp-t3', 'Table 4': 'pp-t4' }
+const TABLES = Object.keys(TABLE_IDS)
 
-function shuffle(a) {
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1))
-    ;[a[i], a[j]] = [a[j], a[i]]
-  }
-  return a
-}
 function fmtKey(d) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
-}
-function generateBookings() {
-  const data = {}
-  const today = new Date(); today.setHours(0, 0, 0, 0)
-  TABLES.forEach((t) => {
-    data[t] = new Set()
-    for (let d = 0; d < 60; d++) {
-      const day = new Date(today); day.setDate(today.getDate() + d)
-      const dk = fmtKey(day)
-      const n = 3 + Math.floor(Math.random() * 6)
-      const pool = Array.from({ length: 24 }, (_, i) => i)
-      shuffle(pool).slice(0, n).forEach((h) => data[t].add(`${dk}_${String(h).padStart(2, '0')}`))
-    }
-  })
-  return data
 }
 
 function Pingpong() {
@@ -43,7 +23,7 @@ function Pingpong() {
   const [chosenSlots, setChosenSlots] = useState(new Set())
   const [dragMode, setDragMode] = useState(null)
 
-  const [bookedSlots] = useState(() => generateBookings())
+  const [takenHours, setTakenHours] = useState(new Set())
   const [showSuccess, setShowSuccess] = useState(false)
   const [successMsg, setSuccessMsg] = useState(null)
 
@@ -52,6 +32,13 @@ function Pingpong() {
     window.addEventListener('mouseup', onUp)
     return () => window.removeEventListener('mouseup', onUp)
   }, [])
+
+  useEffect(() => {
+    if (!selTable || !selDateKey) { setTakenHours(new Set()); return }
+    api.resources.slots(TABLE_IDS[selTable], selDateKey).then((slots) => {
+      setTakenHours(new Set(slots.map((s) => s.hour)))
+    })
+  }, [selTable, selDateKey])
 
   function changeMonth(dir) {
     let m = calMonth + dir, y = calYear
@@ -90,14 +77,34 @@ function Pingpong() {
     })
   }
 
-  function submitReserve() {
+  async function submitReserve() {
     if (!selTable) { alert('Please choose a table.'); return }
     if (!selDateKey) { alert('Please pick a date.'); return }
     if (chosenSlots.size === 0) { alert('Please select at least one time slot.'); return }
     const sorted = Array.from(chosenSlots).sort()
+    const resourceId = TABLE_IDS[selTable]
+
+    try {
+      for (const h of sorted) {
+        await api.resources.bookSlot(resourceId, { date: selDateKey, hour: h, clientName: CURRENT_USER })
+      }
+      await api.bookings.create({
+        type: 'tabletop',
+        activity: `Ping Pong – ${selTable}`,
+        user: CURRENT_USER,
+        date: selDateKey,
+        time: `${sorted[0]}:00`,
+        pay: 0,
+        paid: false,
+      })
+    } catch (e) {
+      alert(e.message || 'Could not complete reservation, please try again.')
+      return
+    }
+
     setSuccessMsg(
       <>
-        <strong>user123</strong> — your table is booked!<br /><br />
+        <strong>{CURRENT_USER}</strong> — your table is booked!<br /><br />
         🏓 <strong>{selTable}</strong><br />
         📅 {selDateLabel}<br />
         ⏰ {sorted.map((h) => `${h}:00`).join(' · ')}<br />
@@ -105,12 +112,8 @@ function Pingpong() {
         See you on the table!
       </>
     )
-    sorted.forEach((h) => {
-      const key = `${selDateKey}_${h}`
-      if (!bookedSlots[selTable]) bookedSlots[selTable] = new Set()
-      bookedSlots[selTable].add(key)
-    })
     setChosenSlots(new Set())
+    setTakenHours((prev) => new Set([...prev, ...sorted]))
     setShowSuccess(true)
   }
 
@@ -145,7 +148,7 @@ function Pingpong() {
           <div className="block">
             <div className="block-label">Player</div>
             <div className="input-wrap">
-              <input type="text" value="user123" readOnly style={{ color: 'rgba(6,182,212,.9)', fontWeight: 600, paddingRight: 130 }} />
+              <input type="text" value={CURRENT_USER} readOnly style={{ color: 'rgba(6,182,212,.9)', fontWeight: 600, paddingRight: 130 }} />
               <span className="input-icon">👤</span>
               <div className="logged-badge"><div className="logged-dot"></div> Logged In</div>
             </div>
@@ -211,8 +214,7 @@ function Pingpong() {
                   {Array.from({ length: 24 }).map((_, h) => {
                     const hStr = String(h).padStart(2, '0')
                     const ampm = h < 12 ? (h === 0 ? '12 AM' : `${h} AM`) : (h === 12 ? '12 PM' : `${h - 12} PM`)
-                    const bookKey = `${selDateKey}_${hStr}`
-                    const isTaken = selTable ? (bookedSlots[selTable]?.has(bookKey) ?? false) : false
+                    const isTaken = selTable ? takenHours.has(hStr) : false
                     const isChosen = chosenSlots.has(hStr)
                     return (
                       <div
@@ -232,7 +234,7 @@ function Pingpong() {
 
           <div className={`summary${showSummary ? ' show' : ''}`}>
             <div className="summary-title">📋 Reservation Summary</div>
-            <div className="summary-row"><span className="summary-key">Player</span><span className="summary-val">user123</span></div>
+            <div className="summary-row"><span className="summary-key">Player</span><span className="summary-val">{CURRENT_USER}</span></div>
             <div className="summary-row"><span className="summary-key">Table</span><span className="summary-val">{selTable || '—'}</span></div>
             <div className="summary-row"><span className="summary-key">Date</span><span className="summary-val">{selDateLabel || '—'}</span></div>
             <div className="summary-row"><span className="summary-key">Time Slots</span><span className="summary-val">{summarySorted.length ? summarySorted.map((h) => `${h}:00`).join(', ') : '—'}</span></div>

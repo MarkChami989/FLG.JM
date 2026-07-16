@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import Header from '../src/components/Header.jsx'
+import { api, CURRENT_USER } from './api.js'
 import './reserve-table.css'
 
 const TABLES = [
@@ -9,9 +10,9 @@ const TABLES = [
   { name: 'Table 4', cap: '6 Persons', desc: 'Social · Premium lounge', chairs: ['top2', 'bot2', 'left', 'right'], icon: '👥', size: 'md' },
 ]
 const ORDERS = [
-  { key: 'low', name: 'Low Order', price: '$60', icon: '🥗', sub: 'Light bites & soft drinks', tags: ['🥗 Salad', '🧃 Juices', '🍞 Bread'] },
-  { key: 'med', name: 'Medium Order', price: '$130', icon: '🍽️', sub: 'Full meal & premium drinks', tags: ['🥩 Steak', '🍷 Wine', '🍮 Dessert'] },
-  { key: 'high', name: 'High Order', price: '$280', icon: '👑', sub: 'Luxury feast & top spirits', tags: ['🦞 Lobster', '🥃 Macallan', '🚬 Cohiba'] },
+  { key: 'low', name: 'Low Order', price: '$60', pay: 60, icon: '🥗', sub: 'Light bites & soft drinks', tags: ['🥗 Salad', '🧃 Juices', '🍞 Bread'] },
+  { key: 'med', name: 'Medium Order', price: '$130', pay: 130, icon: '🍽️', sub: 'Full meal & premium drinks', tags: ['🥩 Steak', '🍷 Wine', '🍮 Dessert'] },
+  { key: 'high', name: 'High Order', price: '$280', pay: 280, icon: '👑', sub: 'Luxury feast & top spirits', tags: ['🦞 Lobster', '🥃 Macallan', '🚬 Cohiba'] },
 ]
 
 function TableVisual({ size, chairs, icon }) {
@@ -51,11 +52,27 @@ function ReserveTable() {
   const dtStr = date && time ? `${date} at ${time}` : date || time || '—'
   const showSummary = selTable || selOrder || date || time
 
-  function submitOrder(e) {
+  async function submitOrder(e) {
     e.preventDefault()
     if (!selTable) { alert('Please choose a table.'); return }
     if (!selOrder) { alert('Please choose an order level.'); return }
     if (!date || !time) { alert('Please select a date and time.'); return }
+
+    try {
+      await api.bookings.create({
+        type: 'reserve-table',
+        activity: `Reserve Table – ${selTable.name}`,
+        user: CURRENT_USER,
+        date,
+        time,
+        pay: selOrder.pay,
+        paid: false,
+      })
+    } catch (err) {
+      alert(err.message || 'Could not complete reservation, please try again.')
+      return
+    }
+
     setShowSuccess(true)
   }
 
@@ -82,7 +99,7 @@ function ReserveTable() {
             <div className="block">
               <div className="block-label">Logged In As</div>
               <div className="input-wrap">
-                <input type="text" value="user123" readOnly style={{ cursor: 'default', color: 'rgba(245,158,11,.9)', fontWeight: 600, paddingRight: 130 }} />
+                <input type="text" value={CURRENT_USER} readOnly style={{ cursor: 'default', color: 'rgba(245,158,11,.9)', fontWeight: 600, paddingRight: 130 }} />
                 <span className="input-icon">👤</span>
                 <div className="logged-badge"><div className="logged-dot"></div> Logged In</div>
               </div>
@@ -137,7 +154,7 @@ function ReserveTable() {
 
             <div className={`summary${showSummary ? ' show' : ''}`}>
               <div className="summary-title">📋 Reservation Summary</div>
-              <div className="summary-row"><span className="summary-key">Guest</span><span className="summary-val">user123</span></div>
+              <div className="summary-row"><span className="summary-key">Guest</span><span className="summary-val">{CURRENT_USER}</span></div>
               <div className="summary-row"><span className="summary-key">Table</span><span className="summary-val">{selTable ? selTable.name : '—'}</span></div>
               <div className="summary-row"><span className="summary-key">Capacity</span><span className="summary-val">{selTable ? selTable.cap : '—'}</span></div>
               <div className="summary-row"><span className="summary-key">Order Level</span><span className="summary-val">{selOrder ? selOrder.name : '—'}</span></div>
