@@ -1,23 +1,27 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Header from '../src/components/Header.jsx'
+import { api, CURRENT_USER } from './api.js'
 import './activities.css'
 
-const INITIAL_ACTIVITIES = [
-  { id: 1, uid: 'FLG-4A7X', type: 'Ping Pong', emoji: '🏓', cls: 'act-pp', date: '2026-07-14', time: '10:00 – 12:00', ltn: 'Table 2', status: 'accepted' },
-  { id: 2, uid: 'FLG-9B2M', type: 'Billiard', emoji: '🎱', cls: 'act-bil', date: '2026-07-15', time: '14:00 – 16:00', ltn: 'Table 3', status: 'pending' },
-  { id: 3, uid: 'FLG-3K8R', type: 'Baby Foot', emoji: '⚽', cls: 'act-bf', date: '2026-07-16', time: '18:00 – 19:00', ltn: 'Table 1', status: 'accepted' },
-  { id: 4, uid: 'FLG-7T1Q', type: 'Reserve Bar', emoji: '🥃', cls: 'act-bar', date: '2026-07-17', time: '20:00 – 23:00', ltn: 'Bar 2', status: 'pending' },
-  { id: 5, uid: 'FLG-2W5N', type: 'Reserve Table', emoji: '🍽️', cls: 'act-tbl', date: '2026-07-18', time: '19:30 – 21:30', ltn: 'Table 4', status: 'rejected' },
-  { id: 6, uid: 'FLG-6P3Z', type: 'FIFA Tournament', emoji: '⚽', cls: 'act-tour', date: '2026-07-20', time: '15:00 – 18:00', ltn: 'Main Hall', status: 'accepted' },
-  { id: 7, uid: 'FLG-0D9V', type: 'Now Combat', emoji: '🥊', cls: 'act-tour', date: '2026-07-21', time: '17:00 – 19:00', ltn: 'Arena 1', status: 'pending' },
-  { id: 8, uid: 'FLG-8H4C', type: 'VIP Room', emoji: '👑', cls: 'act-vip', date: '2026-07-22', time: '21:00 – 23:59', ltn: 'Royal', status: 'pending' },
-  { id: 9, uid: 'FLG-1F6L', type: 'Ping Pong', emoji: '🏓', cls: 'act-pp', date: '2026-07-23', time: '09:00 – 10:00', ltn: 'Table 1', status: 'rejected' },
-  { id: 10, uid: 'FLG-5Y2E', type: 'Reserve Bar', emoji: '🥃', cls: 'act-bar', date: '2026-07-25', time: '22:00 – 23:00', ltn: 'Bar 3', status: 'accepted' },
-  { id: 11, uid: 'FLG-3J8U', type: 'Billiard', emoji: '🎱', cls: 'act-bil', date: '2026-07-26', time: '13:00 – 15:00', ltn: 'Table 1', status: 'pending' },
-  { id: 12, uid: 'FLG-7S0G', type: 'Baby Foot', emoji: '⚽', cls: 'act-bf', date: '2026-07-27', time: '16:00 – 17:00', ltn: 'Table 4', status: 'accepted' },
-]
-
 const REASONS = ['Change of plans', 'Double booking', 'Not available', 'Wrong date/time']
+
+const TYPE_META = {
+  'Ping Pong': { emoji: '🏓', cls: 'act-pp' },
+  'Billiard': { emoji: '🎱', cls: 'act-bil' },
+  'Baby Foot': { emoji: '⚽', cls: 'act-bf' },
+  'Reserve Bar': { emoji: '🥃', cls: 'act-bar' },
+  'Reserve Table': { emoji: '🍽️', cls: 'act-tbl' },
+}
+
+function deriveActivity(b) {
+  if (b.type === 'tournament') {
+    return { uid: b.id, type: b.activity, emoji: '🏆', cls: 'act-tour', ltn: 'Main Hall' }
+  }
+  const [label, rest = ''] = b.activity.split(' – ')
+  const ltn = rest.split(' · ')[0] || '—'
+  const meta = TYPE_META[label] || { emoji: '🎮', cls: 'act-pp' }
+  return { uid: b.id, type: label, emoji: meta.emoji, cls: meta.cls, ltn }
+}
 
 function formatDate(d) {
   const [y, m, day] = d.split('-')
@@ -34,13 +38,19 @@ function statusBadge(s) {
 }
 
 function Activities() {
-  const [activities, setActivities] = useState(INITIAL_ACTIVITIES)
+  const [activities, setActivities] = useState([])
   const [filter, setFilter] = useState('all')
   const [query, setQuery] = useState('')
   const [modalId, setModalId] = useState(null)
   const [selectedReason, setSelectedReason] = useState('')
   const [otherReason, setOtherReason] = useState('')
   const [toast, setToast] = useState({ show: false, msg: '', err: false })
+
+  useEffect(() => {
+    api.bookings.list({ user: CURRENT_USER }).then((list) => {
+      setActivities(list.map((b) => ({ ...b, ...deriveActivity(b) })))
+    })
+  }, [])
 
   const rows = useMemo(() => {
     const q = query.toLowerCase()
@@ -72,13 +82,20 @@ function Activities() {
     setToast({ show: true, msg, err })
     setTimeout(() => setToast((t) => ({ ...t, show: false })), 3200)
   }
-  function confirmDelete() {
+  async function confirmDelete() {
     const reason = selectedReason || otherReason.trim()
     if (!reason) {
       showToast('Please select or write a reason.', true)
       return
     }
     const act = activities.find((a) => a.id === modalId)
+    try {
+      await api.bookings.remove(modalId)
+    } catch (err) {
+      closeModal()
+      showToast(err.message || 'Could not delete activity.', true)
+      return
+    }
     setActivities((prev) => prev.filter((a) => a.id !== modalId))
     closeModal()
     showToast(`🗑️ ${act.type} deleted – "${reason}"`)
@@ -99,7 +116,7 @@ function Activities() {
           </div>
           <div className="user-chip">
             <div className="user-dot"></div>
-            <div className="user-name">👤 user123</div>
+            <div className="user-name">👤 {CURRENT_USER}</div>
           </div>
         </div>
 

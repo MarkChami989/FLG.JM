@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import './Home.css'
 import { Icon, ICONS, TAB_ICON_MAP } from './icons.jsx'
-import { INITIAL_TDB } from './data.js'
+import { api } from './api.js'
 import OrdersTab from './OrdersTab.jsx'
 import TournamentsTab from './TournamentsTab.jsx'
 import RoomsTab from './RoomsTab.jsx'
@@ -13,13 +13,18 @@ function Home() {
   const [now, setNow] = useState(new Date())
   const [tabs, setTabs] = useState([])
   const [activeTab, setActiveTab] = useState(null)
-  const [tDB, setTDB] = useState(INITIAL_TDB)
-  const [bookings, setBookings] = useState({})
+  const [tDB, setTDB] = useState([])
+
+  function reloadTournaments() {
+    api.tournaments.list().then(setTDB)
+  }
 
   useEffect(() => {
     const id = setInterval(() => setNow(new Date()), 1000)
     return () => clearInterval(id)
   }, [])
+
+  useEffect(reloadTournaments, [])
 
   function openTab(id, title, color) {
     setTabs((prev) => {
@@ -155,10 +160,10 @@ function Home() {
           {tabs.map((t) => (
             <div key={t.id} className="tab-content" style={{ display: t.id === activeTab ? 'block' : 'none' }}>
               {t.id === 'orders' && <OrdersTab />}
-              {t.id === 'tournaments' && <TournamentsTab tDB={tDB} setTDB={setTDB} onClose={() => closeTab('tournaments')} />}
-              {t.id === 'rooms' && <RoomsTab bookings={bookings} setBookings={setBookings} onClose={() => closeTab('rooms')} />}
+              {t.id === 'tournaments' && <TournamentsTab tDB={tDB} reload={reloadTournaments} onClose={() => closeTab('tournaments')} />}
+              {t.id === 'rooms' && <RoomsTab onClose={() => closeTab('rooms')} />}
               {t.id === 'lounge' && <LoungeTab onClose={() => closeTab('lounge')} />}
-              {t.id === 'tabletop' && <TabletopTab bookings={bookings} setBookings={setBookings} onClose={() => closeTab('tabletop')} />}
+              {t.id === 'tabletop' && <TabletopTab onClose={() => closeTab('tabletop')} />}
               {['activities', 'report', 'settings'].includes(t.id) && (
                 <GenericTab id={t.id} title={t.title} color={t.color} onClose={() => closeTab(t.id)} />
               )}

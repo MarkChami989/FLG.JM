@@ -4,7 +4,7 @@ import TCard from './TCard.jsx'
 import BookingDetail from './BookingDetail.jsx'
 import { R_ROOMS } from './data.js'
 
-function RoomsTab({ bookings, setBookings, onClose }) {
+function RoomsTab({ onClose }) {
   const [selectedId, setSelectedId] = useState(null)
   const item = R_ROOMS.find((r) => r.id === selectedId)
 
@@ -13,7 +13,7 @@ function RoomsTab({ bookings, setBookings, onClose }) {
       <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 60% 0%,rgba(6,182,212,0.07),transparent 60%)', pointerEvents: 'none', borderRadius: 16 }}></div>
       <div style={{ position: 'relative', zIndex: 1, width: '100%' }}>
         {item ? (
-          <BookingDetail item={item} bookings={bookings} setBookings={setBookings} onBack={() => setSelectedId(null)} />
+          <BookingDetail item={item} onBack={() => setSelectedId(null)} />
         ) : (
           <>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>

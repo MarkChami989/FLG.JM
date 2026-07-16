@@ -1,11 +1,19 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Icon, ICONS } from './icons.jsx'
-import { ORDERS_DATA, STATUS_COLOR } from './data.js'
 import { cap } from './helpers.js'
+import { api } from './api.js'
+
+const STATUS_COLOR = { accepted: 'var(--green)', reserved: 'var(--cyan)', pending: 'var(--gold)', rejected: 'var(--red)' }
 
 function OrdersTab() {
+  const [orders, setOrders] = useState([])
   const [selected, setSelected] = useState(null)
-  const order = ORDERS_DATA.find((o) => o.id === selected)
+
+  useEffect(() => {
+    api.bookings.list().then(setOrders)
+  }, [])
+
+  const order = orders.find((o) => o.id === selected)
 
   return (
     <div className="tab-page" style={{ alignItems: 'flex-start', justifyContent: 'flex-start', padding: '20px 24px', height: 'calc(100vh - 180px)' }}>
@@ -14,13 +22,13 @@ function OrdersTab() {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
             <div style={{ fontFamily: "'Rajdhani',sans-serif", fontSize: 17, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', background: 'linear-gradient(90deg,var(--purple),var(--pink))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>Received Orders</div>
-            <div style={{ fontFamily: "'Rajdhani',sans-serif", fontSize: 10, letterSpacing: 2, color: 'rgba(255,255,255,0.25)', textTransform: 'uppercase', marginTop: 2 }}>{ORDERS_DATA.length} orders · click an ID to view details</div>
+            <div style={{ fontFamily: "'Rajdhani',sans-serif", fontSize: 10, letterSpacing: 2, color: 'rgba(255,255,255,0.25)', textTransform: 'uppercase', marginTop: 2 }}>{orders.length} orders · click an ID to view details</div>
           </div>
         </div>
         <div className="orders-layout">
           <div className="id-list">
             <div className="id-list-header"><div className="id-list-title">Order IDs</div></div>
-            {ORDERS_DATA.map((o) => (
+            {orders.map((o) => (
               <div key={o.id} className={`id-item${selected === o.id ? ' active' : ''}`} onClick={() => setSelected(o.id)}>
                 <span className="id-dot" style={{ background: STATUS_COLOR[o.status], boxShadow: `0 0 6px ${STATUS_COLOR[o.status]}88` }}></span>
                 <span className="id-code">{o.id}</span>

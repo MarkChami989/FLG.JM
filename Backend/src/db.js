@@ -1,0 +1,97 @@
+const fs = require('fs');
+const path = require('path');
+
+const DB_PATH = path.join(__dirname, '..', '..', 'Database', 'db.json');
+
+const SEED = {
+  nextBookingSeq: 42,
+  bookings: [
+    { id: 'FLG-4041', type: 'reserve-bar', activity: 'Reserve Bar – Bar 2', user: 'karim_j', date: '2026-07-14', time: '20:00', pay: 160, paid: true, status: 'pending' },
+    { id: 'FLG-4042', type: 'reserve-table', activity: 'Table for 4', user: 'nadine.r', date: '2026-07-14', time: '19:00', pay: 80, paid: true, status: 'accepted' },
+    { id: 'FLG-4043', type: 'tournament', activity: 'FIFA Tournament', user: 'yehya22', date: '2026-07-15', time: '22:00', pay: 25, paid: true, status: 'pending' },
+    { id: 'FLG-4044', type: 'reserve-table', activity: 'Reserve Table – 8p', user: 'sara.k', date: '2026-07-13', time: '18:00', pay: 130, paid: false, status: 'rejected' },
+    { id: 'FLG-4045', type: 'tournament', activity: 'Combat Tournament', user: 'tarek_m', date: '2026-07-15', time: '20:00', pay: 20, paid: true, status: 'accepted' },
+  ],
+  tournaments: [
+    { id: 'T-001', name: 'FIFA Summer Cup', max: 64, cost: 25, clients: [
+      { user: 'Marc', uid: 'FLG-0050', times: 3, rank: 65 },
+      { user: 'Rami', uid: 'FLG-0040', times: 3, rank: 64 },
+      { user: 'Lara', uid: 'FLG-0039', times: 1, rank: 50 },
+      { user: 'Karim', uid: 'FLG-0038', times: 5, rank: 30 },
+      { user: 'Sara', uid: 'FLG-0037', times: 2, rank: 10 },
+      { user: 'Nour', uid: 'FLG-0036', times: 4, rank: 3 },
+      { user: 'Elie', uid: 'FLG-0035', times: 6, rank: 2 },
+      { user: 'Jana', uid: 'FLG-0034', times: 8, rank: 1 },
+    ]},
+    { id: 'T-002', name: 'Combat Night', max: 32, cost: 20, clients: [
+      { user: 'Nour', uid: 'FLG-0036', times: 4, rank: 5 },
+      { user: 'Elie', uid: 'FLG-0035', times: 1, rank: 4 },
+      { user: 'Karim', uid: 'FLG-0038', times: 2, rank: 3 },
+      { user: 'Sara', uid: 'FLG-0037', times: 3, rank: 2 },
+      { user: 'Jana', uid: 'FLG-0034', times: 5, rank: 1 },
+    ]},
+    { id: 'T-003', name: 'Pro FIFA League', max: 16, cost: 50, clients: [] },
+  ],
+  resources: [
+    { id: 'ps', title: 'PS Room', category: 'room', status: 'free' },
+    { id: 'pc', title: 'PC Room', category: 'room', status: 'occ' },
+    { id: 'vip-standard', title: 'VIP Standard', category: 'room', status: 'free' },
+    { id: 'vip-elite', title: 'VIP Elite', category: 'room', status: 'occ' },
+    { id: 'vip-royal', title: 'VIP Royal', category: 'room', status: 'free' },
+    { id: 'bar-1', title: 'Bar 1', category: 'bar', status: 'free' },
+    { id: 'bar-2', title: 'Bar 2', category: 'bar', status: 'occ' },
+    { id: 'bar-3', title: 'Bar 3', category: 'bar', status: 'free' },
+    { id: 'lounge-table-1', title: 'Table 1', category: 'lounge-table', status: 'free' },
+    { id: 'lounge-table-2', title: 'Table 2', category: 'lounge-table', status: 'occ' },
+    { id: 'lounge-table-3', title: 'Table 3', category: 'lounge-table', status: 'occ' },
+    { id: 'lounge-table-4', title: 'Table 4', category: 'lounge-table', status: 'free' },
+    { id: 'pp-t1', title: 'Ping Pong Table 1', category: 'tabletop', status: 'free' },
+    { id: 'pp-t2', title: 'Ping Pong Table 2', category: 'tabletop', status: 'free' },
+    { id: 'pp-t3', title: 'Ping Pong Table 3', category: 'tabletop', status: 'free' },
+    { id: 'pp-t4', title: 'Ping Pong Table 4', category: 'tabletop', status: 'free' },
+    { id: 'bi-t1', title: 'Billiard Table 1', category: 'tabletop', status: 'free' },
+    { id: 'bi-t2', title: 'Billiard Table 2', category: 'tabletop', status: 'free' },
+    { id: 'bi-vb', title: 'Billiard VIP Blue', category: 'tabletop', status: 'free' },
+    { id: 'bi-vr', title: 'Billiard VIP Red', category: 'tabletop', status: 'free' },
+    { id: 'bf-solo', title: 'Baby Foot Solo (1v1)', category: 'tabletop', status: 'free' },
+    { id: 'bf-team', title: 'Baby Foot Team (2v2)', category: 'tabletop', status: 'free' },
+    { id: 'bf-t1', title: 'Baby Foot Table 1', category: 'tabletop', status: 'free' },
+    { id: 'bf-t2', title: 'Baby Foot Table 2', category: 'tabletop', status: 'free' },
+    { id: 'bf-t3', title: 'Baby Foot Table 3', category: 'tabletop', status: 'free' },
+    { id: 'bf-t4', title: 'Baby Foot Table 4', category: 'tabletop', status: 'free' },
+  ],
+  slotBookings: [],
+  staff: [
+    { id: 'st-1', name: 'Jana K.', role: 'admin', status: 'active', last: 'Now' },
+    { id: 'st-2', name: 'Rami H.', role: 'staff', status: 'active', last: '2m ago' },
+    { id: 'st-3', name: 'Lea S.', role: 'staff', status: 'active', last: '14m ago' },
+    { id: 'st-4', name: 'Omar D.', role: 'staff', status: 'suspended', last: '3d ago' },
+  ],
+};
+
+function load() {
+  if (!fs.existsSync(DB_PATH)) {
+    fs.mkdirSync(path.dirname(DB_PATH), { recursive: true });
+    fs.writeFileSync(DB_PATH, JSON.stringify(SEED, null, 2));
+    return structuredClone(SEED);
+  }
+  return JSON.parse(fs.readFileSync(DB_PATH, 'utf-8'));
+}
+
+let data = load();
+
+function save() {
+  fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2));
+}
+
+function nextBookingId() {
+  data.nextBookingSeq += 1;
+  save();
+  return `FLG-${data.nextBookingSeq}`;
+}
+
+module.exports = {
+  get data() { return data; },
+  save,
+  nextBookingId,
+};

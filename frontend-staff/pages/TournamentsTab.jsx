@@ -4,8 +4,9 @@ import TCard from './TCard.jsx'
 import GiftModal from './GiftModal.jsx'
 import { Icon, ICONS } from './icons.jsx'
 import { inputStyle, joinRowStyle, removeBtnStyle, actionBtnStyle } from './tournamentStyles.js'
+import { api } from './api.js'
 
-function TournamentsTab({ tDB, setTDB, onClose }) {
+function TournamentsTab({ tDB, reload, onClose }) {
   const [screen, setScreen] = useState('main')
   const [selectedTid, setSelectedTid] = useState(null)
   const [giftUser, setGiftUser] = useState(null)
@@ -28,28 +29,26 @@ function TournamentsTab({ tDB, setTDB, onClose }) {
       setTimeout(() => setAddFeedback(null), 1600)
       return
     }
-    const id = 'T-00' + (tDB.length + 1)
-    setTDB((prev) => [...prev, { id, name, max, cost, clients: [] }])
-    setAddFeedback({ text: '✓ Tournament Created!', bad: false })
-    setTimeout(() => { setAddFeedback(null); setScreen('main') }, 1400)
+    api.tournaments.create({ name, max, cost }).then(() => {
+      reload()
+      setAddFeedback({ text: '✓ Tournament Created!', bad: false })
+      setTimeout(() => { setAddFeedback(null); setScreen('main') }, 1400)
+    })
   }
 
-  function removeClient(tid, idx) {
-    setTDB((prev) => prev.map((x) => x.id !== tid ? x : { ...x, clients: x.clients.filter((_, i) => i !== idx) }))
+  function removeClient(tid, uid) {
+    api.tournaments.removeClient(tid, uid).then(reload)
   }
 
   function tAction(tid, action) {
-    if (action === 'delete') setTDB((prev) => prev.filter((x) => x.id !== tid))
+    if (action === 'delete') api.tournaments.remove(tid).then(reload)
     else if (action === 'archive') alert('Tournament ' + tid + ' archived.')
     else if (action === 'end') alert('Tournament ' + tid + ' marked as ended.')
   }
 
   function updateRank(tid, uid, val) {
     const newRank = parseInt(val) || 1
-    setTDB((prev) => prev.map((x) => x.id !== tid ? x : {
-      ...x,
-      clients: x.clients.map((c) => c.uid === uid ? { ...c, rank: newRank } : c),
-    }))
+    api.tournaments.updateClient(tid, uid, { rank: newRank }).then(reload)
   }
 
   function sendGift(msg) {
@@ -154,7 +153,7 @@ function TournamentsTab({ tDB, setTDB, onClose }) {
                     </div>
                   </div>
                 </div>
-                <button onClick={() => removeClient(t.id, i)} style={removeBtnStyle}>Remove</button>
+                <button onClick={() => removeClient(t.id, c.uid)} style={removeBtnStyle}>Remove</button>
               </div>
             ))}
           </div>

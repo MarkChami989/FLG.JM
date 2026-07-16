@@ -1,44 +1,47 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import BackBtn from './BackBtn.jsx'
 import { pad2, dateKey } from './helpers.js'
+import { api } from './api.js'
 
-function BookingDetail({ item, bookings, setBookings, onBack }) {
+function BookingDetail({ item, onBack }) {
   const now = useMemo(() => new Date(), [])
   const [y, setY] = useState(now.getFullYear())
   const [mo, setMo] = useState(now.getMonth() + 1)
   const [d, setD] = useState(now.getDate())
   const [modal, setModal] = useState(null) // { hs, mode, name }
+  const [slots, setSlots] = useState([])
 
   const ds = dateKey(y, mo, d)
-  const dayBook = (bookings[item.id] && bookings[item.id][ds]) || {}
   const isToday = y === now.getFullYear() && mo === now.getMonth() + 1 && d === now.getDate()
   const curH = now.getHours()
   const hours = Array.from({ length: 17 }, (_, i) => i + 7)
 
+  function loadSlots() {
+    api.resources.slots(item.id, ds).then(setSlots)
+  }
+  useEffect(loadSlots, [item.id, ds])
+
+  function slotFor(hs) {
+    return slots.find((s) => s.hour === hs)
+  }
+
   function openModal(hs, mode) {
-    const existing = dayBook[hs] || ''
-    setModal({ hs, mode, name: mode === 'edit' ? existing : '' })
+    const existing = slotFor(hs)
+    setModal({ hs, mode, name: mode === 'edit' ? existing?.clientName || '' : '' })
   }
   function confirmModal() {
     const name = modal.name.trim()
     if (!name) return
-    setBookings((prev) => {
-      const roomBook = { ...(prev[item.id] || {}) }
-      const day = { ...(roomBook[ds] || {}) }
-      day[modal.hs] = name
-      roomBook[ds] = day
-      return { ...prev, [item.id]: roomBook }
-    })
-    setModal(null)
+    const existing = slotFor(modal.hs)
+    const req = existing
+      ? api.resources.updateSlot(item.id, existing.id, { clientName: name })
+      : api.resources.bookSlot(item.id, { date: ds, hour: modal.hs, clientName: name })
+    req.then(() => { loadSlots(); setModal(null) })
   }
   function deleteBooking(hs) {
-    setBookings((prev) => {
-      const roomBook = { ...(prev[item.id] || {}) }
-      const day = { ...(roomBook[ds] || {}) }
-      delete day[hs]
-      roomBook[ds] = day
-      return { ...prev, [item.id]: roomBook }
-    })
+    const existing = slotFor(hs)
+    if (!existing) return
+    api.resources.deleteSlot(item.id, existing.id).then(loadSlots)
   }
 
   return (
@@ -67,15 +70,15 @@ function BookingDetail({ item, bookings, setBookings, onBack }) {
       <div style={{ maxHeight: 440, overflowY: 'auto', paddingRight: 4 }}>
         {hours.map((h) => {
           const hs = pad2(h) + ':00'
-          const client = dayBook[hs]
+          const slot = slotFor(hs)
           const isNow = isToday && h === curH
           const nowBadge = isNow && <span className="r-now-dot">● NOW</span>
-          if (client) {
+          if (slot) {
             return (
               <div key={hs} className={`r-slot booked${isNow ? ' r-slot-now' : ''}`}>
                 <span className="r-hour">{hs}</span>
                 {nowBadge}
-                <span className="r-client-name">{client}</span>
+                <span className="r-client-name">{slot.clientName}</span>
                 <button className="r-edit-btn" onClick={() => openModal(hs, 'edit')}>Edit</button>
                 <button className="r-del-btn" onClick={() => deleteBooking(hs)}>Delete</button>
               </div>

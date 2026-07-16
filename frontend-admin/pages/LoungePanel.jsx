@@ -1,24 +1,42 @@
-import { LOUNGE_BARS, LOUNGE_TABLES } from './data.js'
+import { useEffect, useState } from 'react'
+import { api } from './api.js'
 
 function LoungePanel() {
+  const [bars, setBars] = useState([])
+  const [tables, setTables] = useState([])
+
+  function load() {
+    api.resources.list('bar').then(setBars)
+    api.resources.list('lounge-table').then(setTables)
+  }
+  useEffect(load, [])
+
+  function toggle(resource) {
+    api.resources.update(resource.id, { status: resource.status === 'free' ? 'occ' : 'free' }).then(load)
+  }
+
   return (
     <>
       <div className="panel-head"><h2>🥃 Lounge</h2></div>
       <div className="subhead">Bars</div>
       <div className="status-grid">
-        {LOUNGE_BARS.map((b) => (
-          <div className="status-card" key={b.n}>
-            <h4>{b.n}</h4>
-            <span className={`status-toggle ${b.s === 'free' ? 'st-free' : 'st-occ'}`}>{b.s === 'free' ? 'Free' : 'Occupied'}</span>
+        {bars.map((b) => (
+          <div className="status-card" key={b.id}>
+            <h4>{b.title}</h4>
+            <span className={`status-toggle ${b.status === 'free' ? 'st-free' : 'st-occ'}`} style={{ cursor: 'pointer' }} onClick={() => toggle(b)}>
+              {b.status === 'free' ? 'Free' : 'Occupied'}
+            </span>
           </div>
         ))}
       </div>
       <div className="subhead">Tables</div>
       <div className="status-grid">
-        {LOUNGE_TABLES.map((t) => (
-          <div className="status-card" key={t.n}>
-            <h4>{t.n}</h4>
-            <span className={`status-toggle ${t.s === 'free' ? 'st-free' : 'st-occ'}`}>{t.s === 'free' ? 'Free' : 'Occupied'}</span>
+        {tables.map((t) => (
+          <div className="status-card" key={t.id}>
+            <h4>{t.title}</h4>
+            <span className={`status-toggle ${t.status === 'free' ? 'st-free' : 'st-occ'}`} style={{ cursor: 'pointer' }} onClick={() => toggle(t)}>
+              {t.status === 'free' ? 'Free' : 'Occupied'}
+            </span>
           </div>
         ))}
       </div>

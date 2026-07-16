@@ -4,7 +4,7 @@ import TCard from './TCard.jsx'
 import BookingDetail from './BookingDetail.jsx'
 import { TT_SECTIONS } from './data.js'
 
-function TabletopTab({ bookings, setBookings, onClose }) {
+function TabletopTab({ onClose }) {
   const [selectedId, setSelectedId] = useState(null)
   let item = null
   for (const sec of TT_SECTIONS) {
@@ -17,7 +17,7 @@ function TabletopTab({ bookings, setBookings, onClose }) {
       <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 60% 0%,rgba(217,70,239,0.07),transparent 60%)', pointerEvents: 'none', borderRadius: 16 }}></div>
       <div style={{ position: 'relative', zIndex: 1, width: '100%' }}>
         {item ? (
-          <BookingDetail item={item} bookings={bookings} setBookings={setBookings} onBack={() => setSelectedId(null)} />
+          <BookingDetail item={item} onBack={() => setSelectedId(null)} />
         ) : (
           <>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>

@@ -1,18 +1,44 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Header from '../src/components/Header.jsx'
+import { api, CURRENT_USER } from './api.js'
 import './join.css'
 
-const TOURNAMENTS = {
-  fifa: { name: 'FIFA', emoji: '⚽', price: 25, spotsText: '14 Spots Left', spotsClass: 'spots-green', info: '50 / 64 Players' },
-  combat: { name: 'Now Combat', emoji: '🥊', price: 20, spotsText: '2 Spots Left', spotsClass: 'spots-red', info: '30 / 32 Players' },
+const TOURN_META = {
+  fifa: { id: 'T-001', emoji: '⚽', spotsClass: (left) => (left <= 5 ? 'spots-red' : 'spots-green') },
+  combat: { id: 'T-002', emoji: '🥊', spotsClass: (left) => (left <= 5 ? 'spots-red' : 'spots-green') },
 }
 
 function Join() {
+  const [tournaments, setTournaments] = useState({})
   const [selKey, setSelKey] = useState('')
   const [count, setCount] = useState(1)
   const [showSuccess, setShowSuccess] = useState(false)
 
-  const sel = TOURNAMENTS[selKey]
+  useEffect(() => {
+    api.tournaments.list().then((list) => {
+      const byId = {}
+      list.forEach((t) => { byId[t.id] = t })
+      const next = {}
+      for (const [key, meta] of Object.entries(TOURN_META)) {
+        const t = byId[meta.id]
+        if (!t) continue
+        const left = t.max - t.clients.length
+        next[key] = {
+          id: t.id,
+          name: t.name,
+          emoji: meta.emoji,
+          price: t.cost,
+          spotsLeft: left,
+          spotsText: `${left} Spot${left !== 1 ? 's' : ''} Left`,
+          spotsClass: meta.spotsClass(left),
+          info: `${t.clients.length} / ${t.max} Players`,
+        }
+      }
+      setTournaments(next)
+    })
+  }, [])
+
+  const sel = tournaments[selKey]
   const price = sel ? sel.price : 25
   const total = count * price
 
@@ -23,9 +49,29 @@ function Join() {
     setCount((c) => Math.max(1, Math.min(10, c + n)))
   }
 
-  function submitJoin(e) {
+  async function submitJoin(e) {
     e.preventDefault()
     if (!sel) { alert('Please choose a tournament.'); return }
+
+    try {
+      for (let i = 0; i < count; i++) {
+        await api.tournaments.join(sel.id, { user: CURRENT_USER, uid: CURRENT_USER })
+      }
+      const now = new Date()
+      await api.bookings.create({
+        type: 'tournament',
+        activity: `${sel.name} Tournament`,
+        user: CURRENT_USER,
+        date: now.toISOString().slice(0, 10),
+        time: `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`,
+        pay: total,
+        paid: false,
+      })
+    } catch (err) {
+      alert(err.message || 'Could not complete registration, please try again.')
+      return
+    }
+
     setShowSuccess(true)
   }
 
@@ -52,7 +98,7 @@ function Join() {
             <div className="block">
               <div className="block-label">Logged In As</div>
               <div className="input-wrap">
-                <input type="text" value="user123" readOnly style={{ cursor: 'default', color: 'rgba(217,70,239,.9)', fontWeight: 600, paddingRight: 130 }} />
+                <input type="text" value={CURRENT_USER} readOnly style={{ cursor: 'default', color: 'rgba(217,70,239,.9)', fontWeight: 600, paddingRight: 130 }} />
                 <span className="input-icon">👤</span>
                 <div className="logged-badge"><div className="logged-dot"></div> Logged In</div>
               </div>
@@ -65,15 +111,15 @@ function Join() {
                   <div className="tourn-check check-fifa">✓</div>
                   <span className="tourn-emoji">⚽</span>
                   <div className="tourn-name">FIFA</div>
-                  <div className="tourn-info">50 / 64 Players</div>
-                  <div className="tourn-spots spots-green">14 Spots Left</div>
+                  <div className="tourn-info">{tournaments.fifa ? tournaments.fifa.info : '—'}</div>
+                  <div className={`tourn-spots ${tournaments.fifa ? tournaments.fifa.spotsClass : 'spots-green'}`}>{tournaments.fifa ? tournaments.fifa.spotsText : '—'}</div>
                 </div>
                 <div className={`tourn-option t-combat${selKey === 'combat' ? ' selected' : ''}`} onClick={() => selectTourn('combat')}>
                   <div className="tourn-check check-combat">✓</div>
                   <span className="tourn-emoji">🥊</span>
                   <div className="tourn-name">COMBAT</div>
-                  <div className="tourn-info">30 / 32 Players</div>
-                  <div className="tourn-spots spots-red">2 Spots Left</div>
+                  <div className="tourn-info">{tournaments.combat ? tournaments.combat.info : '—'}</div>
+                  <div className={`tourn-spots ${tournaments.combat ? tournaments.combat.spotsClass : 'spots-red'}`}>{tournaments.combat ? tournaments.combat.spotsText : '—'}</div>
                 </div>
               </div>
             </div>
@@ -112,7 +158,7 @@ function Join() {
 
             <div className={`summary${sel ? ' show' : ''}`}>
               <div className="summary-title">📋 Registration Summary</div>
-              <div className="summary-row"><span className="summary-key">Player</span><span className="summary-val">user123</span></div>
+              <div className="summary-row"><span className="summary-key">Player</span><span className="summary-val">{CURRENT_USER}</span></div>
               <div className="summary-row"><span className="summary-key">Tournament</span><span className="summary-val">{sel ? `${sel.emoji} ${sel.name}` : '—'}</span></div>
               <div className="summary-row"><span className="summary-key">Tickets</span><span className="summary-val">{count} ticket{count > 1 ? 's' : ''}</span></div>
               <div className="summary-row" style={{ marginTop: 4 }}>
@@ -133,7 +179,7 @@ function Join() {
           <div className="success-sub">
             {sel && (
               <>
-                <strong>user123</strong> has been registered!<br /><br />
+                <strong>{CURRENT_USER}</strong> has been registered!<br /><br />
                 {sel.emoji} {sel.name}<br />
                 🎟️ {count} Ticket{count > 1 ? 's' : ''} · <strong style={{ color: 'var(--gold)' }}>${total}</strong><br /><br />
                 Good luck and may the best player win! 🏆
