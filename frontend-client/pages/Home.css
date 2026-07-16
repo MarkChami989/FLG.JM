@@ -32,20 +32,43 @@
 .orb5 { width:280px; height:200px; bottom:0; left:2%; background:radial-gradient(ellipse, rgba(180,83,9,.22), transparent 70%); filter:blur(60px); animation-delay:-5s; }
 @keyframes drift { from{transform:translate(0,0) scale(1)} to{transform:translate(18px,25px) scale(1.08)} }
 
-main { position:relative; z-index:1; padding: 36px 40px 60px; }
+main { position:relative; z-index:1; padding: 36px 40px 60px; display:flex; flex-direction:column; align-items:center; }
 
+/* Hero tag */
+.hero-tag {
+  font-family:'Rajdhani',sans-serif; font-size:10px; font-weight:700; letter-spacing:5px; text-transform:uppercase;
+  color:#93c5fd;
+  margin-bottom: 10px;
+  display:block;
+}
+
+/* Hero title */
+.hero-title {
+  font-size:36px; font-weight:900; letter-spacing:2px; line-height:1.2;
+  color:#93c5fd;
+  display:block;
+}
+
+/* Hero subtitle */
+.hero-sub {
+  font-size:13px; color:#93c5fd; margin-top:10px; letter-spacing:.5px;
+  display:block;
+}
+
+/* Section tag */
 .sec-title {
   font-family:'Rajdhani',sans-serif; font-size:11px; font-weight:700; letter-spacing:4px; text-transform:uppercase;
-  background:linear-gradient(90deg,var(--purple),var(--pink));
-  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin-bottom:6px;
-}
-.sec-head {
-  font-size:28px; font-weight:900; letter-spacing:1px; margin-bottom:28px;
-  background:linear-gradient(90deg,#fff 40%,rgba(226,217,243,.6));
-  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  color:#93c5fd;
+  margin-bottom:6px;
 }
 
-.grid { display:grid; grid-template-columns:1fr 1fr; grid-template-rows:auto auto; gap:24px; }
+/* Section head */
+.sec-head {
+  font-size:28px; font-weight:900; letter-spacing:1px; margin-bottom:28px;
+  color:#93c5fd;
+}
+
+.grid { display:grid; grid-template-columns:1fr 1fr; grid-template-rows:auto auto; gap:24px; width:100%; }
 
 .card {
   border-radius:20px; border:1px solid rgba(124,58,237,.3); background:rgba(8,3,20,.55);
@@ -92,18 +115,32 @@ main { position:relative; z-index:1; padding: 36px 40px 60px; }
   position:absolute; top:12px; left:12px;
   font-family:'Rajdhani',sans-serif; font-size:11px; font-weight:700; letter-spacing:2px; text-transform:uppercase;
   padding:4px 12px; border-radius:20px; background:rgba(0,0,0,.5); border:1px solid rgba(255,255,255,.15);
-  backdrop-filter:blur(8px); color:#fff; transition:opacity .4s;
+  backdrop-filter:blur(8px); color:#93c5fd; transition:opacity .4s;
 }
 
 .card-body { padding:20px 20px 22px; }
-.card-title { font-size:18px; font-weight:800; letter-spacing:.5px; margin-bottom:4px; }
-.card-desc { font-size:12px; color:var(--muted); line-height:1.6; }
+
+/* Card titles (PC & PS Rooms, Tournaments...) */
+.card-title {
+  font-size:18px; font-weight:800; letter-spacing:.5px; margin-bottom:4px;
+  color:#93c5fd;
+}
+
+/* Card description text */
+.card-desc {
+  font-size:12px; color:#93c5fd; line-height:1.9;
+  background: rgba(59,130,246,.28);
+  padding: 1px 6px;
+  border-radius: 3px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
 
 .badge { display:inline-flex; align-items:center; gap:4px; margin-top:10px; padding:4px 12px; border-radius:20px; font-size:10px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; }
-.badge-purple { background:rgba(124,58,237,.2); border:1px solid rgba(124,58,237,.4); color:#a78bfa; }
-.badge-pink   { background:rgba(217,70,239,.2); border:1px solid rgba(217,70,239,.4); color:#f0abfc; }
-.badge-gold   { background:rgba(245,158,11,.2); border:1px solid rgba(245,158,11,.4); color:#fcd34d; }
-.badge-green  { background:rgba(16,185,129,.2); border:1px solid rgba(16,185,129,.4); color:#6ee7b7; }
+.badge-purple { background:rgba(59,130,246,.2); border:1px solid rgba(59,130,246,.4); color:#93c5fd; }
+.badge-pink   { background:rgba(59,130,246,.2); border:1px solid rgba(59,130,246,.4); color:#93c5fd; }
+.badge-gold   { background:rgba(59,130,246,.2); border:1px solid rgba(59,130,246,.4); color:#93c5fd; }
+.badge-green  { background:rgba(59,130,246,.2); border:1px solid rgba(59,130,246,.4); color:#93c5fd; }
 
 .card-tourn { grid-column:2; grid-row:1; min-height:360px; }
 .tourn-banner { height:220px; position:relative; overflow:hidden; background:linear-gradient(135deg,#0d0020,#1a003a,#0a0515); display:flex; align-items:center; justify-content:center; }
@@ -124,10 +161,8 @@ main { position:relative; z-index:1; padding: 36px 40px 60px; }
 
 .tourn-name {
   font-family:'Rajdhani',sans-serif; font-size:22px; font-weight:700; letter-spacing:2px;
-  background:linear-gradient(90deg,var(--gold),#fff,var(--gold)); background-size:200% auto; animation:shimmer 3s linear infinite;
-  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  color:#93c5fd;
 }
-@keyframes shimmer { to{background-position:200% center} }
 
 .prize { font-size:13px; color:var(--gold); font-weight:700; letter-spacing:1px; margin-top:4px; }
 
@@ -192,16 +227,6 @@ main { position:relative; z-index:1; padding: 36px 40px 60px; }
 .menu-origin { font-size:10px; color:var(--muted); margin-top:1px; }
 .menu-price { font-family:'Rajdhani',sans-serif; font-size:14px; font-weight:700; color:var(--gold); }
 
-.hero { text-align:center; padding:10px 0 36px; }
-.hero-tag {
-  font-family:'Rajdhani',sans-serif; font-size:10px; font-weight:700; letter-spacing:5px; text-transform:uppercase;
-  background:linear-gradient(90deg,var(--purple),var(--pink),var(--cyan));
-  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin-bottom:10px;
-}
-.hero-title {
-  font-size:36px; font-weight:900; letter-spacing:2px; line-height:1.1;
-  background:linear-gradient(90deg,#fff 30%,var(--pink) 70%,var(--cyan));
-  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
-}
-.hero-sub { font-size:13px; color:var(--muted); margin-top:10px; letter-spacing:.5px; }
+.hero { text-align:center; padding:10px 0 36px; display:flex; flex-direction:column; align-items:center; width:100%; }
+
 .hero-line { width:80px; height:2px; margin:16px auto 0; background:linear-gradient(90deg,transparent,var(--purple),var(--pink),transparent); }

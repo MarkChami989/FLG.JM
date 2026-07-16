@@ -33,13 +33,13 @@ header {
 nav { display: flex; align-items: center; gap: 28px; }
 nav a {
   font-size: 12px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase;
-  color: var(--muted); text-decoration: none; transition: color .2s;
+  color: #93c5fd; text-decoration: none; transition: color .2s;
 }
-nav a:hover, nav a.active { color: #fff; }
+nav a:hover, nav a.active { color: #bfdbfe; }
 .btn-activity-nav {
   padding: 9px 22px;
   font-family: 'Rajdhani', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 2.5px;
-  text-transform: uppercase; color: #fff;
+  text-transform: uppercase; color: #93c5fd;
   background: transparent;
   border: 1.5px solid rgba(217, 70, 239, .45);
   border-radius: 8px; cursor: pointer; transition: all .2s; margin-right: 10px;
@@ -52,7 +52,7 @@ nav a:hover, nav a.active { color: #fff; }
 .btn-login-nav {
   padding: 9px 22px;
   font-family: 'Rajdhani', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 2.5px;
-  text-transform: uppercase; color: #fff;
+  text-transform: uppercase; color: #93c5fd;
   background: linear-gradient(135deg, var(--purple), var(--pink));
   border: none; border-radius: 8px; cursor: pointer;
   box-shadow: 0 0 16px rgba(217, 70, 239, .3);
