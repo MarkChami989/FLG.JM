@@ -16,6 +16,12 @@ async function request(path, options = {}) {
 export const CURRENT_USER = 'user123'
 
 export const api = {
+  auth: {
+    register: (data) => request('/auth/register', { method: 'POST', body: JSON.stringify(data) }),
+    verify: (data) => request('/auth/verify', { method: 'POST', body: JSON.stringify(data) }),
+    resend: (data) => request('/auth/resend', { method: 'POST', body: JSON.stringify(data) }),
+    login: (data) => request('/auth/login', { method: 'POST', body: JSON.stringify(data) }),
+  },
   bookings: {
     list: (params) => request(`/bookings${params ? '?' + new URLSearchParams(params) : ''}`),
     create: (data) => request('/bookings', { method: 'POST', body: JSON.stringify(data) }),
