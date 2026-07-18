@@ -67,7 +67,7 @@ function Rooms() {
           </div>
 
           <div className="card">
-            <div className="card-glow" style={{ background: 'radial-gradient(ellipse 60% 40% at 50% 0%,rgba(217,70,239,.12),transparent)' }}></div>
+            <div className="card-glow" style={{ background: 'radial-gradient(ellipse 60% 40% at 50% 0%,rgba(59,130,246,.12),transparent)' }}></div>
             <div className="corner tl"></div><div className="corner tr"></div>
             <div className="corner bl"></div><div className="corner br"></div>
 
@@ -90,7 +90,7 @@ function Rooms() {
                     <div className="disc-slot"></div>
                   </div>
                   <div className="ps-ctrl">🕹️</div>
-                  <div style={{ fontSize: 20, filter: 'drop-shadow(0 0 8px rgba(217,70,239,.6))' }}>🎯</div>
+                  <div style={{ fontSize: 20, filter: 'drop-shadow(0 0 8px rgba(59,130,246,.6))' }}>🎯</div>
                 </div>
               </div>
             </div>
@@ -103,7 +103,7 @@ function Rooms() {
                 <span className="badge badge-pink">📺 4K OLED</span>
                 <span className="badge badge-green">✅ Available</span>
               </div>
-              <button className="btn-book" style={{ background: 'linear-gradient(135deg,#7c3aed,#d946ef)' }}>Book Now</button>
+              <button className="btn-book" style={{ background: 'linear-gradient(135deg,#1d4ed8,#3b82f6)' }}>Book Now</button>
             </div>
           </div>
         </div>
