@@ -10,7 +10,7 @@
       "time": "20:00",
       "pay": 160,
       "paid": true,
-      "status": "pending"
+      "status": "accepted"
     },
     {
       "id": "FLG-4042",
@@ -32,7 +32,7 @@
       "time": "22:00",
       "pay": 25,
       "paid": true,
-      "status": "pending"
+      "status": "accepted"
     },
     {
       "id": "FLG-4044",
@@ -318,7 +318,15 @@
       "status": "free"
     }
   ],
-  "slotBookings": [],
+  "slotBookings": [
+    {
+      "id": "vip-standard_2026-07-16_07:00",
+      "resourceId": "vip-standard",
+      "date": "2026-07-16",
+      "hour": "07:00",
+      "clientName": "marc"
+    }
+  ],
   "staff": [
     {
       "id": "st-1",
@@ -348,5 +356,85 @@
       "status": "suspended",
       "last": "3d ago"
     }
-  ]
+  ],
+  "clients": [
+    {
+      "id": "CLI-0001",
+      "username": "MARC",
+      "email": "mark.chamii444@gmail.com",
+      "passwordHash": "$2b$10$bOPUMrGMrPLdryAswq1cY.LfYcf4IBrg2tUBJ8qgQIZXbpfsaqxAa",
+      "phone": "+961 76385221",
+      "dob": "2004-08-12",
+      "verified": false,
+      "otpCode": "121224",
+      "otpExpiresAt": 1784391805225
+    },
+    {
+      "id": "CLI-0004",
+      "username": "NHH",
+      "email": "netronics.power.hub@gmail.com",
+      "passwordHash": "$2b$10$ZWBk6yDUjZz5Orw6TZpw1u9iGUwJ8IXiYG7oOyZfjB1ovo2iXpgGW",
+      "phone": "+961 76385221",
+      "dob": "2004-08-12",
+      "verified": false,
+      "otpCode": "870007",
+      "otpExpiresAt": 1784392317224
+    },
+    {
+      "id": "CLI-0005",
+      "username": "RITA",
+      "email": "marc.chami9@gmail.com",
+      "passwordHash": "$2b$10$0r0A0V7lTl/7UfxhbBMw6OGovgdVXXV6.0Dwe1Ma0/bYofIicXYzi",
+      "phone": "+961 76385221",
+      "dob": "2004-08-12",
+      "verified": false,
+      "otpCode": "246498",
+      "otpExpiresAt": 1784392717053
+    },
+    {
+      "id": "CLI-0006",
+      "username": "RRRTTT",
+      "email": "afifchami4@gmail.com",
+      "passwordHash": "$2b$10$lIZ8vsetKr6ZloOXGk1nmekw9fGlQhxWQn.WRZ1M54TGy2USoRAB2",
+      "phone": "+961 76385221",
+      "dob": "2000-08-12",
+      "verified": false,
+      "otpCode": "816245",
+      "otpExpiresAt": 1784392827803
+    },
+    {
+      "id": "CLI-0007",
+      "username": "testuser_debug2",
+      "email": "mark.chamii444+debug2@gmail.com",
+      "passwordHash": "$2b$10$5idzhOSkyVr1wQgpieI0nuwdVmhBSsPDZB9EPqZ8kSVJlbewNlDNy",
+      "phone": "",
+      "dob": "",
+      "verified": false,
+      "otpCode": "708925",
+      "otpExpiresAt": 1784392863422
+    },
+    {
+      "id": "CLI-0008",
+      "username": "testuser_debug3",
+      "email": "mark.chamii444+debug3@gmail.com",
+      "passwordHash": "$2b$10$04zqIOro7s1lZVKwTP7duuCKDiQNW6evXLB/XJByvjwR/qx0kLWUK",
+      "phone": "",
+      "dob": "",
+      "verified": false,
+      "otpCode": "590270",
+      "otpExpiresAt": 1784392972113
+    },
+    {
+      "id": "CLI-0009",
+      "username": "12123",
+      "email": "marc.chami18@gmail.com",
+      "passwordHash": "$2b$10$dKnRhoq2n0LhJMqkCUUk.uJDaVoUVcMIWsqPSwQj3JVyNyV6Qf3aK",
+      "phone": "+961 76385221",
+      "dob": "2002-02-01",
+      "verified": true,
+      "otpCode": null,
+      "otpExpiresAt": null
+    }
+  ],
+  "nextClientSeq": 9
 }

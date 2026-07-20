@@ -7,6 +7,7 @@ const tournamentsRouter = require('./routes/tournaments');
 const resourcesRouter = require('./routes/resources');
 const staffRouter = require('./routes/staff');
 const reportsRouter = require('./routes/reports');
+const authRouter = require('./routes/auth');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -23,6 +24,7 @@ app.use('/api/tournaments', tournamentsRouter);
 app.use('/api/resources', resourcesRouter);
 app.use('/api/staff', staffRouter);
 app.use('/api/reports', reportsRouter);
+app.use('/api/auth', authRouter);
 
 app.listen(PORT, () => {
   console.log(`Backend server running on http://localhost:${PORT}`);

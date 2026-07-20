@@ -1,13 +1,21 @@
 import { useEffect, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { api } from './api.js'
 import './verify.css'
 
 function Verify() {
   const navigate = useNavigate()
+  const location = useLocation()
+  const email = location.state?.email || ''
   const [otp, setOtp] = useState(Array(6).fill(''))
   const [status, setStatus] = useState('idle') // idle | error | success
+  const [errorMsg, setErrorMsg] = useState('')
   const [countdown, setCountdown] = useState(0)
   const inputRefs = useRef([])
+
+  useEffect(() => {
+    if (!email) navigate('/register')
+  }, [email, navigate])
 
   useEffect(() => {
     inputRefs.current[0]?.focus()
@@ -54,20 +62,35 @@ function Verify() {
     inputRefs.current[nextIdx]?.focus()
   }
 
-  function submitOTP() {
+  async function submitOTP() {
     const code = otp.join('')
     if (code.length < 6) {
+      setErrorMsg('Please enter all 6 digits')
+      setStatus('error')
+      setTimeout(() => setStatus('idle'), 600)
+      return
+    }
+    try {
+      await api.auth.verify({ email, code })
+    } catch (err) {
+      setErrorMsg(err.message || 'Invalid code')
       setStatus('error')
       setTimeout(() => setStatus('idle'), 600)
       return
     }
     setStatus('success')
-    setTimeout(() => navigate('/'), 800)
+    setTimeout(() => navigate('/login'), 800)
   }
 
-  function startResend(e) {
+  async function startResend(e) {
     e.preventDefault()
-    setCountdown(30)
+    if (countdown > 0) return
+    try {
+      await api.auth.resend({ email })
+      setCountdown(30)
+    } catch (err) {
+      setErrorMsg(err.message || 'Could not resend code')
+    }
   }
 
   return (
@@ -123,8 +146,11 @@ function Verify() {
           <div className="verify-title">Verify Your Account</div>
           <div className="verify-sub">
             We sent a 6-digit code to<br />
-            <span>your@email.com</span>
+            <span>{email}</span>
           </div>
+          {status === 'error' && errorMsg && (
+            <div style={{ color: '#f87171', fontSize: 13, textAlign: 'center', marginTop: 4 }}>{errorMsg}</div>
+          )}
 
           <div className="otp-wrap">
             {otp.map((val, i) => (

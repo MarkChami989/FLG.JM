@@ -67,6 +67,8 @@ const SEED = {
     { id: 'st-3', name: 'Lea S.', role: 'staff', status: 'active', last: '14m ago' },
     { id: 'st-4', name: 'Omar D.', role: 'staff', status: 'suspended', last: '3d ago' },
   ],
+  nextClientSeq: 0,
+  clients: [],
 };
 
 function load() {
@@ -75,7 +77,10 @@ function load() {
     fs.writeFileSync(DB_PATH, JSON.stringify(SEED, null, 2));
     return structuredClone(SEED);
   }
-  return JSON.parse(fs.readFileSync(DB_PATH, 'utf-8'));
+  const loaded = JSON.parse(fs.readFileSync(DB_PATH, 'utf-8'));
+  if (!loaded.clients) loaded.clients = [];
+  if (loaded.nextClientSeq === undefined) loaded.nextClientSeq = 0;
+  return loaded;
 }
 
 let data = load();
@@ -90,8 +95,15 @@ function nextBookingId() {
   return `FLG-${data.nextBookingSeq}`;
 }
 
+function nextClientId() {
+  data.nextClientSeq += 1;
+  save();
+  return `CLI-${String(data.nextClientSeq).padStart(4, '0')}`;
+}
+
 module.exports = {
   get data() { return data; },
   save,
   nextBookingId,
+  nextClientId,
 };
