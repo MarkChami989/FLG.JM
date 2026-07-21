@@ -116,8 +116,8 @@ function Verify() {
       <div className="orb orb-3"></div>
       <div className="grid-overlay"></div>
 
-      <div className="page">
-        <div className="card">
+      <div className="auth-page">
+        <div className="auth-card">
           <div className="card-corners"></div>
 
           <div className="logo-wrap">

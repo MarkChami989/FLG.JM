@@ -29,4 +29,4 @@ body {
   position: relative;
 }
 
-#root { min-height: 100vh; }
+#root { min-height: 100vh; zoom: 2; }

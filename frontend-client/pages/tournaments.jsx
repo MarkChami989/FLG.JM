@@ -63,12 +63,6 @@ function Tournaments() {
                     )}
                   </div>
 
-<<<<<<< HEAD
-            <div className="card-body">
-              <div className="live-chip chip-live"><div className="live-dot"></div> LIVE NOW</div>
-              <div className="t-name" style={{ color: '#3b82f6' }}>⚽ FIFA Tournament</div>
-              <div className="t-desc">The biggest FIFA championship at Fusion. Battle through group stages, knockouts, and a grand final to claim the title and prize pool.</div>
-=======
                   <div className="card-body">
                     <div className="live-chip" style={{ background: a.chipBg, border: `1px solid ${a.border}`, color: a.chipText }}>
                       <div className="live-dot" style={{ background: a.var }}></div>
@@ -76,7 +70,6 @@ function Tournaments() {
                     </div>
                     <div className="t-name">🏆 {t.name}</div>
                     <div className="t-desc">{t.description || 'Compete against the best. Join now to secure your spot.'}</div>
->>>>>>> b4b7b421fb57afb486889334a9ad33f47e9b4071
 
                     <div className="stats">
                       <div className="stat">
@@ -121,85 +114,7 @@ function Tournaments() {
               )
             })}
           </div>
-<<<<<<< HEAD
-
-          <div className="card">
-            <div className="corner tl" style={{ borderTop: '1.5px solid var(--red)', borderLeft: '1.5px solid var(--red)' }}></div>
-            <div className="corner tr" style={{ borderTop: '1.5px solid var(--gold)', borderRight: '1.5px solid var(--gold)' }}></div>
-            <div className="corner bl" style={{ borderBottom: '1.5px solid var(--gold)', borderLeft: '1.5px solid var(--gold)' }}></div>
-            <div className="corner br" style={{ borderBottom: '1.5px solid var(--red)', borderRight: '1.5px solid var(--red)' }}></div>
-
-            <div className="t-visual">
-              <div className="combat-bg">
-                <div className="flash-lines"></div>
-                <div className="arena-glow"></div>
-                <div className="health-bars">
-                  <div className="hbar hbar1"><div className="hbar-fill"></div></div>
-                  <div className="vs-mini">VS</div>
-                  <div className="hbar hbar2"><div className="hbar-fill"></div></div>
-                </div>
-                <div className="fighter left">🥷</div>
-                <div className="vs-badge">VS</div>
-                <div className="fighter right">🥷</div>
-              </div>
-            </div>
-
-            <div className="card-body">
-              <div className="live-chip chip-open"><div className="live-dot"></div> OPEN · REGISTERING</div>
-              <div className="t-name" style={{ color: '#3b82f6' }}>🥊 Now Combat</div>
-              <div className="t-desc">Intense 1v1 fighting game tournament. Choose your fighter, master your combos, and outlast every opponent to stand as the last one standing.</div>
-
-              <div className="stats">
-                <div className="stat">
-                  <div className="stat-val" style={{ color: 'var(--red)' }}>{combatCount}</div>
-                  <div className="stat-lbl">Players Joined</div>
-                </div>
-                <div className="stat">
-                  <div className="stat-val" style={{ color: 'var(--gold)' }}>32</div>
-                  <div className="stat-lbl">Max Players</div>
-                </div>
-                <div className="stat">
-                  <div className="stat-val" style={{ color: 'var(--pink)' }}>2</div>
-                  <div className="stat-lbl">Spots Left</div>
-                </div>
-              </div>
-
-              <div className="players-row">
-                <div className="avatars">
-                  <div className="av">🐯</div><div className="av">🦈</div><div className="av">🐍</div>
-                  <div className="av">🦂</div><div className="av">🐲</div>
-                  <div className="av av-more">+25</div>
-                </div>
-                <div className="players-txt"><strong>{combatCount}</strong> players joined · <strong>{32 - combatCount}</strong> spots left</div>
-              </div>
-
-              <div className="progress-wrap">
-                <div className="progress-lbl"><span>Registration</span><span>{combatCount} / 32</span></div>
-                <div className="progress-bar">
-                  <div className="progress-fill" style={{ width: `${(combatCount / 32) * 100}%`, background: 'linear-gradient(90deg,#b91c1c,#ef4444)', boxShadow: '0 0 8px rgba(239,68,68,.5)' }}></div>
-                </div>
-              </div>
-
-              <div className="prize-row" style={{ background: 'rgba(239,68,68,.06)', borderColor: 'rgba(239,68,68,.2)' }}>
-                <div className="prize-icon">🏆</div>
-                <div className="prize-info">
-                  <div className="prize-lbl">Prize Pool</div>
-                  <div className="prize-val" style={{ color: '#f87171' }}>$1,500</div>
-                </div>
-                <div>
-                  <span className="badge badge-red">🥊 1v1</span>
-                  <span className="badge badge-gold">💵 Cash</span>
-                </div>
-              </div>
-
-              <button className="btn-join btn-combat" onClick={joinCombat}>🥊 &nbsp;JOIN NOW</button>
-            </div>
-          </div>
-
-        </div>
-=======
         )}
->>>>>>> b4b7b421fb57afb486889334a9ad33f47e9b4071
       </main>
     </>
   )

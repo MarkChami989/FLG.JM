@@ -55,33 +55,33 @@ function Home() {
 
       <div className="page">
         <header className="topbar">
-          <div className="user-info">
-            <div className="realtime">
-              <span className="live-dot"></span>
-              <span>{clockTime}</span>&nbsp;·&nbsp;<span>{dateStr}</span>
+          <div className="admin-id">
+            <div className="avatar">J</div>
+            <div>
+              <span className="admin-name">Jana</span>
+              <span className="admin-badge">STAFF</span>
             </div>
-            <div className="user-name">Jana</div>
-            <div className="user-role"><span className="role-badge">Staff</span>Staff Portal</div>
+            <div className="clock">{clockTime} · {dateStr}</div>
           </div>
-          <div className="brand-right">
-            <div className="brand-flg">FLG</div>
-            <div className="brand-sub">Fusion Luxury Game</div>
+          <div className="brand">
+            <div className="brand-mark">FLG</div>
+            <div className="brand-text">Fusion <span>Luxury</span> Game · Staff</div>
           </div>
         </header>
 
         <nav className="subnav">
-          <button className="nav-btn" onClick={() => openTab('activities', 'Activities', '#10B981')}>
-            <Icon paths={ICONS.activities} width="15" height="15" strokeWidth="1.8" />
-            Activities
-          </button>
-          <button className="nav-btn" onClick={() => openTab('report', 'Report', '#06B6D4')}>
-            <Icon paths={ICONS.report} width="15" height="15" strokeWidth="1.8" />
-            Report
-          </button>
-          <button className="nav-btn" onClick={() => openTab('settings', 'Settings', '#F59E0B')}>
-            <Icon paths={ICONS.settings} width="15" height="15" strokeWidth="1.8" />
-            Settings
-          </button>
+          <a onClick={() => openTab('activities', 'Activities', '#10B981')}>
+            <Icon paths={ICONS.activities} width="14" height="14" strokeWidth="1.8" />
+            &nbsp;Activities
+          </a>
+          <a onClick={() => openTab('report', 'Report', '#06B6D4')}>
+            <Icon paths={ICONS.report} width="14" height="14" strokeWidth="1.8" />
+            &nbsp;Report
+          </a>
+          <a onClick={() => openTab('settings', 'Settings', '#F59E0B')}>
+            <Icon paths={ICONS.settings} width="14" height="14" strokeWidth="1.8" />
+            &nbsp;Settings
+          </a>
         </nav>
 
         <div className="tabbar">
@@ -99,62 +99,41 @@ function Home() {
 
         <main className="main">
           {!activeTab && (
-            <div className="cards-grid">
-              <div className="card" onClick={() => openTab('orders', 'Received Orders', '#7C3AED')}>
-                <div className="card-glow" style={{ background: 'linear-gradient(90deg,var(--purple),var(--pink))' }}></div>
-                <div className="card-header">
-                  <div className="card-title">Received Orders</div>
-                  <div className="card-icon-wrap" style={{ background: 'rgba(124,58,237,0.15)', border: '1px solid rgba(124,58,237,0.25)' }}>
-                    <Icon paths={ICONS.ordersDetail} width="22" height="22" stroke="#a78bfa" strokeWidth="1.8" />
-                  </div>
+            <>
+              <div className="section-title">Staff Console</div>
+              <div className="page-title">Good to see you, Jana</div>
+              <div className="launcher-grid">
+                <div className="launcher-card" style={{ '--clr': '#a78bfa' }} onClick={() => openTab('orders', 'Received Orders', '#7C3AED')}>
+                  <div className="launcher-icon" style={{ color: '#a78bfa' }}><Icon paths={ICONS.ordersDetail} width="20" height="20" strokeWidth="1.8" /></div>
+                  <h3>Received Orders</h3>
+                  <p>Approve or reject incoming client requests across every activity.</p>
                 </div>
-                <div className="card-arrow"><Icon paths={ICONS.arrowIcon} width="16" height="16" strokeWidth="2" /></div>
-              </div>
 
-              <div className="card" onClick={() => openTab('tournaments', 'Tournaments', '#F59E0B')}>
-                <div className="card-glow" style={{ background: 'linear-gradient(90deg,var(--gold),var(--orange))' }}></div>
-                <div className="card-header">
-                  <div className="card-title">Tournaments</div>
-                  <div className="card-icon-wrap" style={{ background: 'rgba(245,158,11,0.12)', border: '1px solid rgba(245,158,11,0.25)' }}>
-                    <Icon paths={ICONS.tournaments} width="22" height="22" stroke="#fbbf24" strokeWidth="1.8" />
-                  </div>
+                <div className="launcher-card" style={{ '--clr': '#fbbf24' }} onClick={() => openTab('tournaments', 'Tournaments', '#F59E0B')}>
+                  <div className="launcher-icon" style={{ color: '#fbbf24' }}><Icon paths={ICONS.tournaments} width="20" height="20" strokeWidth="1.8" /></div>
+                  <h3>Tournaments</h3>
+                  <p>Create, manage, and settle FIFA &amp; Combat tournament brackets.</p>
                 </div>
-                <div className="card-arrow"><Icon paths={ICONS.arrowIcon} width="16" height="16" strokeWidth="2" /></div>
-              </div>
 
-              <div className="card" onClick={() => openTab('rooms', 'Rooms', '#06B6D4')}>
-                <div className="card-glow" style={{ background: 'linear-gradient(90deg,var(--cyan),var(--purple))' }}></div>
-                <div className="card-header">
-                  <div className="card-title">Rooms</div>
-                  <div className="card-icon-wrap" style={{ background: 'rgba(6,182,212,0.12)', border: '1px solid rgba(6,182,212,0.25)' }}>
-                    <Icon paths={ICONS.rooms} width="22" height="22" stroke="#22d3ee" strokeWidth="1.8" />
-                  </div>
+                <div className="launcher-card" style={{ '--clr': '#22d3ee' }} onClick={() => openTab('rooms', 'Rooms', '#06B6D4')}>
+                  <div className="launcher-icon" style={{ color: '#22d3ee' }}><Icon paths={ICONS.rooms} width="20" height="20" strokeWidth="1.8" /></div>
+                  <h3>Rooms</h3>
+                  <p>Live occupancy across PC, PS5, and every VIP tier.</p>
                 </div>
-                <div className="card-arrow"><Icon paths={ICONS.arrowIcon} width="16" height="16" strokeWidth="2" /></div>
-              </div>
 
-              <div className="card card-lounge" onClick={() => openTab('lounge', 'Lounge', '#F97316')}>
-                <div className="card-glow" style={{ background: 'linear-gradient(90deg,var(--orange),var(--gold))' }}></div>
-                <div className="card-header">
-                  <div className="card-title">Lounge</div>
-                  <div className="card-icon-wrap" style={{ background: 'rgba(249,115,22,0.12)', border: '1px solid rgba(249,115,22,0.25)' }}>
-                    <Icon paths={ICONS.lounge} width="22" height="22" stroke="#fb923c" strokeWidth="1.8" />
-                  </div>
+                <div className="launcher-card" style={{ '--clr': '#fb923c' }} onClick={() => openTab('lounge', 'Lounge', '#F97316')}>
+                  <div className="launcher-icon" style={{ color: '#fb923c' }}><Icon paths={ICONS.lounge} width="20" height="20" strokeWidth="1.8" /></div>
+                  <h3>Lounge</h3>
+                  <p>Bar seating and table status for the Cigar Lounge.</p>
                 </div>
-                <div className="card-arrow"><Icon paths={ICONS.arrowIcon} width="16" height="16" strokeWidth="2" /></div>
-              </div>
 
-              <div className="card card-tabletop" onClick={() => openTab('tabletop', 'Tabletop Games', '#D946EF')}>
-                <div className="card-glow" style={{ background: 'linear-gradient(90deg,var(--pink),var(--purple),var(--cyan))' }}></div>
-                <div className="card-header">
-                  <div className="card-title">Tabletop Games</div>
-                  <div className="card-icon-wrap" style={{ background: 'rgba(217,70,239,0.12)', border: '1px solid rgba(217,70,239,0.25)' }}>
-                    <Icon paths={ICONS.tabletop} width="22" height="22" stroke="#e879f9" strokeWidth="1.8" />
-                  </div>
+                <div className="launcher-card" style={{ '--clr': '#e879f9' }} onClick={() => openTab('tabletop', 'Tabletop Games', '#D946EF')}>
+                  <div className="launcher-icon" style={{ color: '#e879f9' }}><Icon paths={ICONS.tabletop} width="20" height="20" strokeWidth="1.8" /></div>
+                  <h3>Tabletop Games</h3>
+                  <p>Ping Pong, Billiard &amp; Baby Foot table reservations.</p>
                 </div>
-                <div className="card-arrow"><Icon paths={ICONS.arrowIcon} width="16" height="16" strokeWidth="2" /></div>
               </div>
-            </div>
+            </>
           )}
 
           {tabs.map((t) => (
