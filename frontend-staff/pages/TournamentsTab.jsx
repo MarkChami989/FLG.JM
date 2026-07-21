@@ -12,16 +12,37 @@ function TournamentsTab({ tDB, reload, onClose }) {
   const [giftUser, setGiftUser] = useState(null)
   const [toast, setToast] = useState({ show: false, msg: '' })
   const [addFeedback, setAddFeedback] = useState(null)
+  const [imageData, setImageData] = useState('')
   const nameRef = useRef(null)
+  const descRef = useRef(null)
   const maxRef = useRef(null)
   const costRef = useRef(null)
+  const fileInputRef = useRef(null)
 
   const t = tDB.find((x) => x.id === selectedTid)
 
   function goto(s, tid) { setScreen(s); if (tid !== undefined) setSelectedTid(tid) }
 
+  function handleImageChange(e) {
+    const file = e.target.files[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = () => setImageData(reader.result)
+    reader.readAsDataURL(file)
+  }
+
+  function resetAddForm() {
+    nameRef.current.value = ''
+    descRef.current.value = ''
+    maxRef.current.value = ''
+    costRef.current.value = ''
+    if (fileInputRef.current) fileInputRef.current.value = ''
+    setImageData('')
+  }
+
   function tCreate() {
     const name = nameRef.current.value.trim()
+    const description = descRef.current.value.trim()
     const max = parseInt(maxRef.current.value)
     const cost = parseInt(costRef.current.value)
     if (!name || !max || isNaN(cost)) {
@@ -29,10 +50,10 @@ function TournamentsTab({ tDB, reload, onClose }) {
       setTimeout(() => setAddFeedback(null), 1600)
       return
     }
-    api.tournaments.create({ name, max, cost }).then(() => {
+    api.tournaments.create({ name, max, cost, description, image: imageData }).then(() => {
       reload()
       setAddFeedback({ text: '✓ Tournament Created!', bad: false })
-      setTimeout(() => { setAddFeedback(null); setScreen('main') }, 1400)
+      setTimeout(() => { setAddFeedback(null); setScreen('main'); resetAddForm() }, 1400)
     })
   }
 
@@ -86,6 +107,26 @@ function TournamentsTab({ tDB, reload, onClose }) {
               <div>
                 <div style={{ fontFamily: "'Rajdhani',sans-serif", fontSize: 10, letterSpacing: 2, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', marginBottom: 7 }}>Tournament Name</div>
                 <input ref={nameRef} type="text" placeholder="e.g. FIFA Summer Cup" style={inputStyle} />
+              </div>
+              <div>
+                <div style={{ fontFamily: "'Rajdhani',sans-serif", fontSize: 10, letterSpacing: 2, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', marginBottom: 7 }}>Tournament Image</div>
+                <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageChange} style={inputStyle} />
+                {imageData && (
+                  <img
+                    src={imageData}
+                    alt="Tournament preview"
+                    style={{ marginTop: 10, width: '100%', maxHeight: 160, objectFit: 'cover', borderRadius: 10, border: '1px solid rgba(255,255,255,0.1)' }}
+                  />
+                )}
+              </div>
+              <div>
+                <div style={{ fontFamily: "'Rajdhani',sans-serif", fontSize: 10, letterSpacing: 2, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', marginBottom: 7 }}>Description</div>
+                <textarea
+                  ref={descRef}
+                  rows={3}
+                  placeholder="e.g. The biggest FIFA championship at Fusion..."
+                  style={{ ...inputStyle, resize: 'vertical', fontFamily: "'Exo 2',sans-serif" }}
+                ></textarea>
               </div>
               <div>
                 <div style={{ fontFamily: "'Rajdhani',sans-serif", fontSize: 10, letterSpacing: 2, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', marginBottom: 7 }}>Max Players</div>

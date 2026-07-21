@@ -9,24 +9,34 @@ router.get('/', async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
-  const { name, max, cost } = req.body;
+  const { name, max, cost, description, image } = req.body;
   if (!name || !max || cost === undefined) {
     return res.status(400).json({ error: 'name, max, cost are required' });
   }
   const count = await db.tournaments().countDocuments();
   const id = `T-${String(count + 1).padStart(3, '0')}`;
-  const tournament = { id, name, max: Number(max), cost: Number(cost), clients: [] };
+  const tournament = {
+    id,
+    name,
+    max: Number(max),
+    cost: Number(cost),
+    description: description || '',
+    image: image || '',
+    clients: [],
+  };
   await db.tournaments().insertOne(tournament);
   const { _id, ...pub } = tournament;
   res.status(201).json(pub);
 });
 
 router.patch('/:id', async (req, res) => {
-  const { name, max, cost } = req.body;
+  const { name, max, cost, description, image } = req.body;
   const update = {};
   if (name !== undefined) update.name = name;
   if (max !== undefined) update.max = Number(max);
   if (cost !== undefined) update.cost = Number(cost);
+  if (description !== undefined) update.description = description;
+  if (image !== undefined) update.image = image;
   const t = await db.tournaments().findOneAndUpdate(
     { id: req.params.id },
     { $set: update },
