@@ -117,7 +117,7 @@ function Home() {
             </div>
           </div>
 
-          <div className="card card-tourn">
+          <div className="card card-tourn" onClick={() => navigate('/tournaments')}>
             <div className="card-glow" style={{ background: 'radial-gradient(ellipse 60% 40% at 50% 0%,rgba(245,158,11,.1),transparent)' }}></div>
             <div className="corner tl"></div><div className="corner tr"></div>
             <div className="corner bl"></div><div className="corner br"></div>
@@ -134,7 +134,7 @@ function Home() {
                   <div className="avatar">🦂</div><div className="avatar">🐯</div>
                   <div style={{ marginLeft: -6, width: 28, height: 28, borderRadius: '50%', background: 'rgba(255,255,255,.1)', border: '2px solid rgba(255,255,255,.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: 'var(--muted)' }}>+38</div>
                 </div>
-                <button className="tourn-btn" onClick={() => navigate('/join')}>JOIN NOW</button>
+                <button className="tourn-btn" onClick={(e) => { e.stopPropagation(); navigate('/join') }}>JOIN NOW</button>
               </div>
             </div>
 

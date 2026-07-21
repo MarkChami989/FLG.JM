@@ -54,7 +54,7 @@ function Tournaments() {
 
             <div className="card-body">
               <div className="live-chip chip-live"><div className="live-dot"></div> LIVE NOW</div>
-              <div className="t-name">⚽ FIFA Tournament</div>
+              <div className="t-name" style={{ color: '#3b82f6' }}>⚽ FIFA Tournament</div>
               <div className="t-desc">The biggest FIFA championship at Fusion. Battle through group stages, knockouts, and a grand final to claim the title and prize pool.</div>
 
               <div className="stats">
@@ -127,7 +127,7 @@ function Tournaments() {
 
             <div className="card-body">
               <div className="live-chip chip-open"><div className="live-dot"></div> OPEN · REGISTERING</div>
-              <div className="t-name">🥊 Now Combat</div>
+              <div className="t-name" style={{ color: '#3b82f6' }}>🥊 Now Combat</div>
               <div className="t-desc">Intense 1v1 fighting game tournament. Choose your fighter, master your combos, and outlast every opponent to stand as the last one standing.</div>
 
               <div className="stats">
