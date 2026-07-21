@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import Header from '../src/components/Header.jsx'
-import { api, CURRENT_USER } from './api.js'
+import { useAuth } from '../src/auth.jsx'
+import { api } from './api.js'
 import './pingpong.css'
 
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
@@ -13,6 +14,8 @@ function fmtKey(d) {
 }
 
 function Pingpong() {
+  const { user } = useAuth()
+  const username = user?.username || ''
   const [selTable, setSelTable] = useState('')
 
   const now = useMemo(() => { const n = new Date(); n.setHours(0, 0, 0, 0); return n }, [])
@@ -86,12 +89,12 @@ function Pingpong() {
 
     try {
       for (const h of sorted) {
-        await api.resources.bookSlot(resourceId, { date: selDateKey, hour: h, clientName: CURRENT_USER })
+        await api.resources.bookSlot(resourceId, { date: selDateKey, hour: h, clientName: username })
       }
       await api.bookings.create({
         type: 'tabletop',
         activity: `Ping Pong – ${selTable}`,
-        user: CURRENT_USER,
+        user: username,
         date: selDateKey,
         time: `${sorted[0]}:00`,
         pay: 0,
@@ -104,7 +107,7 @@ function Pingpong() {
 
     setSuccessMsg(
       <>
-        <strong>{CURRENT_USER}</strong> — your table is booked!<br /><br />
+        <strong>{username}</strong> — your table is booked!<br /><br />
         🏓 <strong>{selTable}</strong><br />
         📅 {selDateLabel}<br />
         ⏰ {sorted.map((h) => `${h}:00`).join(' · ')}<br />
@@ -148,7 +151,7 @@ function Pingpong() {
           <div className="block">
             <div className="block-label">Player</div>
             <div className="input-wrap">
-              <input type="text" value={CURRENT_USER} readOnly style={{ color: 'rgba(6,182,212,.9)', fontWeight: 600, paddingRight: 130 }} />
+              <input type="text" value={username} readOnly style={{ color: 'rgba(6,182,212,.9)', fontWeight: 600, paddingRight: 130 }} />
               <span className="input-icon">👤</span>
               <div className="logged-badge"><div className="logged-dot"></div> Logged In</div>
             </div>
@@ -234,7 +237,7 @@ function Pingpong() {
 
           <div className={`summary${showSummary ? ' show' : ''}`}>
             <div className="summary-title">📋 Reservation Summary</div>
-            <div className="summary-row"><span className="summary-key">Player</span><span className="summary-val">{CURRENT_USER}</span></div>
+            <div className="summary-row"><span className="summary-key">Player</span><span className="summary-val">{username}</span></div>
             <div className="summary-row"><span className="summary-key">Table</span><span className="summary-val">{selTable || '—'}</span></div>
             <div className="summary-row"><span className="summary-key">Date</span><span className="summary-val">{selDateLabel || '—'}</span></div>
             <div className="summary-row"><span className="summary-key">Time Slots</span><span className="summary-val">{summarySorted.length ? summarySorted.map((h) => `${h}:00`).join(', ') : '—'}</span></div>

@@ -1,6 +1,7 @@
 require('dotenv').config({ quiet: true });
 const express = require('express');
 const cors = require('cors');
+const { connect } = require('./mongo');
 
 const bookingsRouter = require('./routes/bookings');
 const tournamentsRouter = require('./routes/tournaments');
@@ -26,6 +27,13 @@ app.use('/api/staff', staffRouter);
 app.use('/api/reports', reportsRouter);
 app.use('/api/auth', authRouter);
 
-app.listen(PORT, () => {
-  console.log(`Backend server running on http://localhost:${PORT}`);
-});
+connect()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`Backend server running on http://localhost:${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error('Failed to connect to MongoDB:', err.message);
+    process.exit(1);
+  });

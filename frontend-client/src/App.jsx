@@ -1,4 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { AuthProvider } from './auth.jsx'
+import RequireAuth from './components/RequireAuth.jsx'
 import Home from '../pages/Home.jsx'
 import Login from '../pages/login.jsx'
 import Register from '../pages/register.jsx'
@@ -16,24 +18,26 @@ import Tournaments from '../pages/tournaments.jsx'
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/verify" element={<Verify />} />
-        <Route path="/activities" element={<Activities />} />
-        <Route path="/babyfoot" element={<Babyfoot />} />
-        <Route path="/billiard" element={<Billiard />} />
-        <Route path="/pingpong" element={<Pingpong />} />
-        <Route path="/join" element={<Join />} />
-        <Route path="/lounge" element={<Lounge />} />
-        <Route path="/reserve" element={<Reserve />} />
-        <Route path="/reserve-table" element={<ReserveTable />} />
-        <Route path="/rooms" element={<Rooms />} />
-        <Route path="/tournaments" element={<Tournaments />} />
-      </Routes>
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/verify" element={<Verify />} />
+          <Route path="/activities" element={<RequireAuth><Activities /></RequireAuth>} />
+          <Route path="/babyfoot" element={<RequireAuth><Babyfoot /></RequireAuth>} />
+          <Route path="/billiard" element={<RequireAuth><Billiard /></RequireAuth>} />
+          <Route path="/pingpong" element={<RequireAuth><Pingpong /></RequireAuth>} />
+          <Route path="/join" element={<RequireAuth><Join /></RequireAuth>} />
+          <Route path="/lounge" element={<Lounge />} />
+          <Route path="/reserve" element={<RequireAuth><Reserve /></RequireAuth>} />
+          <Route path="/reserve-table" element={<RequireAuth><ReserveTable /></RequireAuth>} />
+          <Route path="/rooms" element={<Rooms />} />
+          <Route path="/tournaments" element={<Tournaments />} />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   )
 }
 

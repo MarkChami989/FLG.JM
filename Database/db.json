@@ -1,5 +1,5 @@
 {
-  "nextBookingSeq": 47,
+  "nextBookingSeq": 48,
   "bookings": [
     {
       "id": "FLG-4041",
@@ -55,6 +55,17 @@
       "pay": 20,
       "paid": true,
       "status": "accepted"
+    },
+    {
+      "id": "FLG-48",
+      "type": "tournament",
+      "activity": "FIFA Summer Cup Tournament",
+      "user": "user123",
+      "date": "2026-07-20",
+      "time": "14:28",
+      "pay": 50,
+      "paid": false,
+      "status": "pending"
     }
   ],
   "tournaments": [
@@ -111,6 +122,12 @@
           "uid": "FLG-0034",
           "times": 8,
           "rank": 1
+        },
+        {
+          "user": "user123",
+          "uid": "user123",
+          "times": 2,
+          "rank": 9
         }
       ]
     },

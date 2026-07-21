@@ -3,35 +3,39 @@ const db = require('../db');
 
 const router = express.Router();
 
-router.get('/', (req, res) => {
-  res.json(db.data.staff);
+router.get('/', async (req, res) => {
+  const list = await db.staff().find({}, { projection: { _id: 0 } }).toArray();
+  res.json(list);
 });
 
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
   const { name, role } = req.body;
   if (!name || !role) return res.status(400).json({ error: 'name and role are required' });
-  const member = { id: `st-${db.data.staff.length + 1}`, name, role, status: 'active', last: 'Now' };
-  db.data.staff.push(member);
-  db.save();
-  res.status(201).json(member);
+  const count = await db.staff().countDocuments();
+  const member = { id: `st-${count + 1}`, name, role, status: 'active', last: 'Now' };
+  await db.staff().insertOne(member);
+  const { _id, ...pub } = member;
+  res.status(201).json(pub);
 });
 
-router.patch('/:id', (req, res) => {
-  const member = db.data.staff.find((s) => s.id === req.params.id);
-  if (!member) return res.status(404).json({ error: 'Staff member not found' });
+router.patch('/:id', async (req, res) => {
   const { status, role, name } = req.body;
-  if (status) member.status = status;
-  if (role) member.role = role;
-  if (name) member.name = name;
-  db.save();
+  const update = {};
+  if (status) update.status = status;
+  if (role) update.role = role;
+  if (name) update.name = name;
+  const member = await db.staff().findOneAndUpdate(
+    { id: req.params.id },
+    { $set: update },
+    { returnDocument: 'after', projection: { _id: 0 } }
+  );
+  if (!member) return res.status(404).json({ error: 'Staff member not found' });
   res.json(member);
 });
 
-router.delete('/:id', (req, res) => {
-  const idx = db.data.staff.findIndex((s) => s.id === req.params.id);
-  if (idx === -1) return res.status(404).json({ error: 'Staff member not found' });
-  db.data.staff.splice(idx, 1);
-  db.save();
+router.delete('/:id', async (req, res) => {
+  const result = await db.staff().deleteOne({ id: req.params.id });
+  if (result.deletedCount === 0) return res.status(404).json({ error: 'Staff member not found' });
   res.status(204).end();
 });
 

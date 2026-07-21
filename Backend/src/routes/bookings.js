@@ -3,21 +3,22 @@ const db = require('../db');
 
 const router = express.Router();
 
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   const { user, status } = req.query;
-  let list = db.data.bookings;
-  if (user) list = list.filter((b) => b.user === user);
-  if (status) list = list.filter((b) => b.status === status);
+  const filter = {};
+  if (user) filter.user = user;
+  if (status) filter.status = status;
+  const list = await db.bookings().find(filter, { projection: { _id: 0 } }).toArray();
   res.json(list);
 });
 
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
   const { type, activity, user, date, time, pay, paid } = req.body;
   if (!type || !activity || !user || !date || !time) {
     return res.status(400).json({ error: 'type, activity, user, date, time are required' });
   }
   const booking = {
-    id: db.nextBookingId(),
+    id: await db.nextBookingId(),
     type,
     activity,
     user,
@@ -27,26 +28,28 @@ router.post('/', (req, res) => {
     paid: paid ?? false,
     status: 'pending',
   };
-  db.data.bookings.push(booking);
-  db.save();
-  res.status(201).json(booking);
+  await db.bookings().insertOne(booking);
+  const { _id, ...pub } = booking;
+  res.status(201).json(pub);
 });
 
-router.patch('/:id', (req, res) => {
-  const booking = db.data.bookings.find((b) => b.id === req.params.id);
-  if (!booking) return res.status(404).json({ error: 'Booking not found' });
+router.patch('/:id', async (req, res) => {
   const { status, paid } = req.body;
-  if (status) booking.status = status;
-  if (paid !== undefined) booking.paid = paid;
-  db.save();
+  const update = {};
+  if (status) update.status = status;
+  if (paid !== undefined) update.paid = paid;
+  const booking = await db.bookings().findOneAndUpdate(
+    { id: req.params.id },
+    { $set: update },
+    { returnDocument: 'after', projection: { _id: 0 } }
+  );
+  if (!booking) return res.status(404).json({ error: 'Booking not found' });
   res.json(booking);
 });
 
-router.delete('/:id', (req, res) => {
-  const idx = db.data.bookings.findIndex((b) => b.id === req.params.id);
-  if (idx === -1) return res.status(404).json({ error: 'Booking not found' });
-  db.data.bookings.splice(idx, 1);
-  db.save();
+router.delete('/:id', async (req, res) => {
+  const result = await db.bookings().deleteOne({ id: req.params.id });
+  if (result.deletedCount === 0) return res.status(404).json({ error: 'Booking not found' });
   res.status(204).end();
 });
 
