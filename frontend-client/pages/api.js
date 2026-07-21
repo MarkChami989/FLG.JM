@@ -13,8 +13,6 @@ async function request(path, options = {}) {
   return res.json()
 }
 
-export const CURRENT_USER = 'user123'
-
 export const api = {
   auth: {
     register: (data) => request('/auth/register', { method: 'POST', body: JSON.stringify(data) }),

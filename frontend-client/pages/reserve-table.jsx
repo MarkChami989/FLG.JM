@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import Header from '../src/components/Header.jsx'
-import { api, CURRENT_USER } from './api.js'
+import { useAuth } from '../src/auth.jsx'
+import { api } from './api.js'
 import './reserve-table.css'
 
 const TABLES = [
@@ -43,6 +44,8 @@ function TableVisual({ size, chairs, icon }) {
 }
 
 function ReserveTable() {
+  const { user } = useAuth()
+  const username = user?.username || ''
   const [selTable, setSelTable] = useState(null)
   const [selOrder, setSelOrder] = useState(null)
   const [date, setDate] = useState('')
@@ -62,7 +65,7 @@ function ReserveTable() {
       await api.bookings.create({
         type: 'reserve-table',
         activity: `Reserve Table – ${selTable.name}`,
-        user: CURRENT_USER,
+        user: username,
         date,
         time,
         pay: selOrder.pay,
@@ -99,7 +102,7 @@ function ReserveTable() {
             <div className="block">
               <div className="block-label">Logged In As</div>
               <div className="input-wrap">
-                <input type="text" value={CURRENT_USER} readOnly style={{ cursor: 'default', color: 'rgba(245,158,11,.9)', fontWeight: 600, paddingRight: 130 }} />
+                <input type="text" value={username} readOnly style={{ cursor: 'default', color: 'rgba(245,158,11,.9)', fontWeight: 600, paddingRight: 130 }} />
                 <span className="input-icon">👤</span>
                 <div className="logged-badge"><div className="logged-dot"></div> Logged In</div>
               </div>
@@ -154,7 +157,7 @@ function ReserveTable() {
 
             <div className={`summary${showSummary ? ' show' : ''}`}>
               <div className="summary-title">📋 Reservation Summary</div>
-              <div className="summary-row"><span className="summary-key">Guest</span><span className="summary-val">{CURRENT_USER}</span></div>
+              <div className="summary-row"><span className="summary-key">Guest</span><span className="summary-val">{username}</span></div>
               <div className="summary-row"><span className="summary-key">Table</span><span className="summary-val">{selTable ? selTable.name : '—'}</span></div>
               <div className="summary-row"><span className="summary-key">Capacity</span><span className="summary-val">{selTable ? selTable.cap : '—'}</span></div>
               <div className="summary-row"><span className="summary-key">Order Level</span><span className="summary-val">{selOrder ? selOrder.name : '—'}</span></div>

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import Header from '../src/components/Header.jsx'
-import { api, CURRENT_USER } from './api.js'
+import { useAuth } from '../src/auth.jsx'
+import { api } from './api.js'
 import './babyfoot.css'
 
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
@@ -26,6 +27,8 @@ function BabyfootTableArt({ bg, border, ballTop, ballLeft }) {
 }
 
 function Babyfoot() {
+  const { user } = useAuth()
+  const username = user?.username || ''
   const [selTable, setSelTable] = useState('')
   const [selMode, setSelMode] = useState('')
   const [sA, setSA] = useState(0)
@@ -102,12 +105,12 @@ function Babyfoot() {
 
     try {
       for (const h of sorted) {
-        await api.resources.bookSlot(resourceId, { date: selDateKey, hour: h, clientName: CURRENT_USER })
+        await api.resources.bookSlot(resourceId, { date: selDateKey, hour: h, clientName: username })
       }
       await api.bookings.create({
         type: 'tabletop',
         activity: `Baby Foot – ${selTable} · ${selMode || 'Open Play'}`,
-        user: CURRENT_USER,
+        user: username,
         date: selDateKey,
         time: `${sorted[0]}:00`,
         pay: 0,
@@ -120,7 +123,7 @@ function Babyfoot() {
 
     setSuccessMsg(
       <>
-        <strong>{CURRENT_USER}</strong> — your Baby Foot table is set!<br /><br />
+        <strong>{username}</strong> — your Baby Foot table is set!<br /><br />
         ⚽ <strong>{selTable}</strong> · {selMode || 'Open Play'}<br />
         📅 {selDateLabel}<br />
         ⏰ {sorted.map((h) => `${h}:00`).join(' · ')}<br />
@@ -164,7 +167,7 @@ function Babyfoot() {
           <div className="block">
             <div className="block-label">Player</div>
             <div className="input-wrap">
-              <input type="text" value={CURRENT_USER} readOnly style={{ color: 'rgba(249,115,22,.9)', fontWeight: 600, paddingRight: 130 }} />
+              <input type="text" value={username} readOnly style={{ color: 'rgba(249,115,22,.9)', fontWeight: 600, paddingRight: 130 }} />
               <span className="input-icon">👤</span>
               <div className="logged-badge"><div className="logged-dot"></div> Logged In</div>
             </div>
@@ -298,7 +301,7 @@ function Babyfoot() {
 
           <div className={`summary${showSummary ? ' show' : ''}`}>
             <div className="summary-title">📋 Reservation Summary</div>
-            <div className="summary-row"><span className="summary-key">Player</span><span className="summary-val">{CURRENT_USER}</span></div>
+            <div className="summary-row"><span className="summary-key">Player</span><span className="summary-val">{username}</span></div>
             <div className="summary-row"><span className="summary-key">Table</span><span className="summary-val">{selTable || '—'}</span></div>
             <div className="summary-row"><span className="summary-key">Mode</span><span className="summary-val">{selMode || '—'}</span></div>
             <div className="summary-row"><span className="summary-key">Date</span><span className="summary-val">{selDateLabel || '—'}</span></div>

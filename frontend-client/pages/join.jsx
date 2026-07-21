@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import Header from '../src/components/Header.jsx'
-import { api, CURRENT_USER } from './api.js'
+import { useAuth } from '../src/auth.jsx'
+import { api } from './api.js'
 import './join.css'
 
 const TOURN_META = {
@@ -9,6 +10,8 @@ const TOURN_META = {
 }
 
 function Join() {
+  const { user } = useAuth()
+  const username = user?.username || ''
   const [tournaments, setTournaments] = useState({})
   const [selKey, setSelKey] = useState('')
   const [count, setCount] = useState(1)
@@ -55,13 +58,13 @@ function Join() {
 
     try {
       for (let i = 0; i < count; i++) {
-        await api.tournaments.join(sel.id, { user: CURRENT_USER, uid: CURRENT_USER })
+        await api.tournaments.join(sel.id, { user: username, uid: username })
       }
       const now = new Date()
       await api.bookings.create({
         type: 'tournament',
         activity: `${sel.name} Tournament`,
-        user: CURRENT_USER,
+        user: username,
         date: now.toISOString().slice(0, 10),
         time: `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`,
         pay: total,
@@ -98,7 +101,7 @@ function Join() {
             <div className="block">
               <div className="block-label">Logged In As</div>
               <div className="input-wrap">
-                <input type="text" value={CURRENT_USER} readOnly style={{ cursor: 'default', color: 'rgba(217,70,239,.9)', fontWeight: 600, paddingRight: 130 }} />
+                <input type="text" value={username} readOnly style={{ cursor: 'default', color: 'rgba(217,70,239,.9)', fontWeight: 600, paddingRight: 130 }} />
                 <span className="input-icon">👤</span>
                 <div className="logged-badge"><div className="logged-dot"></div> Logged In</div>
               </div>
@@ -158,7 +161,7 @@ function Join() {
 
             <div className={`summary${sel ? ' show' : ''}`}>
               <div className="summary-title">📋 Registration Summary</div>
-              <div className="summary-row"><span className="summary-key">Player</span><span className="summary-val">{CURRENT_USER}</span></div>
+              <div className="summary-row"><span className="summary-key">Player</span><span className="summary-val">{username}</span></div>
               <div className="summary-row"><span className="summary-key">Tournament</span><span className="summary-val">{sel ? `${sel.emoji} ${sel.name}` : '—'}</span></div>
               <div className="summary-row"><span className="summary-key">Tickets</span><span className="summary-val">{count} ticket{count > 1 ? 's' : ''}</span></div>
               <div className="summary-row" style={{ marginTop: 4 }}>
@@ -179,7 +182,7 @@ function Join() {
           <div className="success-sub">
             {sel && (
               <>
-                <strong>{CURRENT_USER}</strong> has been registered!<br /><br />
+                <strong>{username}</strong> has been registered!<br /><br />
                 {sel.emoji} {sel.name}<br />
                 🎟️ {count} Ticket{count > 1 ? 's' : ''} · <strong style={{ color: 'var(--gold)' }}>${total}</strong><br /><br />
                 Good luck and may the best player win! 🏆

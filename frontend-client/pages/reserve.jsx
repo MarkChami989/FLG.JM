@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import Header from '../src/components/Header.jsx'
-import { api, CURRENT_USER } from './api.js'
+import { useAuth } from '../src/auth.jsx'
+import { api } from './api.js'
 import './reserve.css'
 
 const BARS = [
@@ -15,6 +16,8 @@ const ORDERS = [
 ]
 
 function Reserve() {
+  const { user } = useAuth()
+  const username = user?.username || ''
   const [selBar, setSelBar] = useState('')
   const [selOrder, setSelOrder] = useState(null)
   const [date, setDate] = useState('')
@@ -34,7 +37,7 @@ function Reserve() {
       await api.bookings.create({
         type: 'reserve-bar',
         activity: `Reserve Bar – ${selBar}`,
-        user: CURRENT_USER,
+        user: username,
         date,
         time,
         pay: selOrder.pay,
@@ -71,7 +74,7 @@ function Reserve() {
             <div className="block">
               <div className="block-label">Logged In As</div>
               <div className="input-wrap">
-                <input type="text" value={CURRENT_USER} readOnly style={{ cursor: 'default', color: 'rgba(245,158,11,.9)', fontWeight: 600, paddingRight: 130 }} />
+                <input type="text" value={username} readOnly style={{ cursor: 'default', color: 'rgba(245,158,11,.9)', fontWeight: 600, paddingRight: 130 }} />
                 <span className="input-icon">👤</span>
                 <div className="logged-badge"><div className="logged-dot"></div> Logged In</div>
               </div>
@@ -122,7 +125,7 @@ function Reserve() {
 
             <div className={`summary${showSummary ? ' show' : ''}`}>
               <div className="summary-title">📋 Reservation Summary</div>
-              <div className="summary-row"><span className="summary-key">Guest</span><span className="summary-val">{CURRENT_USER}</span></div>
+              <div className="summary-row"><span className="summary-key">Guest</span><span className="summary-val">{username}</span></div>
               <div className="summary-row"><span className="summary-key">Location</span><span className="summary-val">{selBar || '—'}</span></div>
               <div className="summary-row"><span className="summary-key">Order Level</span><span className="summary-val">{selOrder ? selOrder.name : '—'}</span></div>
               <div className="summary-row"><span className="summary-key">Date &amp; Time</span><span className="summary-val">{dtStr}</span></div>

@@ -11,8 +11,12 @@ function genOtp() {
 }
 
 function publicClient(c) {
-  const { passwordHash, otpCode, otpExpiresAt, ...pub } = c;
+  const { passwordHash, otpCode, otpExpiresAt, _id, ...pub } = c;
   return pub;
+}
+
+function byEmailCaseInsensitive(email) {
+  return { $expr: { $eq: [{ $toLower: '$email' }, email.toLowerCase()] } };
 }
 
 router.post('/register', async (req, res) => {
@@ -20,14 +24,13 @@ router.post('/register', async (req, res) => {
   if (!username || !email || !password) {
     return res.status(400).json({ error: 'username, email, password are required' });
   }
-  const emailLower = email.toLowerCase();
-  const exists = db.data.clients.find((c) => c.email.toLowerCase() === emailLower || c.username === username);
+  const exists = await db.clients().findOne({ $or: [byEmailCaseInsensitive(email), { username }] });
   if (exists) return res.status(409).json({ error: 'Username or email already registered' });
 
   const passwordHash = await bcrypt.hash(password, 10);
   const otpCode = genOtp();
   const client = {
-    id: db.nextClientId(),
+    id: await db.nextClientId(),
     username,
     email,
     passwordHash,
@@ -37,8 +40,7 @@ router.post('/register', async (req, res) => {
     otpCode,
     otpExpiresAt: Date.now() + OTP_TTL_MS,
   };
-  db.data.clients.push(client);
-  db.save();
+  await db.clients().insertOne(client);
 
   try {
     await sendVerificationEmail(email, otpCode);
@@ -52,16 +54,16 @@ router.post('/register', async (req, res) => {
 router.post('/resend', async (req, res) => {
   const { email } = req.body;
   if (!email) return res.status(400).json({ error: 'email is required' });
-  const client = db.data.clients.find((c) => c.email.toLowerCase() === email.toLowerCase());
+  const client = await db.clients().findOne(byEmailCaseInsensitive(email));
   if (!client) return res.status(404).json({ error: 'Account not found' });
   if (client.verified) return res.status(400).json({ error: 'Account already verified' });
 
-  client.otpCode = genOtp();
-  client.otpExpiresAt = Date.now() + OTP_TTL_MS;
-  db.save();
+  const otpCode = genOtp();
+  const otpExpiresAt = Date.now() + OTP_TTL_MS;
+  await db.clients().updateOne({ id: client.id }, { $set: { otpCode, otpExpiresAt } });
 
   try {
-    await sendVerificationEmail(client.email, client.otpCode);
+    await sendVerificationEmail(client.email, otpCode);
   } catch (e) {
     return res.status(502).json({ error: 'Failed to send verification email', detail: e.message });
   }
@@ -69,10 +71,10 @@ router.post('/resend', async (req, res) => {
   res.json({ ok: true });
 });
 
-router.post('/verify', (req, res) => {
+router.post('/verify', async (req, res) => {
   const { email, code } = req.body;
   if (!email || !code) return res.status(400).json({ error: 'email and code are required' });
-  const client = db.data.clients.find((c) => c.email.toLowerCase() === email.toLowerCase());
+  const client = await db.clients().findOne(byEmailCaseInsensitive(email));
   if (!client) return res.status(404).json({ error: 'Account not found' });
   if (client.verified) return res.status(400).json({ error: 'Account already verified' });
   if (!client.otpCode || Date.now() > client.otpExpiresAt) {
@@ -82,18 +84,16 @@ router.post('/verify', (req, res) => {
     return res.status(400).json({ error: 'Invalid code' });
   }
 
-  client.verified = true;
-  client.otpCode = null;
-  client.otpExpiresAt = null;
-  db.save();
+  const update = { verified: true, otpCode: null, otpExpiresAt: null };
+  await db.clients().updateOne({ id: client.id }, { $set: update });
 
-  res.json(publicClient(client));
+  res.json(publicClient({ ...client, ...update }));
 });
 
 router.post('/login', async (req, res) => {
   const { username, password } = req.body;
   if (!username || !password) return res.status(400).json({ error: 'username and password are required' });
-  const client = db.data.clients.find((c) => c.username === username);
+  const client = await db.clients().findOne({ username });
   if (!client) return res.status(401).json({ error: 'Invalid username or password' });
   const ok = await bcrypt.compare(password, client.passwordHash);
   if (!ok) return res.status(401).json({ error: 'Invalid username or password' });

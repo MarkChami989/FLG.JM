@@ -1,8 +1,15 @@
 import { Link, useNavigate } from 'react-router-dom'
+import { useAuth } from '../auth.jsx'
 import './Header.css'
 
 function Header({ active = '' }) {
   const navigate = useNavigate()
+  const { user, logout } = useAuth()
+
+  function handleLogout() {
+    logout()
+    navigate('/')
+  }
 
   return (
     <header>
@@ -51,9 +58,16 @@ function Header({ active = '' }) {
       >
         Activities
       </button>
-      <button className="btn-login-nav" onClick={() => navigate('/login')}>
-        Sign In
-      </button>
+      {user ? (
+        <div className="user-menu">
+          <span className="user-badge">👤 {user.username}</span>
+          <button className="btn-logout-nav" onClick={handleLogout}>Sign Out</button>
+        </div>
+      ) : (
+        <button className="btn-login-nav" onClick={() => navigate('/login')}>
+          Sign In
+        </button>
+      )}
     </header>
   )
 }

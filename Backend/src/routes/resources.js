@@ -3,59 +3,65 @@ const db = require('../db');
 
 const router = express.Router();
 
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   const { category } = req.query;
-  let list = db.data.resources;
-  if (category) list = list.filter((r) => r.category === category);
+  const filter = {};
+  if (category) filter.category = category;
+  const list = await db.resources().find(filter, { projection: { _id: 0 } }).toArray();
   res.json(list);
 });
 
-router.patch('/:id', (req, res) => {
-  const resource = db.data.resources.find((r) => r.id === req.params.id);
-  if (!resource) return res.status(404).json({ error: 'Resource not found' });
+router.patch('/:id', async (req, res) => {
   const { status } = req.body;
-  if (status) resource.status = status;
-  db.save();
+  const update = {};
+  if (status) update.status = status;
+  const resource = await db.resources().findOneAndUpdate(
+    { id: req.params.id },
+    { $set: update },
+    { returnDocument: 'after', projection: { _id: 0 } }
+  );
+  if (!resource) return res.status(404).json({ error: 'Resource not found' });
   res.json(resource);
 });
 
 // hourly slot bookings for a resource (rooms + tabletop calendar)
-router.get('/:id/slots', (req, res) => {
+router.get('/:id/slots', async (req, res) => {
   const { date } = req.query;
-  let list = db.data.slotBookings.filter((s) => s.resourceId === req.params.id);
-  if (date) list = list.filter((s) => s.date === date);
+  const filter = { resourceId: req.params.id };
+  if (date) filter.date = date;
+  const list = await db.slotBookings().find(filter, { projection: { _id: 0 } }).toArray();
   res.json(list);
 });
 
-router.post('/:id/slots', (req, res) => {
+router.post('/:id/slots', async (req, res) => {
   const { date, hour, clientName } = req.body;
   if (!date || !hour || !clientName) {
     return res.status(400).json({ error: 'date, hour, clientName are required' });
   }
-  const existing = db.data.slotBookings.find(
-    (s) => s.resourceId === req.params.id && s.date === date && s.hour === hour
-  );
+  const existing = await db.slotBookings().findOne({ resourceId: req.params.id, date, hour });
   if (existing) return res.status(409).json({ error: 'Slot already booked' });
   const slot = { id: `${req.params.id}_${date}_${hour}`, resourceId: req.params.id, date, hour, clientName };
-  db.data.slotBookings.push(slot);
-  db.save();
-  res.status(201).json(slot);
+  await db.slotBookings().insertOne(slot);
+  const { _id, ...pub } = slot;
+  res.status(201).json(pub);
 });
 
-router.patch('/:id/slots/:slotId', (req, res) => {
-  const slot = db.data.slotBookings.find((s) => s.id === req.params.slotId && s.resourceId === req.params.id);
-  if (!slot) return res.status(404).json({ error: 'Slot not found' });
+router.patch('/:id/slots/:slotId', async (req, res) => {
   const { clientName } = req.body;
-  if (clientName) slot.clientName = clientName;
-  db.save();
+  const update = {};
+  if (clientName) update.clientName = clientName;
+  const slot = await db.slotBookings().findOneAndUpdate(
+    { id: req.params.slotId, resourceId: req.params.id },
+    { $set: update },
+    { returnDocument: 'after', projection: { _id: 0 } }
+  );
+  if (!slot) return res.status(404).json({ error: 'Slot not found' });
   res.json(slot);
 });
 
-router.delete('/:id/slots/:slotId', (req, res) => {
-  const idx = db.data.slotBookings.findIndex((s) => s.id === req.params.slotId && s.resourceId === req.params.id);
-  if (idx === -1) return res.status(404).json({ error: 'Slot not found' });
-  db.data.slotBookings.splice(idx, 1);
-  db.save();
+router.delete('/:id/slots/:slotId', async (req, res) => {
+  const result = await db.slotBookings().deleteOne({ id: req.params.slotId, resourceId: req.params.id });
+  if (result.deletedCount === 0) return res.status(404).json({ error: 'Slot not found' });
   res.status(204).end();
 });
 

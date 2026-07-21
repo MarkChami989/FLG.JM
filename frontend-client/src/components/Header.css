@@ -59,3 +59,21 @@ nav a:hover, nav a.active { color: #bfdbfe; }
   transition: transform .15s, filter .2s;
 }
 .btn-login-nav:hover { transform: translateY(-1px); filter: brightness(1.15); }
+.user-menu { display: flex; align-items: center; gap: 12px; }
+.user-badge {
+  font-family: 'Rajdhani', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 1px;
+  color: #f0abfc;
+  padding: 8px 16px;
+  background: rgba(217, 70, 239, .12);
+  border: 1.5px solid rgba(217, 70, 239, .4);
+  border-radius: 8px;
+}
+.btn-logout-nav {
+  padding: 9px 18px;
+  font-family: 'Rajdhani', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; color: #93c5fd;
+  background: transparent;
+  border: 1.5px solid rgba(147, 197, 253, .35);
+  border-radius: 8px; cursor: pointer; transition: all .2s;
+}
+.btn-logout-nav:hover { border-color: rgba(248, 113, 113, .8); color: #f87171; }

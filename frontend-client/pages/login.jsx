@@ -1,14 +1,36 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { useAuth } from '../src/auth.jsx'
+import { api } from './api.js'
 import './login.css'
 
 function Login() {
   const navigate = useNavigate()
+  const location = useLocation()
+  const { login } = useAuth()
   const [showPwd, setShowPwd] = useState(false)
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const [submitting, setSubmitting] = useState(false)
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault()
-    navigate('/')
+    if (!username || !password) {
+      setError('Please enter your username and password.')
+      return
+    }
+    setSubmitting(true)
+    setError('')
+    try {
+      const client = await api.auth.login({ username, password })
+      login(client)
+      navigate(location.state?.from || '/')
+    } catch (err) {
+      setError(err.message || 'Invalid username or password.')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -61,7 +83,14 @@ function Login() {
             <div className="form-group">
               <label htmlFor="username">Username</label>
               <div className="input-wrap">
-                <input id="username" type="text" placeholder="Enter your username" autoComplete="off" />
+                <input
+                  id="username"
+                  type="text"
+                  placeholder="Enter your username"
+                  autoComplete="off"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                />
                 <span className="input-icon">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
@@ -74,7 +103,13 @@ function Login() {
             <div className="form-group">
               <label htmlFor="password">Password</label>
               <div className="input-wrap">
-                <input id="password" type={showPwd ? 'text' : 'password'} placeholder="Enter your password" />
+                <input
+                  id="password"
+                  type={showPwd ? 'text' : 'password'}
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
                 <span className="input-icon">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <rect x="3" y="11" width="18" height="11" rx="2" />
@@ -100,7 +135,13 @@ function Login() {
               </div>
             </div>
 
-            <button className="btn-login" type="submit">Sign In</button>
+            {error && (
+              <div style={{ color: '#f87171', fontSize: 13, textAlign: 'center', marginBottom: 12 }}>{error}</div>
+            )}
+
+            <button className="btn-login" type="submit" disabled={submitting}>
+              {submitting ? 'Signing In…' : 'Sign In'}
+            </button>
 
             <button className="btn-create" type="button" onClick={() => navigate('/register')}>Create Account</button>
           </form>

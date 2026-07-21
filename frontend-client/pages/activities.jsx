@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import Header from '../src/components/Header.jsx'
-import { api, CURRENT_USER } from './api.js'
+import { useAuth } from '../src/auth.jsx'
+import { api } from './api.js'
 import './activities.css'
 
 const REASONS = ['Change of plans', 'Double booking', 'Not available', 'Wrong date/time']
@@ -38,6 +39,8 @@ function statusBadge(s) {
 }
 
 function Activities() {
+  const { user } = useAuth()
+  const username = user?.username || ''
   const [activities, setActivities] = useState([])
   const [filter, setFilter] = useState('all')
   const [query, setQuery] = useState('')
@@ -47,10 +50,10 @@ function Activities() {
   const [toast, setToast] = useState({ show: false, msg: '', err: false })
 
   useEffect(() => {
-    api.bookings.list({ user: CURRENT_USER }).then((list) => {
+    api.bookings.list({ user: username }).then((list) => {
       setActivities(list.map((b) => ({ ...b, ...deriveActivity(b) })))
     })
-  }, [])
+  }, [username])
 
   const rows = useMemo(() => {
     const q = query.toLowerCase()
@@ -116,7 +119,7 @@ function Activities() {
           </div>
           <div className="user-chip">
             <div className="user-dot"></div>
-            <div className="user-name">👤 {CURRENT_USER}</div>
+            <div className="user-name">👤 {username}</div>
           </div>
         </div>
 

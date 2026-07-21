@@ -11,8 +11,11 @@ const TYPE_LABELS = {
   'tabletop': 'Tabletop',
 };
 
-router.get('/summary', (req, res) => {
-  const { bookings, staff } = db.data;
+router.get('/summary', async (req, res) => {
+  const [bookings, staff] = await Promise.all([
+    db.bookings().find({}, { projection: { _id: 0 } }).toArray(),
+    db.staff().find({}, { projection: { _id: 0 } }).toArray(),
+  ]);
 
   const revenue = bookings.reduce((sum, b) => sum + (b.pay || 0), 0);
   const activeStaff = staff.filter((s) => s.status === 'active').length;
