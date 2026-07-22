@@ -226,8 +226,19 @@ html, body { overflow-x: hidden; }
 .id-list { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 14px; overflow-y: auto; display: flex; flex-direction: column; }
 .id-list::-webkit-scrollbar { width: 3px; }
 .id-list::-webkit-scrollbar-thumb { background: rgba(124,58,237,0.3); border-radius: 2px; }
-.id-list-header { padding: 14px 16px 10px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
-.id-list-title { font-family: 'Rajdhani', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 2.5px; color: rgba(255,255,255,0.25); text-transform: uppercase; }
+.id-list-header { padding: 14px 16px 14px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+.id-list-title { font-family: 'Rajdhani', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 2.5px; color: rgba(255,255,255,0.25); text-transform: uppercase; margin-bottom: 10px; }
+.id-search-wrap { position: relative; }
+.id-search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 15px; opacity: .5; pointer-events: none; }
+.id-search-input {
+  width: 100%; padding: 12px 12px 12px 36px; border-radius: 10px;
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(124,58,237,0.3);
+  color: #fff; font-family: 'Exo 2', sans-serif; font-size: 14px; outline: none;
+  transition: border-color .2s, background .2s;
+}
+.id-search-input::placeholder { color: rgba(255,255,255,0.3); }
+.id-search-input:focus { border-color: var(--purple); background: rgba(124,58,237,0.08); }
+.id-list-empty { padding: 24px 16px; text-align: center; font-family: 'Rajdhani', sans-serif; font-size: 11px; letter-spacing: 1.5px; color: rgba(255,255,255,0.2); text-transform: uppercase; }
 .id-item { display: flex; align-items: center; gap: 10px; padding: 12px 16px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.04); transition: background 0.15s; }
 .id-item:hover { background: rgba(124,58,237,0.08); }
 .id-item.active { background: rgba(124,58,237,0.14); border-left: 2px solid var(--purple); }
@@ -257,7 +268,13 @@ html, body { overflow-x: hidden; }
 .badge-accepted { color: var(--green); background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.3); }
 .badge-reserved { color: var(--cyan); background: rgba(6,182,212,0.1); border: 1px solid rgba(6,182,212,0.28); }
 .badge-pending { color: var(--gold); background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.28); animation: pulse-pending 2s ease-in-out infinite; }
+.badge-rejected { color: var(--red); background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.25); }
 @keyframes pulse-pending { 0%,100%{opacity:1;} 50%{opacity:0.5;} }
+
+.order-approve-btn { padding: 5px 12px; border-radius: 7px; border: 1px solid rgba(16,185,129,0.3); background: rgba(16,185,129,0.07); color: var(--green); font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; transition: background 0.18s; }
+.order-approve-btn:hover { background: rgba(16,185,129,0.18); }
+.order-reject-btn { padding: 5px 12px; border-radius: 7px; border: 1px solid rgba(239,68,68,0.3); background: rgba(239,68,68,0.07); color: var(--red); font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; transition: background 0.18s; }
+.order-reject-btn:hover { background: rgba(239,68,68,0.18); }
 .back-btn {
   display: flex; align-items: center; gap: 8px;
   padding: 9px 18px; border-radius: 9px; border: 1px solid rgba(255,255,255,0.1);

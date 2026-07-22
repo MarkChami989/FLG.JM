@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { api } from './api.js'
 
+const RESOURCE_TAB = { room: 'Rooms', tabletop: 'Tabletop Games', 'reserve-bar': 'Lounge', 'reserve-table': 'Lounge' }
+
 function OrdersPanel() {
   const [orders, setOrders] = useState([])
   const [activeOrder, setActiveOrder] = useState(null)
@@ -59,6 +61,12 @@ function OrdersPanel() {
                 <span className={`status-pill status-${o.status}`}>{o.status}</span>
               </div>
               <div className="detail-grid">
+                {o.resourceId && RESOURCE_TAB[o.type] && (
+                  <div className="detail-item" style={{ gridColumn: '1/-1' }}>
+                    <label>Location</label>
+                    <div>{o.resourceId} — check the {RESOURCE_TAB[o.type]} panel for this exact slot before booking manually</div>
+                  </div>
+                )}
                 <div className="detail-item"><label>Username</label><div>{o.user}</div></div>
                 <div className="detail-item"><label>Payment</label><div>${o.pay}</div></div>
                 <div className="detail-item"><label>Date</label><div>{o.date}</div></div>

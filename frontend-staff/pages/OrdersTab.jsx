@@ -4,16 +4,25 @@ import { cap } from './helpers.js'
 import { api } from './api.js'
 
 const STATUS_COLOR = { accepted: 'var(--green)', reserved: 'var(--cyan)', pending: 'var(--gold)', rejected: 'var(--red)' }
+const RESOURCE_TAB = { room: 'Rooms', tabletop: 'Tabletop Games', 'reserve-bar': 'Lounge', 'reserve-table': 'Lounge' }
 
 function OrdersTab() {
   const [orders, setOrders] = useState([])
   const [selected, setSelected] = useState(null)
+  const [query, setQuery] = useState('')
 
   useEffect(() => {
     api.bookings.list().then(setOrders)
   }, [])
 
   const order = orders.find((o) => o.id === selected)
+  const filteredOrders = orders.filter((o) => o.id.toLowerCase().includes(query.trim().toLowerCase()))
+
+  function setStatus(id, status) {
+    api.bookings.update(id, { status }).then((updated) => {
+      setOrders((prev) => prev.map((o) => (o.id === id ? updated : o)))
+    })
+  }
 
   return (
     <div className="tab-page" style={{ alignItems: 'flex-start', justifyContent: 'flex-start', padding: '20px 24px', height: 'calc(100vh - 180px)' }}>
@@ -27,8 +36,22 @@ function OrdersTab() {
         </div>
         <div className="orders-layout">
           <div className="id-list">
-            <div className="id-list-header"><div className="id-list-title">Order IDs</div></div>
-            {orders.map((o) => (
+            <div className="id-list-header">
+              <div className="id-list-title">Order IDs</div>
+              <div className="id-search-wrap">
+                <span className="id-search-icon">🔍</span>
+                <input
+                  className="id-search-input"
+                  type="text"
+                  placeholder="Search by Order ID…"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                />
+              </div>
+            </div>
+            {filteredOrders.length === 0 ? (
+              <div className="id-list-empty">No orders match "{query}"</div>
+            ) : filteredOrders.map((o) => (
               <div key={o.id} className={`id-item${selected === o.id ? ' active' : ''}`} onClick={() => setSelected(o.id)}>
                 <span className="id-dot" style={{ background: STATUS_COLOR[o.status], boxShadow: `0 0 6px ${STATUS_COLOR[o.status]}88` }}></span>
                 <span className="id-code">{o.id}</span>
@@ -50,9 +73,25 @@ function OrdersTab() {
                     <div className="detail-id">{order.id}</div>
                     <div className="detail-act">{order.activity}</div>
                   </div>
-                  <span className={`badge badge-${order.status}`}>{cap(order.status)}</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <span className={`badge badge-${order.status}`}>{cap(order.status)}</span>
+                    {order.status === 'pending' && (
+                      <>
+                        <button className="order-approve-btn" onClick={() => setStatus(order.id, 'accepted')}>Approve</button>
+                        <button className="order-reject-btn" onClick={() => setStatus(order.id, 'rejected')}>Reject</button>
+                      </>
+                    )}
+                  </div>
                 </div>
                 <div className="detail-rows">
+                  {order.resourceId && RESOURCE_TAB[order.type] && (
+                    <div className="detail-row">
+                      <div className="detail-row-icon" style={{ background: 'rgba(6,182,212,0.1)', border: '1px solid rgba(6,182,212,0.2)' }}>
+                        <Icon paths={ICONS.rooms} width="17" height="17" stroke="#22d3ee" strokeWidth="1.8" />
+                      </div>
+                      <div><div className="detail-row-label">Location</div><div className="detail-row-value">{order.resourceId} — check the {RESOURCE_TAB[order.type]} tab for this exact slot before booking manually</div></div>
+                    </div>
+                  )}
                   <div className="detail-row">
                     <div className="detail-row-icon" style={{ background: 'rgba(124,58,237,0.12)', border: '1px solid rgba(124,58,237,0.2)' }}>
                       <Icon paths={ICONS.userIcon} width="17" height="17" stroke="#a78bfa" strokeWidth="1.8" />

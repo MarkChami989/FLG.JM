@@ -14,6 +14,8 @@ import Lounge from '../pages/lounge.jsx'
 import Reserve from '../pages/reserve.jsx'
 import ReserveTable from '../pages/reserve-table.jsx'
 import Rooms from '../pages/rooms.jsx'
+import PcRoom from '../pages/pcroom.jsx'
+import PsRoom from '../pages/psroom.jsx'
 import Tournaments from '../pages/tournaments.jsx'
 
 function App() {
@@ -34,6 +36,8 @@ function App() {
           <Route path="/reserve" element={<RequireAuth><Reserve /></RequireAuth>} />
           <Route path="/reserve-table" element={<RequireAuth><ReserveTable /></RequireAuth>} />
           <Route path="/rooms" element={<Rooms />} />
+          <Route path="/pcroom" element={<RequireAuth><PcRoom /></RequireAuth>} />
+          <Route path="/psroom" element={<RequireAuth><PsRoom /></RequireAuth>} />
           <Route path="/tournaments" element={<Tournaments />} />
         </Routes>
       </BrowserRouter>

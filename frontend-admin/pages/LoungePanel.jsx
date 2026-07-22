@@ -1,45 +1,30 @@
-import { useEffect, useState } from 'react'
-import { api } from './api.js'
+import { useState } from 'react'
+import TCard from './TCard.jsx'
+import BookingDetail from './BookingDetail.jsx'
+import { ICONS } from './icons.jsx'
+import { LOUNGE_BARS, LOUNGE_TABLES } from './data.js'
 
 function LoungePanel() {
-  const [bars, setBars] = useState([])
-  const [tables, setTables] = useState([])
-
-  function load() {
-    api.resources.list('bar').then(setBars)
-    api.resources.list('lounge-table').then(setTables)
-  }
-  useEffect(load, [])
-
-  function toggle(resource) {
-    api.resources.update(resource.id, { status: resource.status === 'free' ? 'occ' : 'free' }).then(load)
-  }
+  const [selectedId, setSelectedId] = useState(null)
+  const item = [...LOUNGE_BARS, ...LOUNGE_TABLES].find((x) => x.id === selectedId)
 
   return (
     <>
-      <div className="panel-head"><h2>🥃 Lounge</h2></div>
-      <div className="subhead">Bars</div>
-      <div className="status-grid">
-        {bars.map((b) => (
-          <div className="status-card" key={b.id}>
-            <h4>{b.title}</h4>
-            <span className={`status-toggle ${b.status === 'free' ? 'st-free' : 'st-occ'}`} style={{ cursor: 'pointer' }} onClick={() => toggle(b)}>
-              {b.status === 'free' ? 'Free' : 'Occupied'}
-            </span>
+      {item ? (
+        <BookingDetail item={item} onBack={() => setSelectedId(null)} />
+      ) : (
+        <>
+          <div className="panel-head"><h2>🥃 Lounge</h2></div>
+          <div className="subhead">Bars</div>
+          <div className="t-grid" style={{ gridTemplateColumns: 'repeat(3,1fr)' }}>
+            {LOUNGE_BARS.map((b) => <TCard key={b.id} {...b} icon={ICONS.barIcon} onClick={() => setSelectedId(b.id)} />)}
           </div>
-        ))}
-      </div>
-      <div className="subhead">Tables</div>
-      <div className="status-grid">
-        {tables.map((t) => (
-          <div className="status-card" key={t.id}>
-            <h4>{t.title}</h4>
-            <span className={`status-toggle ${t.status === 'free' ? 'st-free' : 'st-occ'}`} style={{ cursor: 'pointer' }} onClick={() => toggle(t)}>
-              {t.status === 'free' ? 'Free' : 'Occupied'}
-            </span>
+          <div className="subhead">Tables</div>
+          <div className="t-grid" style={{ gridTemplateColumns: 'repeat(4,1fr)' }}>
+            {LOUNGE_TABLES.map((t) => <TCard key={t.id} {...t} icon={ICONS.tableIcon} onClick={() => setSelectedId(t.id)} />)}
           </div>
-        ))}
-      </div>
+        </>
+      )}
     </>
   )
 }

@@ -13,7 +13,7 @@ router.get('/', async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
-  const { type, activity, user, date, time, pay, paid } = req.body;
+  const { type, activity, user, date, time, pay, paid, resourceId } = req.body;
   if (!type || !activity || !user || !date || !time) {
     return res.status(400).json({ error: 'type, activity, user, date, time are required' });
   }
@@ -24,6 +24,7 @@ router.post('/', async (req, res) => {
     user,
     date,
     time,
+    resourceId: resourceId || null,
     pay: pay ?? 0,
     paid: paid ?? false,
     status: 'pending',

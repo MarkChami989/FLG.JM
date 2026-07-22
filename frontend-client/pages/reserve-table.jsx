@@ -1,8 +1,16 @@
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Header from '../src/components/Header.jsx'
 import { useAuth } from '../src/auth.jsx'
 import { api } from './api.js'
 import './reserve-table.css'
+
+const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+const DAYS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
+const TABLE_IDS = { 'Table 1': 'lounge-table-1', 'Table 2': 'lounge-table-2', 'Table 3': 'lounge-table-3', 'Table 4': 'lounge-table-4' }
+
+function fmtKey(d) {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+}
 
 const TABLES = [
   { name: 'Table 1', cap: '4 Persons', desc: 'Intimate dining · Lounge setting', chairs: ['top', 'bot', 'left', 'right'], icon: '🪑', size: 'sm' },
@@ -48,26 +56,92 @@ function ReserveTable() {
   const username = user?.username || ''
   const [selTable, setSelTable] = useState(null)
   const [selOrder, setSelOrder] = useState(null)
-  const [date, setDate] = useState('')
-  const [time, setTime] = useState('')
-  const [showSuccess, setShowSuccess] = useState(false)
 
-  const dtStr = date && time ? `${date} at ${time}` : date || time || '—'
-  const showSummary = selTable || selOrder || date || time
+  const now = useMemo(() => { const n = new Date(); n.setHours(0, 0, 0, 0); return n }, [])
+  const [calYear, setCalYear] = useState(now.getFullYear())
+  const [calMonth, setCalMonth] = useState(now.getMonth())
+  const [selDateKey, setSelDateKey] = useState('')
+  const [selDateLabel, setSelDateLabel] = useState('')
+  const [chosenSlots, setChosenSlots] = useState(new Set())
+  const [dragMode, setDragMode] = useState(null)
+
+  const [takenHours, setTakenHours] = useState(new Set())
+  const [showSuccess, setShowSuccess] = useState(false)
+  const [confirmedDtStr, setConfirmedDtStr] = useState('—')
+
+  useEffect(() => {
+    function onUp() { setDragMode(null) }
+    window.addEventListener('mouseup', onUp)
+    return () => window.removeEventListener('mouseup', onUp)
+  }, [])
+
+  useEffect(() => {
+    if (!selTable || !selDateKey) { setTakenHours(new Set()); return }
+    api.resources.slots(TABLE_IDS[selTable.name], selDateKey).then((slots) => {
+      setTakenHours(new Set(slots.map((s) => s.hour)))
+    })
+  }, [selTable, selDateKey])
+
+  function changeMonth(dir) {
+    let m = calMonth + dir, y = calYear
+    if (m > 11) { m = 0; y++ }
+    if (m < 0) { m = 11; y-- }
+    setCalMonth(m); setCalYear(y)
+  }
+
+  function pickDate(date, key) {
+    setSelDateKey(key)
+    setSelDateLabel(date.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }))
+    setChosenSlots(new Set())
+  }
+
+  function selectTable(t) {
+    setSelTable(t)
+    setChosenSlots(new Set())
+  }
+
+  function slotDown(h, taken) {
+    if (taken) return
+    setChosenSlots((prev) => {
+      const next = new Set(prev)
+      if (next.has(h)) { next.delete(h); setDragMode('unchoose') }
+      else { next.add(h); setDragMode('choose') }
+      return next
+    })
+  }
+  function slotEnter(h, taken) {
+    if (!dragMode || taken) return
+    setChosenSlots((prev) => {
+      const next = new Set(prev)
+      if (dragMode === 'choose') next.add(h)
+      else next.delete(h)
+      return next
+    })
+  }
+
+  const dtStr = selDateLabel && chosenSlots.size ? `${selDateLabel} · ${Array.from(chosenSlots).sort().map((h) => `${h}:00`).join(', ')}` : '—'
+  const showSummary = selTable || selOrder || selDateKey
 
   async function submitOrder(e) {
     e.preventDefault()
     if (!selTable) { alert('Please choose a table.'); return }
     if (!selOrder) { alert('Please choose an order level.'); return }
-    if (!date || !time) { alert('Please select a date and time.'); return }
+    if (!selDateKey) { alert('Please pick a date.'); return }
+    if (chosenSlots.size === 0) { alert('Please select at least one time slot.'); return }
+    const sorted = Array.from(chosenSlots).sort()
+    const resourceId = TABLE_IDS[selTable.name]
 
     try {
+      for (const h of sorted) {
+        await api.resources.bookSlot(resourceId, { date: selDateKey, hour: h, clientName: username })
+      }
       await api.bookings.create({
         type: 'reserve-table',
         activity: `Reserve Table – ${selTable.name}`,
         user: username,
-        date,
-        time,
+        date: selDateKey,
+        time: sorted.map((h) => `${h}:00`).join(', '),
+        resourceId,
         pay: selOrder.pay,
         paid: false,
       })
@@ -76,8 +150,17 @@ function ReserveTable() {
       return
     }
 
+    setConfirmedDtStr(`${selDateLabel} · ${sorted.map((h) => `${h}:00`).join(', ')}`)
+    setChosenSlots(new Set())
+    setTakenHours((prev) => new Set([...prev, ...sorted]))
     setShowSuccess(true)
   }
+
+  const calDays = []
+  const first = new Date(calYear, calMonth, 1).getDay()
+  const total = new Date(calYear, calMonth + 1, 0).getDate()
+  for (let i = 0; i < first; i++) calDays.push(null)
+  for (let d = 1; d <= total; d++) calDays.push(d)
 
   return (
     <>
@@ -112,7 +195,7 @@ function ReserveTable() {
               <div className="block-label">Choose Your Table</div>
               <div className="table-grid">
                 {TABLES.map((t) => (
-                  <div key={t.name} className={`table-option${selTable?.name === t.name ? ' selected' : ''}`} onClick={() => setSelTable(t)}>
+                  <div key={t.name} className={`table-option${selTable?.name === t.name ? ' selected' : ''}`} onClick={() => selectTable(t)}>
                     <div className="table-check">✓</div>
                     <TableVisual size={t.size} chairs={t.chairs} icon={t.icon} />
                     <div className="table-num">{t.name.toUpperCase()}</div>
@@ -142,17 +225,69 @@ function ReserveTable() {
             </div>
 
             <div className="block">
-              <div className="block-label">Date &amp; Time</div>
-              <div className="datetime-grid">
-                <div className="dt-group">
-                  <label htmlFor="res-date">📅 Date</label>
-                  <input type="date" id="res-date" value={date} onChange={(e) => setDate(e.target.value)} />
+              <div className="block-label">Pick a Date</div>
+              <div className="cal-wrap">
+                <div className="cal-header">
+                  <button type="button" className="cal-nav" onClick={() => changeMonth(-1)}>‹</button>
+                  <div className="cal-month">{MONTHS[calMonth]} {calYear}</div>
+                  <button type="button" className="cal-nav" onClick={() => changeMonth(1)}>›</button>
                 </div>
-                <div className="dt-group">
-                  <label htmlFor="res-time">🕐 Time</label>
-                  <input type="time" id="res-time" value={time} onChange={(e) => setTime(e.target.value)} />
+                <div className="cal-grid">
+                  {DAYS.map((d) => <div className="cal-dow" key={d}>{d}</div>)}
+                  {calDays.map((d, i) => {
+                    if (d === null) return <div className="cal-day empty" key={i}></div>
+                    const date = new Date(calYear, calMonth, d)
+                    const key = fmtKey(date)
+                    const isPast = date < now
+                    const isToday = date.getTime() === now.getTime()
+                    const isSelected = key === selDateKey
+                    return (
+                      <div
+                        key={i}
+                        className={`cal-day${isPast ? ' past' : ''}${isToday ? ' today' : ''}${isSelected ? ' selected' : ''}`}
+                        onClick={() => !isPast && pickDate(date, key)}
+                      >
+                        {d}
+                      </div>
+                    )
+                  })}
                 </div>
               </div>
+            </div>
+
+            <div className="block">
+              <div className="block-label">Select Time Slots</div>
+              {!selTable ? (
+                <div className="no-date-notice"><span>🛋️</span>Please choose a table first</div>
+              ) : !selDateKey ? (
+                <div className="no-date-notice"><span>📅</span>Please pick a date first</div>
+              ) : (
+                <>
+                  <div className="time-legend">
+                    <div className="leg-item"><div className="leg-dot leg-av"></div>Available</div>
+                    <div className="leg-item"><div className="leg-dot leg-tak"></div>Taken</div>
+                    <div className="leg-item"><div className="leg-dot leg-sel"></div>Your Selection</div>
+                  </div>
+                  <div className="time-grid">
+                    {Array.from({ length: 24 }).map((_, h) => {
+                      const hStr = String(h).padStart(2, '0')
+                      const ampm = h < 12 ? (h === 0 ? '12 AM' : `${h} AM`) : (h === 12 ? '12 PM' : `${h - 12} PM`)
+                      const isTaken = takenHours.has(hStr)
+                      const isChosen = chosenSlots.has(hStr)
+                      return (
+                        <div
+                          key={hStr}
+                          className={`time-slot${isTaken ? ' taken' : isChosen ? ' chosen' : ''}`}
+                          onMouseDown={() => slotDown(hStr, isTaken)}
+                          onMouseEnter={() => slotEnter(hStr, isTaken)}
+                        >
+                          {hStr}:00<span className="am-pm">{ampm}</span>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </>
+              )}
             </div>
 
             <div className={`summary${showSummary ? ' show' : ''}`}>
@@ -183,7 +318,7 @@ function ReserveTable() {
                 Your table is confirmed!<br /><br />
                 📍 {selTable.name} · {selTable.cap}<br />
                 🍽️ {selOrder.name} ({selOrder.price})<br />
-                📅 {date} at {time}<br /><br />
+                📅 {confirmedDtStr}<br /><br />
                 We look forward to serving you. 🛋️
               </>
             ) : (

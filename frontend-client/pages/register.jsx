@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { api } from './api.js'
 import './register.css'
 
 const STRENGTH_COLORS = ['#ef4444', '#f97316', '#eab308', '#22c55e']
@@ -16,13 +17,35 @@ function strengthScore(val) {
 function Register() {
   const navigate = useNavigate()
   const [showPwd, setShowPwd] = useState(false)
+  const [username, setUsername] = useState('')
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [dob, setDob] = useState('')
+  const [phoneCode, setPhoneCode] = useState('+961')
+  const [phoneNum, setPhoneNum] = useState('')
+  const [error, setError] = useState('')
+  const [submitting, setSubmitting] = useState(false)
 
   const score = strengthScore(password)
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault()
-    navigate('/verify')
+    setError('')
+    setSubmitting(true)
+    try {
+      await api.auth.register({
+        username,
+        email,
+        password,
+        phone: phoneNum ? `${phoneCode} ${phoneNum}` : '',
+        dob,
+      })
+      navigate('/verify', { state: { email } })
+    } catch (err) {
+      setError(err.message || 'Registration failed')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -82,7 +105,7 @@ function Register() {
               <div className="form-group full">
                 <label htmlFor="username">Username</label>
                 <div className="input-wrap">
-                  <input id="username" type="text" placeholder="Choose a username" />
+                  <input id="username" type="text" placeholder="Choose a username" value={username} onChange={(e) => setUsername(e.target.value)} />
                   <span className="input-icon">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
@@ -95,7 +118,7 @@ function Register() {
               <div className="form-group full">
                 <label htmlFor="email">Email Address</label>
                 <div className="input-wrap">
-                  <input id="email" type="email" placeholder="your@email.com" />
+                  <input id="email" type="email" placeholder="your@email.com" value={email} onChange={(e) => setEmail(e.target.value)} />
                   <span className="input-icon">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <rect x="2" y="4" width="20" height="16" rx="2" />
@@ -145,14 +168,14 @@ function Register() {
               <div className="form-group">
                 <label htmlFor="birthday">Date of Birth</label>
                 <div className="input-wrap">
-                  <input id="birthday" type="date" style={{ paddingLeft: 14 }} />
+                  <input id="birthday" type="date" style={{ paddingLeft: 14 }} value={dob} onChange={(e) => setDob(e.target.value)} />
                 </div>
               </div>
 
               <div className="form-group full">
                 <label>Phone Number</label>
                 <div className="phone-wrap">
-                  <select className="phone-code" title="Country code" defaultValue="+961">
+                  <select className="phone-code" title="Country code" value={phoneCode} onChange={(e) => setPhoneCode(e.target.value)}>
                     <option>+961</option>
                     <option>+1</option>
                     <option>+44</option>
@@ -163,7 +186,7 @@ function Register() {
                     <option>+90</option>
                   </select>
                   <div className="input-wrap" style={{ flex: 1 }}>
-                    <input className="phone-num" type="tel" placeholder="00 000 000" />
+                    <input className="phone-num" type="tel" placeholder="00 000 000" value={phoneNum} onChange={(e) => setPhoneNum(e.target.value)} />
                     <span className="input-icon" style={{ left: 10 }}>
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92Z" />
@@ -175,8 +198,12 @@ function Register() {
 
             </div>
 
-            <button className="btn-verify" type="submit">
-              Verify
+            {error && (
+              <div style={{ color: '#f87171', fontSize: 13, textAlign: 'center', marginTop: 8 }}>{error}</div>
+            )}
+
+            <button className="btn-verify" type="submit" disabled={submitting}>
+              {submitting ? 'Creating…' : 'Verify'}
             </button>
           </form>
 

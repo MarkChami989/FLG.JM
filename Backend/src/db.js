@@ -23,6 +23,11 @@ async function nextClientId() {
   return `CLI-${String(seq).padStart(4, '0')}`;
 }
 
+async function nextTournamentId() {
+  const seq = await nextSeq('tournamentSeq');
+  return `T-${String(seq).padStart(3, '0')}`;
+}
+
 module.exports = {
   bookings: () => collection('bookings'),
   tournaments: () => collection('tournaments'),
@@ -32,4 +37,5 @@ module.exports = {
   clients: () => collection('clients'),
   nextBookingId,
   nextClientId,
+  nextTournamentId,
 };

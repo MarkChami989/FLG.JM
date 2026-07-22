@@ -1,7 +1,9 @@
+import { useNavigate } from 'react-router-dom'
 import Header from '../src/components/Header.jsx'
 import './rooms.css'
 
 function Rooms() {
+  const navigate = useNavigate()
   return (
     <>
       <div className="bg"></div>
@@ -62,7 +64,7 @@ function Rooms() {
                 <span className="badge badge-blue">🖥️ 4K Display</span>
                 <span className="badge badge-green">✅ Available</span>
               </div>
-              <button className="btn-book">Book Now</button>
+              <button className="btn-book" onClick={() => navigate('/pcroom')}>Book Now</button>
             </div>
           </div>
 
@@ -103,7 +105,7 @@ function Rooms() {
                 <span className="badge badge-pink">📺 4K OLED</span>
                 <span className="badge badge-green">✅ Available</span>
               </div>
-              <button className="btn-book" style={{ background: 'linear-gradient(135deg,#1d4ed8,#3b82f6)' }}>Book Now</button>
+              <button className="btn-book" style={{ background: 'linear-gradient(135deg,#1d4ed8,#3b82f6)' }} onClick={() => navigate('/psroom')}>Book Now</button>
             </div>
           </div>
         </div>

@@ -28,13 +28,13 @@ export const TT_SECTIONS = [
 ]
 
 export const LOUNGE_BARS = [
-  { title: 'Bar 1', glow: 'linear-gradient(90deg,#F97316,#F59E0B)', iconBg: 'rgba(249,115,22,0.12)', iconBorder: 'rgba(249,115,22,0.28)', iconStroke: '#fb923c' },
-  { title: 'Bar 2', glow: 'linear-gradient(90deg,#F59E0B,#D946EF)', iconBg: 'rgba(245,158,11,0.12)', iconBorder: 'rgba(245,158,11,0.28)', iconStroke: '#fbbf24' },
-  { title: 'Bar 3', glow: 'linear-gradient(90deg,#D946EF,#7C3AED)', iconBg: 'rgba(217,70,239,0.12)', iconBorder: 'rgba(217,70,239,0.28)', iconStroke: '#e879f9' },
+  { id: 'bar-1', title: 'Bar 1', glow: 'linear-gradient(90deg,#F97316,#F59E0B)', iconBg: 'rgba(249,115,22,0.12)', iconBorder: 'rgba(249,115,22,0.28)', iconStroke: '#fb923c' },
+  { id: 'bar-2', title: 'Bar 2', glow: 'linear-gradient(90deg,#F59E0B,#D946EF)', iconBg: 'rgba(245,158,11,0.12)', iconBorder: 'rgba(245,158,11,0.28)', iconStroke: '#fbbf24' },
+  { id: 'bar-3', title: 'Bar 3', glow: 'linear-gradient(90deg,#D946EF,#7C3AED)', iconBg: 'rgba(217,70,239,0.12)', iconBorder: 'rgba(217,70,239,0.28)', iconStroke: '#e879f9' },
 ]
 export const LOUNGE_TABLES = [
-  { title: 'Table 1', glow: 'linear-gradient(90deg,#06B6D4,#7C3AED)', iconBg: 'rgba(6,182,212,0.12)', iconBorder: 'rgba(6,182,212,0.28)', iconStroke: '#22d3ee' },
-  { title: 'Table 2', glow: 'linear-gradient(90deg,#7C3AED,#D946EF)', iconBg: 'rgba(124,58,237,0.12)', iconBorder: 'rgba(124,58,237,0.28)', iconStroke: '#a78bfa' },
-  { title: 'Table 3', glow: 'linear-gradient(90deg,#10B981,#06B6D4)', iconBg: 'rgba(16,185,129,0.12)', iconBorder: 'rgba(16,185,129,0.28)', iconStroke: '#34d399' },
-  { title: 'Table 4', glow: 'linear-gradient(90deg,#F59E0B,#10B981)', iconBg: 'rgba(245,158,11,0.12)', iconBorder: 'rgba(245,158,11,0.28)', iconStroke: '#fbbf24' },
+  { id: 'lounge-table-1', title: 'Table 1', glow: 'linear-gradient(90deg,#06B6D4,#7C3AED)', iconBg: 'rgba(6,182,212,0.12)', iconBorder: 'rgba(6,182,212,0.28)', iconStroke: '#22d3ee' },
+  { id: 'lounge-table-2', title: 'Table 2', glow: 'linear-gradient(90deg,#7C3AED,#D946EF)', iconBg: 'rgba(124,58,237,0.12)', iconBorder: 'rgba(124,58,237,0.28)', iconStroke: '#a78bfa' },
+  { id: 'lounge-table-3', title: 'Table 3', glow: 'linear-gradient(90deg,#10B981,#06B6D4)', iconBg: 'rgba(16,185,129,0.12)', iconBorder: 'rgba(16,185,129,0.28)', iconStroke: '#34d399' },
+  { id: 'lounge-table-4', title: 'Table 4', glow: 'linear-gradient(90deg,#F59E0B,#10B981)', iconBg: 'rgba(245,158,11,0.12)', iconBorder: 'rgba(245,158,11,0.28)', iconStroke: '#fbbf24' },
 ]

@@ -213,6 +213,105 @@ tbody tr:hover { background: rgba(255, 255, 255, .02); }
 .empty-note { text-align: center; padding: 60px 20px; color: var(--txt-dim); }
 .empty-note .ic { font-size: 34px; margin-bottom: 12px; }
 
+/* ---- tournament results / leaderboard ---- */
+.rank-row { display: flex; align-items: center; gap: 14px; padding: 11px 16px; border-radius: 11px; background: rgba(255,255,255,0.035); border: 1px solid rgba(255,255,255,0.06); margin-bottom: 7px; position: relative; overflow: hidden; transition: background 0.18s; }
+.rank-row:hover { background: rgba(124,58,237,0.08); }
+.rank-avatar { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 15px; flex-shrink: 0; }
+.rank-info { flex: 1; }
+.rank-name { font-family: 'Rajdhani', sans-serif; font-size: 14px; font-weight: 600; letter-spacing: 0.5px; }
+.rank-meta { font-size: 11px; color: rgba(255,255,255,0.3); margin-top: 2px; display: flex; align-items: center; gap: 8px; }
+.rank-times { font-family: 'Rajdhani', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 1px; padding: 2px 8px; border-radius: 20px; background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.35); }
+.rank-top1 { background: rgba(245,158,11,0.08); border-color: rgba(245,158,11,0.25); }
+.rank-top2 { background: rgba(148,163,184,0.07); border-color: rgba(148,163,184,0.2); }
+.rank-top3 { background: rgba(180,100,50,0.08); border-color: rgba(180,100,50,0.22); }
+.crown { font-size: 18px; flex-shrink: 0; min-width: 22px; text-align: center; }
+.gift-btn { display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04); cursor: pointer; font-family: 'Rajdhani', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; color: rgba(255,255,255,0.4); text-transform: uppercase; transition: all 0.2s; white-space: nowrap; }
+.gift-btn:hover { background: rgba(245,158,11,0.15); border-color: rgba(245,158,11,0.4); color: var(--gold); }
+.rank-editable { font-family: 'Rajdhani', sans-serif; font-size: 13px; font-weight: 700; width: 42px; text-align: center; background: none; border: none; color: rgba(255,255,255,0.3); outline: none; cursor: text; border-bottom: 1px dashed rgba(255,255,255,0.15); padding: 1px 2px; }
+.rank-editable:focus { color: #fff; border-bottom-color: var(--purple); }
+
+/* gift modal */
+.gift-modal { position: fixed; inset: 0; z-index: 150; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.25s; }
+.gift-modal.show { opacity: 1; pointer-events: all; }
+.gift-modal-box { background: #0d0818; border: 1px solid rgba(245,158,11,0.25); border-radius: 18px; padding: 32px; width: 100%; max-width: 420px; box-shadow: 0 0 60px rgba(245,158,11,0.15),0 32px 80px rgba(0,0,0,0.6); transform: scale(0.88); transition: transform 0.25s; }
+.gift-modal.show .gift-modal-box { transform: scale(1); }
+.gift-modal-title { font-family: 'Rajdhani', sans-serif; font-size: 16px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; margin-bottom: 6px; color: var(--gold); }
+.gift-modal-sub { font-size: 12px; color: rgba(255,255,255,0.3); margin-bottom: 20px; }
+.gift-textarea { width: 100%; padding: 12px 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: #fff; font-family: 'Exo 2', sans-serif; font-size: 13px; line-height: 1.6; resize: vertical; min-height: 100px; outline: none; }
+.gift-textarea:focus { border-color: var(--gold); }
+.gift-modal-actions { display: flex; gap: 10px; margin-top: 14px; }
+.gift-send-btn { flex: 1; padding: 11px; border: none; border-radius: 9px; cursor: pointer; font-family: 'Rajdhani', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #fff; background: linear-gradient(135deg,var(--gold),var(--orange)); box-shadow: 0 0 18px rgba(245,158,11,0.3); transition: opacity 0.2s; }
+.gift-send-btn:hover { opacity: 0.85; }
+.gift-cancel-btn { padding: 11px 18px; border: 1px solid rgba(255,255,255,0.1); border-radius: 9px; cursor: pointer; background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.4); font-family: 'Rajdhani', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; transition: all 0.2s; }
+.gift-cancel-btn:hover { background: rgba(255,255,255,0.08); color: #fff; }
+
+.gift-toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(80px); background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.35); border-radius: 12px; padding: 12px 24px; font-family: 'Rajdhani', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 1.5px; color: var(--green); text-transform: uppercase; opacity: 0; transition: all 0.35s; z-index: 300; white-space: nowrap; backdrop-filter: blur(12px); }
+.gift-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ---- resource sub-cards (Rooms / Tabletop / Lounge catalogs) ---- */
+.t-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 18px; width: 100%; }
+.t-card {
+  background: rgba(255,255,255,0.04); border: 1px solid var(--line); border-radius: 16px;
+  padding: 30px 24px; cursor: pointer; position: relative; overflow: hidden;
+  display: flex; flex-direction: column; align-items: flex-start; gap: 14px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.t-card:hover { transform: translateY(-3px); }
+.t-card::before, .t-card::after { content: ''; position: absolute; width: 16px; height: 16px; border-color: var(--gold); border-style: solid; opacity: 0.4; }
+.t-card::before { top: 0; left: 0; border-width: 1.5px 0 0 1.5px; border-radius: 16px 0 0 0; }
+.t-card::after { bottom: 0; right: 0; border-width: 0 1.5px 1.5px 0; border-radius: 0 0 16px 0; }
+.t-card-glow { position: absolute; top: 0; left: 0; right: 0; height: 2px; border-radius: 16px 16px 0 0; }
+.t-card-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.t-card-title { font-family: 'Rajdhani', sans-serif; font-size: 16px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #fff; }
+.t-card-arrow { position: absolute; bottom: 16px; right: 18px; opacity: 0; transform: translateX(-5px); transition: opacity 0.2s, transform 0.2s; color: rgba(255,255,255,0.25); }
+.t-card:hover .t-card-arrow { opacity: 1; transform: translateX(0); }
+
+.back-btn {
+  display: flex; align-items: center; gap: 8px;
+  padding: 9px 18px; border-radius: 9px; border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.04); cursor: pointer;
+  font-family: 'Rajdhani', sans-serif; font-size: 12px; font-weight: 600;
+  letter-spacing: 2px; color: rgba(255,255,255,0.45); text-transform: uppercase;
+  transition: all 0.2s; margin-top: 20px;
+}
+.back-btn:hover { background: rgba(124,58,237,0.12); border-color: rgba(124,58,237,0.35); color: #fff; }
+.back-btn svg { opacity: 0.5; transition: opacity 0.2s; }
+.back-btn:hover svg { opacity: 1; }
+
+/* ---- per-slot booking schedule (Rooms / Tabletop / Lounge detail) ---- */
+.r-date-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+.r-date-sel { padding: 6px 10px; border-radius: 8px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #fff; font-family: 'Rajdhani', sans-serif; font-size: 13px; font-weight: 600; outline: none; cursor: pointer; }
+.r-date-sel:focus { border-color: var(--cyan); }
+.r-slot { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.07); margin-bottom: 6px; transition: background 0.18s; }
+.r-slot.empty { background: rgba(255,255,255,0.025); }
+.r-slot.booked { background: rgba(16,185,129,0.07); border-color: rgba(16,185,129,0.22); }
+.r-hour { font-family: 'Rajdhani', sans-serif; font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.4); min-width: 52px; letter-spacing: 1px; }
+.r-client-name { font-family: 'Exo 2', sans-serif; font-size: 13px; font-weight: 600; color: var(--green); flex: 1; }
+.r-avail { font-family: 'Rajdhani', sans-serif; font-size: 11px; letter-spacing: 1.5px; color: rgba(255,255,255,0.15); flex: 1; text-transform: uppercase; }
+.r-book-btn { padding: 5px 12px; border-radius: 7px; border: 1px solid rgba(6,182,212,0.3); background: rgba(6,182,212,0.07); color: var(--cyan); font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; transition: background 0.18s; white-space: nowrap; }
+.r-book-btn:hover { background: rgba(6,182,212,0.18); }
+.r-edit-btn { padding: 5px 10px; border-radius: 7px; border: 1px solid rgba(245,158,11,0.3); background: rgba(245,158,11,0.07); color: var(--gold); font-family: 'Rajdhani', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; transition: background 0.18s; }
+.r-edit-btn:hover { background: rgba(245,158,11,0.18); }
+.r-del-btn { padding: 5px 10px; border-radius: 7px; border: 1px solid rgba(239,68,68,0.3); background: rgba(239,68,68,0.07); color: var(--red); font-family: 'Rajdhani', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; transition: background 0.18s; }
+.r-del-btn:hover { background: rgba(239,68,68,0.18); }
+.r-slot-now { border-color: rgba(239,68,68,0.35) !important; box-shadow: 0 0 12px rgba(239,68,68,0.1); }
+.r-now-dot { display: inline-flex; align-items: center; gap: 4px; font-family: 'Rajdhani', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; color: var(--red); text-transform: uppercase; animation: nowpulse 1.4s ease-in-out infinite; }
+@keyframes nowpulse { 0%,100%{opacity:1} 50%{opacity:0.35} }
+
+.r-modal { position: fixed; inset: 0; z-index: 150; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.25s; }
+.r-modal.show { opacity: 1; pointer-events: all; }
+.r-modal-box { background: #0d0818; border: 1px solid rgba(6,182,212,0.25); border-radius: 18px; padding: 28px; width: 100%; max-width: 380px; box-shadow: 0 0 60px rgba(6,182,212,0.12),0 32px 80px rgba(0,0,0,0.6); transform: scale(0.88); transition: transform 0.25s; }
+.r-modal.show .r-modal-box { transform: scale(1); }
+.r-modal-title { font-family: 'Rajdhani', sans-serif; font-size: 15px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: var(--cyan); margin-bottom: 4px; }
+.r-modal-sub { font-size: 12px; color: rgba(255,255,255,0.3); margin-bottom: 18px; }
+.r-modal-input { width: 100%; padding: 11px 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: #fff; font-family: 'Exo 2', sans-serif; font-size: 14px; outline: none; box-sizing: border-box; }
+.r-modal-input:focus { border-color: var(--cyan); }
+.r-modal-actions { display: flex; gap: 10px; margin-top: 14px; }
+.r-modal-confirm { flex: 1; padding: 11px; border: none; border-radius: 9px; cursor: pointer; font-family: 'Rajdhani', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #fff; background: linear-gradient(135deg,var(--cyan),var(--purple)); box-shadow: 0 0 18px rgba(6,182,212,0.25); transition: opacity 0.2s; }
+.r-modal-confirm:hover { opacity: 0.85; }
+.r-modal-cancel { padding: 11px 16px; border: 1px solid rgba(255,255,255,0.1); border-radius: 9px; cursor: pointer; background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.4); font-family: 'Rajdhani', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; transition: all 0.2s; }
+.r-modal-cancel:hover { background: rgba(255,255,255,0.08); color: #fff; }
+
 ::-webkit-scrollbar { width: 8px; }
 ::-webkit-scrollbar-thumb { background: rgba(124, 58, 237, .35); border-radius: 8px; }
 

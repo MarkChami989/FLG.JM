@@ -96,7 +96,8 @@ function Pingpong() {
         activity: `Ping Pong – ${selTable}`,
         user: username,
         date: selDateKey,
-        time: `${sorted[0]}:00`,
+        time: sorted.map((h) => `${h}:00`).join(', '),
+        resourceId,
         pay: 0,
         paid: false,
       })

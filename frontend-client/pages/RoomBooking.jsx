@@ -2,37 +2,18 @@ import { useEffect, useMemo, useState } from 'react'
 import Header from '../src/components/Header.jsx'
 import { useAuth } from '../src/auth.jsx'
 import { api } from './api.js'
-import './billiard.css'
+import './roombooking.css'
 
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 const DAYS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
-const TABLE_IDS = { 'Table 1': 'bi-t1', 'Table 2': 'bi-t2', 'Table 3': 'bi-vb', 'Table 4': 'bi-vr' }
 
 function fmtKey(d) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 }
 
-function BilliardTableArt({ bg }) {
-  return (
-    <div className="bil-art" style={bg ? { background: bg.bg, borderColor: bg.border } : undefined}>
-      <div className="bil-balls">
-        <div className="bil-ball b-white"></div>
-        <div className="bil-ball b-red1"></div>
-        <div className="bil-ball b-red2"></div>
-        <div className="bil-ball b-yel"></div>
-        <div className="bil-ball b-blue"></div>
-        <div className="bil-ball b-pink"></div>
-        <div className="bil-ball b-blk"></div>
-      </div>
-      <div className="bil-cue"></div>
-    </div>
-  )
-}
-
-function Billiard() {
+function RoomBooking({ resourceId, title, icon, tag }) {
   const { user } = useAuth()
   const username = user?.username || ''
-  const [selTable, setSelTable] = useState('')
 
   const now = useMemo(() => { const n = new Date(); n.setHours(0, 0, 0, 0); return n }, [])
   const [calYear, setCalYear] = useState(now.getFullYear())
@@ -53,11 +34,11 @@ function Billiard() {
   }, [])
 
   useEffect(() => {
-    if (!selTable || !selDateKey) { setTakenHours(new Set()); return }
-    api.resources.slots(TABLE_IDS[selTable], selDateKey).then((slots) => {
+    if (!selDateKey) { setTakenHours(new Set()); return }
+    api.resources.slots(resourceId, selDateKey).then((slots) => {
       setTakenHours(new Set(slots.map((s) => s.hour)))
     })
-  }, [selTable, selDateKey])
+  }, [resourceId, selDateKey])
 
   function changeMonth(dir) {
     let m = calMonth + dir, y = calYear
@@ -69,11 +50,6 @@ function Billiard() {
   function pickDate(date, key) {
     setSelDateKey(key)
     setSelDateLabel(date.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }))
-    setChosenSlots(new Set())
-  }
-
-  function selectTable(name) {
-    setSelTable(name)
     setChosenSlots(new Set())
   }
 
@@ -97,19 +73,17 @@ function Billiard() {
   }
 
   async function submitReserve() {
-    if (!selTable) { alert('Please choose a table.'); return }
     if (!selDateKey) { alert('Please pick a date.'); return }
     if (chosenSlots.size === 0) { alert('Please select at least one time slot.'); return }
     const sorted = Array.from(chosenSlots).sort()
-    const resourceId = TABLE_IDS[selTable]
 
     try {
       for (const h of sorted) {
         await api.resources.bookSlot(resourceId, { date: selDateKey, hour: h, clientName: username })
       }
       await api.bookings.create({
-        type: 'tabletop',
-        activity: `Billiard – ${selTable}`,
+        type: 'room',
+        activity: `${title}`,
         user: username,
         date: selDateKey,
         time: sorted.map((h) => `${h}:00`).join(', '),
@@ -124,12 +98,12 @@ function Billiard() {
 
     setSuccessMsg(
       <>
-        <strong>{username}</strong> — your billiard table is booked!<br /><br />
-        🎱 <strong>{selTable}</strong><br />
+        <strong>{username}</strong> — your {title} is booked!<br /><br />
+        {icon} <strong>{title}</strong><br />
         📅 {selDateLabel}<br />
         ⏰ {sorted.map((h) => `${h}:00`).join(' · ')}<br />
         ⏱️ {sorted.length} hour{sorted.length > 1 ? 's' : ''}<br /><br />
-        Rack &apos;em up and good luck! 🎯
+        See you at Fusion Luxury Game!
       </>
     )
     setChosenSlots(new Set())
@@ -144,14 +118,14 @@ function Billiard() {
   for (let d = 1; d <= total; d++) calDays.push(d)
 
   const summarySorted = Array.from(chosenSlots).sort()
-  const showSummary = selTable && selDateKey && chosenSlots.size > 0
+  const showSummary = selDateKey && chosenSlots.size > 0
 
   return (
     <>
       <div className="bg"></div>
       <div className="orb orb1"></div><div className="orb orb2"></div><div className="orb orb3"></div>
 
-      <Header />
+      <Header active="rooms" />
 
       <main>
         <div className="reserve-card">
@@ -159,37 +133,18 @@ function Billiard() {
           <div className="corner bl"></div><div className="corner br"></div>
 
           <div className="form-header">
-            <span className="form-icon">🎱</span>
-            <div className="form-tag">Billiard · Snooker</div>
-            <div className="form-title">Reserve Billiard Table</div>
+            <span className="form-icon">{icon}</span>
+            <div className="form-tag">{tag}</div>
+            <div className="form-title">Reserve {title}</div>
           </div>
           <div className="divider"></div>
 
           <div className="block">
             <div className="block-label">Player</div>
             <div className="input-wrap">
-              <input type="text" value={username} readOnly style={{ color: 'rgba(245,158,11,.9)', fontWeight: 600, paddingRight: 130 }} />
+              <input type="text" value={username} readOnly style={{ color: 'rgba(59,130,246,.9)', fontWeight: 600, paddingRight: 130 }} />
               <span className="input-icon">👤</span>
               <div className="logged-badge"><div className="logged-dot"></div> Logged In</div>
-            </div>
-          </div>
-
-          <div className="block">
-            <div className="block-label">Choose Table</div>
-            <div className="table-grid">
-              {[
-                { name: 'Table 1', cap: 'Standard · 2–4p' },
-                { name: 'Table 2', cap: 'Standard · 2–4p' },
-                { name: 'Table 3', cap: 'VIP Blue · 2–4p', bg: { bg: '#1a4a6b', border: '#0e2d42' } },
-                { name: 'Table 4', cap: 'VIP Red · 2–4p', bg: { bg: '#4a1a1a', border: '#2c0e0e' } },
-              ].map((t) => (
-                <div key={t.name} className={`table-opt${selTable === t.name ? ' selected' : ''}`} onClick={() => selectTable(t.name)}>
-                  <div className="table-check">✓</div>
-                  <BilliardTableArt bg={t.bg} />
-                  <div className="table-name">{t.name.toUpperCase()}</div>
-                  <div className="table-cap">{t.cap}</div>
-                </div>
-              ))}
             </div>
           </div>
 
@@ -239,7 +194,7 @@ function Billiard() {
                   {Array.from({ length: 24 }).map((_, h) => {
                     const hStr = String(h).padStart(2, '0')
                     const ampm = h < 12 ? (h === 0 ? '12 AM' : `${h} AM`) : (h === 12 ? '12 PM' : `${h - 12} PM`)
-                    const isTaken = selTable ? takenHours.has(hStr) : false
+                    const isTaken = takenHours.has(hStr)
                     const isChosen = chosenSlots.has(hStr)
                     return (
                       <div
@@ -260,26 +215,26 @@ function Billiard() {
           <div className={`summary${showSummary ? ' show' : ''}`}>
             <div className="summary-title">📋 Reservation Summary</div>
             <div className="summary-row"><span className="summary-key">Player</span><span className="summary-val">{username}</span></div>
-            <div className="summary-row"><span className="summary-key">Table</span><span className="summary-val">{selTable || '—'}</span></div>
+            <div className="summary-row"><span className="summary-key">Room</span><span className="summary-val">{title}</span></div>
             <div className="summary-row"><span className="summary-key">Date</span><span className="summary-val">{selDateLabel || '—'}</span></div>
             <div className="summary-row"><span className="summary-key">Time Slots</span><span className="summary-val">{summarySorted.length ? summarySorted.map((h) => `${h}:00`).join(', ') : '—'}</span></div>
             <div className="summary-row"><span className="summary-key">Duration</span><span className="summary-val">{summarySorted.length ? `${summarySorted.length} hour${summarySorted.length > 1 ? 's' : ''}` : '—'}</span></div>
           </div>
 
-          <button className="btn-submit" onClick={submitReserve}>🎱 &nbsp; Submit Reservation</button>
+          <button className="btn-submit" onClick={submitReserve}>{icon} &nbsp; Submit Reservation</button>
         </div>
       </main>
 
       <div className={`success-overlay${showSuccess ? ' show' : ''}`}>
         <div className="success-box">
-          <div className="success-icon">🎱</div>
-          <div className="success-title">Table Reserved!</div>
+          <div className="success-icon">{icon}</div>
+          <div className="success-title">Room Reserved!</div>
           <div className="success-sub">{successMsg}</div>
-          <button className="btn-close" onClick={() => setShowSuccess(false)}>Break &amp; Play! 🎱</button>
+          <button className="btn-close" onClick={() => setShowSuccess(false)}>Let's Go 🚀</button>
         </div>
       </div>
     </>
   )
 }
 
-export default Billiard
+export default RoomBooking

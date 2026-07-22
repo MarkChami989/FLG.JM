@@ -13,8 +13,7 @@ router.post('/', async (req, res) => {
   if (!name || !max || cost === undefined) {
     return res.status(400).json({ error: 'name, max, cost are required' });
   }
-  const count = await db.tournaments().countDocuments();
-  const id = `T-${String(count + 1).padStart(3, '0')}`;
+  const id = await db.nextTournamentId();
   const tournament = {
     id,
     name,

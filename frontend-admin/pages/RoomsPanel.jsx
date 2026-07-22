@@ -1,31 +1,24 @@
-import { useEffect, useState } from 'react'
-import { api } from './api.js'
+import { useState } from 'react'
+import TCard from './TCard.jsx'
+import BookingDetail from './BookingDetail.jsx'
+import { R_ROOMS } from './data.js'
 
 function RoomsPanel() {
-  const [rooms, setRooms] = useState([])
-
-  function load() {
-    api.resources.list('room').then(setRooms)
-  }
-  useEffect(load, [])
-
-  function toggle(room) {
-    api.resources.update(room.id, { status: room.status === 'free' ? 'occ' : 'free' }).then(load)
-  }
+  const [selectedId, setSelectedId] = useState(null)
+  const item = R_ROOMS.find((r) => r.id === selectedId)
 
   return (
     <>
-      <div className="panel-head"><h2>🖥️ Rooms</h2></div>
-      <div className="status-grid">
-        {rooms.map((r) => (
-          <div className="status-card" key={r.id}>
-            <h4>{r.title}</h4>
-            <span className={`status-toggle ${r.status === 'free' ? 'st-free' : 'st-occ'}`} style={{ cursor: 'pointer' }} onClick={() => toggle(r)}>
-              {r.status === 'free' ? 'Free' : 'Occupied'}
-            </span>
+      {item ? (
+        <BookingDetail item={item} onBack={() => setSelectedId(null)} />
+      ) : (
+        <>
+          <div className="panel-head"><h2>🖥️ Rooms</h2></div>
+          <div className="t-grid" style={{ gridTemplateColumns: 'repeat(3,1fr)' }}>
+            {R_ROOMS.map((r) => <TCard key={r.id} {...r} onClick={() => setSelectedId(r.id)} />)}
           </div>
-        ))}
-      </div>
+        </>
+      )}
     </>
   )
 }
