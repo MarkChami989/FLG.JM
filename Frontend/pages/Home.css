@@ -319,6 +319,20 @@ tbody tr:hover { background: rgba(255, 255, 255, .02); }
   .orders-layout { grid-template-columns: 1fr; }
   .detail-grid { grid-template-columns: 1fr; }
   .topbar { padding: 0 16px; }
-  .subnav { padding: 0 16px; gap: 16px; }
+  .subnav { padding: 0 16px; gap: 16px; overflow-x: auto; scrollbar-width: none; }
+  .subnav::-webkit-scrollbar { display: none; }
   main { padding: 18px 16px 50px; }
+  .chart-wrap { gap: 8px; }
+}
+
+@media (max-width: 640px) {
+  .topbar { height: auto; flex-wrap: wrap; padding: 10px 16px; gap: 10px; row-gap: 8px; }
+  .brand { order: -1; width: 100%; justify-content: center; }
+  .admin-id { width: 100%; justify-content: space-between; }
+  .clock { margin-left: auto; }
+  .page-title { font-size: 24px; }
+  .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 -16px; padding: 0 16px; }
+  .table-scroll table { min-width: 620px; }
+  .gift-modal-box, .r-modal-box { width: 100%; max-width: none !important; }
+  .gift-modal, .r-modal { padding: 16px; }
 }

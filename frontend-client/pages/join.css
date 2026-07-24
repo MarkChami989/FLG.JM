@@ -124,3 +124,15 @@ input:focus{border-color:rgba(217,70,239,.7);background:rgba(255,255,255,.07);bo
 .success-sub{font-size:13px;color:var(--muted);line-height:1.7;}
 .btn-close{margin-top:28px;padding:12px 32px;font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#fff;background:linear-gradient(135deg,var(--purple),var(--pink));border:none;border-radius:9px;cursor:pointer;transition:filter .2s,transform .15s;box-shadow:0 0 16px rgba(217,70,239,.3);}
 .btn-close:hover{filter:brightness(1.1);transform:translateY(-1px);}
+
+@media (max-width: 640px) {
+  main { padding: 24px 16px 40px !important; }
+  .join-card { padding: 30px 22px 32px !important; }
+  .ticket-wrap { flex-wrap: wrap !important; gap: 12px !important; }
+  .success-overlay { padding: 20px !important; }
+  .success-box { width: 100% !important; padding: 40px 28px !important; }
+}
+
+@media (max-width: 380px) {
+  .tourn-grid { grid-template-columns: 1fr !important; }
+}

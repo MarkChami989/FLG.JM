@@ -212,3 +212,15 @@
   color: var(--green); margin-bottom: 8px;
 }
 .success-sub { font-size: 13px; color: rgba(255,255,255,0.45); }
+
+@media (max-width: 640px) {
+  .auth-page { padding: 16px !important; }
+  .auth-card { padding: 36px 20px 30px !important; }
+  .otp-row { gap: 6px !important; }
+  .otp-input { width: 42px !important; height: 56px !important; font-size: 22px !important; }
+}
+
+@media (max-width: 360px) {
+  .otp-input { width: 36px !important; height: 50px !important; font-size: 18px !important; }
+  .otp-row { gap: 4px !important; }
+}

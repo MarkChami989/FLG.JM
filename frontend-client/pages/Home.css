@@ -230,3 +230,25 @@ main { position:relative; z-index:1; padding: 36px 40px 60px; display:flex; flex
 .hero { text-align:center; padding:10px 0 36px; display:flex; flex-direction:column; align-items:center; width:100%; }
 
 .hero-line { width:80px; height:2px; margin:16px auto 0; background:linear-gradient(90deg,transparent,var(--purple),var(--pink),transparent); }
+
+@media (max-width: 1024px) {
+  main { padding: 28px 24px 48px !important; }
+  .hero-title { font-size: 30px !important; }
+}
+
+@media (max-width: 768px) {
+  .grid { grid-template-columns: 1fr !important; grid-template-rows: none !important; gap: 20px !important; }
+  .card-rooms, .card-tourn, .card-table, .card-cigar { grid-column: auto !important; grid-row: auto !important; min-height: 0 !important; }
+  main { padding: 24px 16px 40px !important; }
+  .hero-title { font-size: 26px !important; }
+  .sec-head { font-size: 22px !important; }
+  .room-pc, .room-ps { gap: 12px !important; padding: 14px !important; }
+  .monitor { width: 110px !important; height: 72px !important; }
+  .tv-screen { width: 130px !important; height: 82px !important; }
+}
+
+@media (max-width: 420px) {
+  .hero-title { font-size: 22px !important; }
+  .hero-sub { font-size: 12px !important; }
+  .card-body { padding: 16px !important; }
+}

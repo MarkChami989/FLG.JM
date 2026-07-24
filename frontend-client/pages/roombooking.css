@@ -102,3 +102,11 @@ input[type="text"]{width:100%;padding:13px 14px 13px 42px;background:rgba(255,25
 
 .no-date-notice{text-align:center;padding:28px 16px;color:var(--muted);font-size:13px;background:rgba(255,255,255,.02);border:1px dashed rgba(59,130,246,.2);border-radius:12px;}
 .no-date-notice span{font-size:28px;display:block;margin-bottom:8px;opacity:.5;}
+
+@media (max-width: 640px) {
+  main { padding: 24px 12px 40px !important; }
+  .reserve-card { padding: 30px 18px 32px !important; }
+  .time-grid { grid-template-columns: repeat(3,1fr) !important; }
+  .success-overlay { padding: 20px !important; }
+  .success-box { width: 100% !important; padding: 40px 24px !important; }
+}

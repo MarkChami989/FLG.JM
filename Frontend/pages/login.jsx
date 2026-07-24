@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { api } from './api.js'
 import './login.css'
 
 function Login() {
@@ -8,13 +9,15 @@ function Login() {
   const [password, setPassword] = useState('')
   const [showPwd, setShowPwd] = useState(false)
   const [status, setStatus] = useState('idle') // idle | error | authenticating | success
+  const [errorMsg, setErrorMsg] = useState('')
   const [busy, setBusy] = useState(false)
 
-  function handleLogin() {
+  async function handleLogin() {
     const u = username.trim()
     const p = password
 
     if (!u || !p) {
+      setErrorMsg('Please enter both fields')
       setStatus('error')
       setTimeout(() => setStatus('idle'), 1800)
       return
@@ -22,10 +25,24 @@ function Login() {
 
     setStatus('authenticating')
     setBusy(true)
-    setTimeout(() => {
+    try {
+      await api.adminAuth.login({ username: u, password: p })
       setStatus('success')
-      setTimeout(() => navigate('/verify'), 800)
-    }, 1200)
+      setTimeout(() => navigate('/verify', { state: { flow: 'admin' } }), 800)
+      return
+    } catch {
+      // not the admin account — fall through and try staff credentials
+    }
+    try {
+      const { email } = await api.staffAuth.login({ username: u, password: p })
+      setStatus('success')
+      setTimeout(() => navigate('/verify', { state: { flow: 'staff', username: u, email } }), 800)
+    } catch (err) {
+      setErrorMsg(err.message || 'Invalid username or password')
+      setStatus('error')
+      setBusy(false)
+      setTimeout(() => setStatus('idle'), 1800)
+    }
   }
 
   useEffect(() => {
@@ -41,7 +58,7 @@ function Login() {
     status === 'success' ? 'linear-gradient(135deg,#10B981,#065f46)' :
     undefined
   const btnText =
-    status === 'error' ? 'Fill in both fields' :
+    status === 'error' ? (errorMsg || 'Fill in both fields') :
     status === 'authenticating' ? 'Authenticating…' :
     status === 'success' ? '✓ Welcome Back' :
     'Sign In'
@@ -87,7 +104,7 @@ function Login() {
             </div>
           </div>
 
-          <div className="section-title">Staff Sign In</div>
+          <div className="section-title">Team Sign In</div>
 
           <div className="field">
             <label htmlFor="username">Username</label>
@@ -146,8 +163,7 @@ function Login() {
           <div className="divider"><span>•</span></div>
 
           <div className="footer-note">
-            Staff Only &nbsp;·&nbsp; Contact support to get access
-            <br />If any issue, call the admin
+            Admin &amp; Staff &nbsp;·&nbsp; Console access is restricted
           </div>
         </div>
       </div>
