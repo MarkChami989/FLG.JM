@@ -232,7 +232,7 @@ function Home() {
                     <div className="menu-origin">Champagne · France</div>
                   </div>
                 </div>
-                <div className="menu-price">$45</div>
+               
               </div>
               <div className="menu-item">
                 <div className="menu-item-left">

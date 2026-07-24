@@ -128,13 +128,10 @@ main { position:relative; z-index:1; padding: 36px 40px 60px; display:flex; flex
 
 /* Card description text */
 .card-desc {
-  font-size:12px; color:#93c5fd; line-height:1.9;
-  background: rgba(59,130,246,.28);
-  padding: 1px 6px;
-  border-radius: 3px;
-  box-decoration-break: clone;
-  -webkit-box-decoration-break: clone;
+
+  font-size:12px; color:#c0c0c0; line-height:1.9;
 }
+
 
 .badge { display:inline-flex; align-items:center; gap:4px; margin-top:10px; padding:4px 12px; border-radius:20px; font-size:10px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; }
 .badge-purple { background:rgba(59,130,246,.2); border:1px solid rgba(59,130,246,.4); color:#93c5fd; }
