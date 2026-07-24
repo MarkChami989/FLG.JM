@@ -118,3 +118,12 @@ input:focus { border-color: rgba(217,70,239,.7); background: rgba(255,255,255,.0
 .steps { display: flex; align-items: center; justify-content: center; gap: 6px; margin-bottom: 26px; }
 .step { width: 28px; height: 4px; border-radius: 2px; background: rgba(255,255,255,.1); }
 .step.active { background: linear-gradient(90deg, var(--purple), var(--pink)); box-shadow: 0 0 8px rgba(217,70,239,.5); }
+
+@media (max-width: 640px) {
+  .wrapper { padding: 20px 14px !important; }
+  .card { padding: 32px 22px 28px !important; }
+  .form-grid { grid-template-columns: 1fr !important; gap: 14px !important; }
+  .full { grid-column: auto !important; }
+  .phone-wrap { flex-wrap: wrap !important; }
+  .phone-code { width: 96px !important; }
+}

@@ -39,11 +39,22 @@ export const api = {
   },
   staff: {
     list: () => request('/staff'),
+    get: (id) => request(`/staff/${id}`),
     create: (data) => request('/staff', { method: 'POST', body: JSON.stringify(data) }),
     update: (id, data) => request(`/staff/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
     remove: (id) => request(`/staff/${id}`, { method: 'DELETE' }),
   },
   reports: {
     summary: () => request('/reports/summary'),
+  },
+  adminAuth: {
+    login: (data) => request('/admin-auth/login', { method: 'POST', body: JSON.stringify(data) }),
+    verify: (data) => request('/admin-auth/verify', { method: 'POST', body: JSON.stringify(data) }),
+    resend: () => request('/admin-auth/resend', { method: 'POST', body: JSON.stringify({}) }),
+  },
+  staffAuth: {
+    login: (data) => request('/staff-auth/login', { method: 'POST', body: JSON.stringify(data) }),
+    verify: (data) => request('/staff-auth/verify', { method: 'POST', body: JSON.stringify(data) }),
+    resend: (data) => request('/staff-auth/resend', { method: 'POST', body: JSON.stringify(data) }),
   },
 }

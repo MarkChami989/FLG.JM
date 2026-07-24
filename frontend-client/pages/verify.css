@@ -111,3 +111,15 @@
 .steps { display: flex; align-items: center; justify-content: center; gap: 6px; margin-bottom: 26px; }
 .step { width: 28px; height: 4px; border-radius: 2px; background: rgba(255,255,255,.1); }
 .step.active { background: linear-gradient(90deg, var(--purple), var(--pink)); box-shadow: 0 0 8px rgba(217,70,239,.5); }
+
+@media (max-width: 640px) {
+  .wrapper { padding: 20px 12px !important; }
+  .card { padding: 36px 18px 32px !important; }
+  .otp-wrap { gap: 6px !important; }
+  .otp-box { width: 44px !important; height: 56px !important; font-size: 24px !important; }
+}
+
+@media (max-width: 380px) {
+  .otp-box { width: 38px !important; height: 50px !important; font-size: 20px !important; }
+  .otp-wrap { gap: 4px !important; }
+}

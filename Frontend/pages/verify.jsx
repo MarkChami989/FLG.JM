@@ -1,9 +1,16 @@
 import { useEffect, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { useAuth } from '../src/auth.jsx'
+import { api } from './api.js'
 import './verify.css'
 
 function Verify() {
   const navigate = useNavigate()
+  const location = useLocation()
+  const { login } = useAuth()
+  const flow = location.state?.flow || 'admin'
+  const staffUsername = location.state?.username || ''
+  const staffEmail = location.state?.email || ''
   const [otp, setOtp] = useState(Array(6).fill(''))
   const [status, setStatus] = useState('idle') // idle | verifying | success | error
   const [btnText, setBtnText] = useState('Verify Code')
@@ -11,6 +18,10 @@ function Verify() {
   const [resendBusy, setResendBusy] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
   const inputRefs = useRef([])
+
+  useEffect(() => {
+    if (flow === 'staff' && !staffUsername) navigate('/login')
+  }, [flow, staffUsername, navigate])
 
   useEffect(() => {
     inputRefs.current[0]?.focus()
@@ -61,31 +72,32 @@ function Verify() {
     inputRefs.current[nextIdx]?.focus()
   }
 
-  function verifyCode() {
+  async function verifyCode() {
     const code = otp.join('')
     setStatus('verifying')
     setBtnText('Verifying…')
 
-    setTimeout(() => {
-      const valid = code.length === 6
-      if (valid) {
-        setStatus('success')
-        setBtnText('✓ Verified')
-        setTimeout(() => {
-          setShowSuccess(true)
-          setTimeout(() => navigate('/'), 1200)
-        }, 600)
-      } else {
-        setStatus('error')
-        setBtnText('Invalid Code')
-        setTimeout(() => {
-          setOtp(Array(6).fill(''))
-          inputRefs.current[0]?.focus()
-          setBtnText('Verify Code')
-          setStatus('idle')
-        }, 1800)
-      }
-    }, 1000)
+    try {
+      const account = flow === 'staff'
+        ? await api.staffAuth.verify({ username: staffUsername, code })
+        : await api.adminAuth.verify({ code })
+      setStatus('success')
+      setBtnText('✓ Verified')
+      login(account)
+      setTimeout(() => {
+        setShowSuccess(true)
+        setTimeout(() => navigate('/'), 1200)
+      }, 600)
+    } catch (err) {
+      setStatus('error')
+      setBtnText(err.message || 'Invalid Code')
+      setTimeout(() => {
+        setOtp(Array(6).fill(''))
+        inputRefs.current[0]?.focus()
+        setBtnText('Verify Code')
+        setStatus('idle')
+      }, 1800)
+    }
   }
 
   useEffect(() => {
@@ -96,11 +108,17 @@ function Verify() {
     return () => document.removeEventListener('keydown', onKeyDown)
   })
 
-  function resendCode() {
+  async function resendCode() {
     setResendBusy(true)
     setOtp(Array(6).fill(''))
     setStatus('idle')
     inputRefs.current[0]?.focus()
+    try {
+      if (flow === 'staff') await api.staffAuth.resend({ username: staffUsername })
+      else await api.adminAuth.resend()
+    } catch {
+      // ignore, user can retry
+    }
     setSeconds(30)
   }
 
@@ -166,7 +184,7 @@ function Verify() {
           <div className="heading">Check Your Email</div>
           <div className="sub-text">
             We sent a 6-digit verification code to<br />
-            <span>your email address</span>
+            <span>{flow === 'staff' ? (staffEmail || 'your email address') : 'the admin email address'}</span>
           </div>
 
           <div className="otp-row">
@@ -201,8 +219,7 @@ function Verify() {
           </div>
 
           <div className="footer-note">
-            Staff Only &nbsp;·&nbsp; Contact support to get access<br />
-            If any issue, call the admin
+            {flow === 'staff' ? 'Staff Only · Contact the admin for access' : 'Admin Only · Console access is restricted'}
           </div>
         </div>
       </div>
@@ -215,7 +232,7 @@ function Verify() {
             </svg>
           </div>
           <div className="success-title">Verified!</div>
-          <div className="success-sub">Identity confirmed. Welcome to FLG Staff Portal.</div>
+          <div className="success-sub">Identity confirmed. Welcome to FLG Admin Console.</div>
         </div>
       </div>
     </>

@@ -158,3 +158,9 @@
   color: rgba(255,255,255,0.2);
   font-family: 'Exo 2', sans-serif; letter-spacing: 0.5px;
 }
+
+@media (max-width: 640px) {
+  .auth-page { padding: 16px !important; }
+  .auth-card { padding: 36px 24px 30px !important; }
+  .logo-wrap { margin-bottom: 24px !important; }
+}

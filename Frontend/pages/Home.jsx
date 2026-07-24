@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import './Home.css'
+import { useAuth } from '../src/auth.jsx'
 import { SECTIONS } from './data.js'
 import OrdersPanel from './OrdersPanel.jsx'
 import TournamentsPanel from './TournamentsPanel.jsx'
@@ -22,6 +23,12 @@ const PANEL_RENDERERS = {
 const NAV_MAP = { home: null, staffnav: 'staff', reportsnav: 'reports', settingsnav: null }
 
 function Home() {
+  const { user } = useAuth()
+  const isAdmin = user?.role === 'admin'
+  const displayName = isAdmin
+    ? (user?.username ? user.username[0].toUpperCase() + user.username.slice(1) : 'Admin')
+    : (user?.name || 'Staff')
+  const sections = Object.entries(SECTIONS).filter(([, s]) => !s.adminOnly || isAdmin)
   const [now, setNow] = useState(new Date())
   const [openTabs, setOpenTabs] = useState([])
   const [activeTab, setActiveTab] = useState(null)
@@ -65,23 +72,23 @@ function Home() {
 
       <div className="topbar">
         <div className="admin-id">
-          <div className="avatar">M</div>
+          <div className="avatar">{displayName[0]}</div>
           <div>
-            <span className="admin-name">Mark</span>
-            <span className="admin-badge">ADMIN</span>
+            <span className="admin-name">{displayName}</span>
+            <span className="admin-badge">{isAdmin ? 'ADMIN' : 'STAFF'}</span>
           </div>
           <div className="clock">{clockStr}</div>
         </div>
         <div className="brand">
           <div className="brand-mark">FLG</div>
-          <div className="brand-text">Fusion <span>Luxury</span> Game · Admin</div>
+          <div className="brand-text">Fusion <span>Luxury</span> Game · {isAdmin ? 'Admin' : 'Staff'}</div>
         </div>
       </div>
 
       <div className="subnav">
         <a className={activeNav === 'home' ? 'active' : ''} onClick={() => handleNavClick('home')}>Dashboard</a>
-        <a className={activeNav === 'staffnav' ? 'active' : ''} onClick={() => handleNavClick('staffnav')}>Staff</a>
-        <a className={activeNav === 'reportsnav' ? 'active' : ''} onClick={() => handleNavClick('reportsnav')}>Reports</a>
+        {isAdmin && <a className={activeNav === 'staffnav' ? 'active' : ''} onClick={() => handleNavClick('staffnav')}>Staff</a>}
+        {isAdmin && <a className={activeNav === 'reportsnav' ? 'active' : ''} onClick={() => handleNavClick('reportsnav')}>Reports</a>}
         <a className={activeNav === 'settingsnav' ? 'active' : ''} onClick={() => handleNavClick('settingsnav')}>Settings</a>
       </div>
 
@@ -107,10 +114,10 @@ function Home() {
       <main>
         {activeTab === null ? (
           <>
-            <div className="section-title">Admin Console</div>
-            <div className="page-title">Good to see you, Mark</div>
+            <div className="section-title">{isAdmin ? 'Admin Console' : 'Staff Console'}</div>
+            <div className="page-title">Good to see you, {displayName}</div>
             <div className="launcher-grid">
-              {Object.entries(SECTIONS).map(([key, s], i) => (
+              {sections.map(([key, s], i) => (
                 <div key={key} className="launcher-card" style={{ '--clr': s.clr, animationDelay: `${i * 0.04}s` }} onClick={() => openTab(key)}>
                   {s.adminOnly && <div className="launcher-badge">ADMIN ONLY</div>}
                   <div className="launcher-icon" style={{ color: s.clr }}>{s.icon}</div>

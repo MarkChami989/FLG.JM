@@ -17,6 +17,8 @@
   --txt: #F3F1FA;
   --txt-dim: #9C93B8;
   --admin: #F59E0B;
+  --card: rgba(255, 255, 255, 0.04);
+  --border: rgba(255, 255, 255, 0.08);
 }
 
 html, body { height: 100%; }
@@ -29,4 +31,4 @@ body {
   position: relative;
 }
 
-#root { min-height: 100vh; zoom: 2; }
+#root { min-height: 100vh; }
