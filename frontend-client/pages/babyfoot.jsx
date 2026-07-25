@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import Header from '../src/components/Header.jsx'
 import { useAuth } from '../src/auth.jsx'
 import { api } from './api.js'
+import { Icon, ICONS } from '../src/icons.jsx'
 import './babyfoot.css'
 
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
@@ -45,6 +46,15 @@ function Babyfoot() {
   const [takenHours, setTakenHours] = useState(new Set())
   const [showSuccess, setShowSuccess] = useState(false)
   const [successMsg, setSuccessMsg] = useState(null)
+  const [rates, setRates] = useState({})
+
+  useEffect(() => {
+    api.roomRates.list().then((list) => {
+      const map = {}
+      list.forEach((r) => { map[r.category] = r.pricePerHour })
+      setRates(map)
+    })
+  }, [])
 
   useEffect(() => {
     function onUp() { setDragMode(null) }
@@ -114,7 +124,7 @@ function Babyfoot() {
         date: selDateKey,
         time: sorted.map((h) => `${h}:00`).join(', '),
         resourceId,
-        pay: 0,
+        pay: (rates[resourceId] || 0) * sorted.length,
         paid: false,
       })
     } catch (e) {
@@ -125,11 +135,11 @@ function Babyfoot() {
     setSuccessMsg(
       <>
         <strong>{username}</strong> — your Baby Foot table is set!<br /><br />
-        ⚽ <strong>{selTable}</strong> · {selMode || 'Open Play'}<br />
-        📅 {selDateLabel}<br />
-        ⏰ {sorted.map((h) => `${h}:00`).join(' · ')}<br />
-        ⏱️ {sorted.length} hour{sorted.length > 1 ? 's' : ''}<br /><br />
-        May the best team win! ⚽
+        <strong>{selTable}</strong> · {selMode || 'Open Play'}<br />
+        {selDateLabel}<br />
+        {sorted.map((h) => `${h}:00`).join(' · ')}<br />
+        {sorted.length} hour{sorted.length > 1 ? 's' : ''}<br /><br />
+        May the best team win!
       </>
     )
     setChosenSlots(new Set())
@@ -145,6 +155,7 @@ function Babyfoot() {
 
   const summarySorted = Array.from(chosenSlots).sort()
   const showSummary = selTable && selDateKey && chosenSlots.size > 0
+  const pricePerHour = selTable ? (rates[TABLE_IDS[selTable]] || 0) : 0
 
   return (
     <>
@@ -159,7 +170,7 @@ function Babyfoot() {
           <div className="corner bl"></div><div className="corner br"></div>
 
           <div className="form-header">
-            <span className="form-icon">⚽</span>
+            <span className="form-icon"><Icon paths={ICONS.bfIcon} width="40" height="40" /></span>
             <div className="form-tag">Tabletop Games</div>
             <div className="form-title">Reserve Baby Foot Table</div>
           </div>
@@ -169,7 +180,7 @@ function Babyfoot() {
             <div className="block-label">Player</div>
             <div className="input-wrap">
               <input type="text" value={username} readOnly style={{ color: 'rgba(249,115,22,.9)', fontWeight: 600, paddingRight: 130 }} />
-              <span className="input-icon">👤</span>
+              <span className="input-icon"></span>
               <div className="logged-badge"><div className="logged-dot"></div> Logged In</div>
             </div>
           </div>
@@ -195,7 +206,7 @@ function Babyfoot() {
             <div className="mode-grid">
               <div className={`mode-opt${selMode === '1 vs 1 – Solo' ? ' selected' : ''}`} onClick={() => setSelMode('1 vs 1 – Solo')}>
                 <div className="mode-check">✓</div>
-                <div className="mode-emoji">🧍</div>
+                <div className="mode-emoji"></div>
                 <div className="mode-info">
                   <div className="mode-name">1 vs 1</div>
                   <div className="mode-sub">Solo · 2 players</div>
@@ -203,7 +214,7 @@ function Babyfoot() {
               </div>
               <div className={`mode-opt${selMode === '2 vs 2 – Team' ? ' selected' : ''}`} onClick={() => setSelMode('2 vs 2 – Team')}>
                 <div className="mode-check">✓</div>
-                <div className="mode-emoji">👥</div>
+                <div className="mode-emoji"></div>
                 <div className="mode-info">
                   <div className="mode-name">2 vs 2</div>
                   <div className="mode-sub">Team · 4 players</div>
@@ -213,7 +224,7 @@ function Babyfoot() {
 
             <div className="scoreboard">
               <div className="score-team orange">
-                <div className="score-name o">🟠 Team A</div>
+                <div className="score-name o">Team A</div>
                 <div className="score-num o">{sA}</div>
                 <div className="score-ctrl">
                   <button className="sc-btn" onClick={() => setSA((s) => Math.max(0, s - 1))}>−</button>
@@ -226,7 +237,7 @@ function Babyfoot() {
                 <div className="vs-dash"></div>
               </div>
               <div className="score-team blue">
-                <div className="score-name b">🔵 Team B</div>
+                <div className="score-name b">Team B</div>
                 <div className="score-num b">{sB}</div>
                 <div className="score-ctrl">
                   <button className="sc-btn" onClick={() => setSB((s) => Math.max(0, s - 1))}>−</button>
@@ -268,9 +279,12 @@ function Babyfoot() {
           </div>
 
           <div className="block">
-            <div className="block-label">Select Time Slots</div>
+            <div className="block-label">
+              Select Time Slots
+              {pricePerHour > 0 && <span style={{ float: 'right', fontWeight: 600, color: '#fbbf24' }}>${pricePerHour} / hour</span>}
+            </div>
             {!selDateKey ? (
-              <div className="no-date-notice"><span>📅</span>Please pick a date first</div>
+              <div className="no-date-notice"><span></span>Please pick a date first</div>
             ) : (
               <>
                 <div className="time-legend">
@@ -301,25 +315,28 @@ function Babyfoot() {
           </div>
 
           <div className={`summary${showSummary ? ' show' : ''}`}>
-            <div className="summary-title">📋 Reservation Summary</div>
+            <div className="summary-title">Reservation Summary</div>
             <div className="summary-row"><span className="summary-key">Player</span><span className="summary-val">{username}</span></div>
             <div className="summary-row"><span className="summary-key">Table</span><span className="summary-val">{selTable || '—'}</span></div>
             <div className="summary-row"><span className="summary-key">Mode</span><span className="summary-val">{selMode || '—'}</span></div>
             <div className="summary-row"><span className="summary-key">Date</span><span className="summary-val">{selDateLabel || '—'}</span></div>
             <div className="summary-row"><span className="summary-key">Time Slots</span><span className="summary-val">{summarySorted.length ? summarySorted.map((h) => `${h}:00`).join(', ') : '—'}</span></div>
             <div className="summary-row"><span className="summary-key">Duration</span><span className="summary-val">{summarySorted.length ? `${summarySorted.length} hour${summarySorted.length > 1 ? 's' : ''}` : '—'}</span></div>
+            {pricePerHour > 0 && (
+              <div className="summary-row"><span className="summary-key">Total</span><span className="summary-val" style={{ color: '#fbbf24', fontWeight: 700 }}>${(pricePerHour * summarySorted.length).toFixed(2)}</span></div>
+            )}
           </div>
 
-          <button className="btn-submit" onClick={submitReserve}>⚽ &nbsp; Submit Reservation</button>
+          <button className="btn-submit" onClick={submitReserve}>Submit Reservation</button>
         </div>
       </main>
 
       <div className={`success-overlay${showSuccess ? ' show' : ''}`}>
         <div className="success-box">
-          <div className="success-icon">⚽</div>
+          <div className="success-icon"><Icon paths={ICONS.bfIcon} width="52" height="52" /></div>
           <div className="success-title">Game On!</div>
           <div className="success-sub">{successMsg}</div>
-          <button className="btn-close" onClick={() => setShowSuccess(false)}>Kick Off! ⚽</button>
+          <button className="btn-close" onClick={() => setShowSuccess(false)}>Kick Off!</button>
         </div>
       </div>
     </>

@@ -5,8 +5,8 @@ import { api } from './api.js'
 import './join.css'
 
 const TOURN_META = {
-  fifa: { id: 'T-001', emoji: '⚽', spotsClass: (left) => (left <= 5 ? 'spots-red' : 'spots-green') },
-  combat: { id: 'T-002', emoji: '🥊', spotsClass: (left) => (left <= 5 ? 'spots-red' : 'spots-green') },
+  fifa: { id: 'T-001', emoji: '', spotsClass: (left) => (left <= 5 ? 'spots-red' : 'spots-green') },
+  combat: { id: 'T-002', emoji: '', spotsClass: (left) => (left <= 5 ? 'spots-red' : 'spots-green') },
 }
 
 function Join() {
@@ -91,7 +91,7 @@ function Join() {
           <div className="corner bl"></div><div className="corner br"></div>
 
           <div className="form-header">
-            <div className="form-icon">🏆</div>
+            <div className="form-icon"></div>
             <div className="form-tag">Tournaments</div>
             <div className="form-title">Join Tournament</div>
           </div>
@@ -102,7 +102,7 @@ function Join() {
               <div className="block-label">Logged In As</div>
               <div className="input-wrap">
                 <input type="text" value={username} readOnly style={{ cursor: 'default', color: 'rgba(217,70,239,.9)', fontWeight: 600, paddingRight: 130 }} />
-                <span className="input-icon">👤</span>
+                <span className="input-icon"></span>
                 <div className="logged-badge"><div className="logged-dot"></div> Logged In</div>
               </div>
             </div>
@@ -112,14 +112,14 @@ function Join() {
               <div className="tourn-grid">
                 <div className={`tourn-option t-fifa${selKey === 'fifa' ? ' selected' : ''}`} onClick={() => selectTourn('fifa')}>
                   <div className="tourn-check check-fifa">✓</div>
-                  <span className="tourn-emoji">⚽</span>
+                  <span className="tourn-emoji"></span>
                   <div className="tourn-name">FIFA</div>
                   <div className="tourn-info">{tournaments.fifa ? tournaments.fifa.info : '—'}</div>
                   <div className={`tourn-spots ${tournaments.fifa ? tournaments.fifa.spotsClass : 'spots-green'}`}>{tournaments.fifa ? tournaments.fifa.spotsText : '—'}</div>
                 </div>
                 <div className={`tourn-option t-combat${selKey === 'combat' ? ' selected' : ''}`} onClick={() => selectTourn('combat')}>
                   <div className="tourn-check check-combat">✓</div>
-                  <span className="tourn-emoji">🥊</span>
+                  <span className="tourn-emoji"></span>
                   <div className="tourn-name">COMBAT</div>
                   <div className="tourn-info">{tournaments.combat ? tournaments.combat.info : '—'}</div>
                   <div className={`tourn-spots ${tournaments.combat ? tournaments.combat.spotsClass : 'spots-red'}`}>{tournaments.combat ? tournaments.combat.spotsText : '—'}</div>
@@ -131,7 +131,7 @@ function Join() {
               <div className="block-label">Number of Tickets</div>
               <div className="ticket-wrap">
                 <div className="ticket-info">
-                  <div className="ticket-icon">🎟️</div>
+                  <div className="ticket-icon"></div>
                   <div>
                     <div className="ticket-label">Tickets</div>
                     <div className="ticket-sub">Entry per player · ${price} each</div>
@@ -160,7 +160,7 @@ function Join() {
             </div>
 
             <div className={`summary${sel ? ' show' : ''}`}>
-              <div className="summary-title">📋 Registration Summary</div>
+              <div className="summary-title">Registration Summary</div>
               <div className="summary-row"><span className="summary-key">Player</span><span className="summary-val">{username}</span></div>
               <div className="summary-row"><span className="summary-key">Tournament</span><span className="summary-val">{sel ? `${sel.emoji} ${sel.name}` : '—'}</span></div>
               <div className="summary-row"><span className="summary-key">Tickets</span><span className="summary-val">{count} ticket{count > 1 ? 's' : ''}</span></div>
@@ -170,26 +170,26 @@ function Join() {
               </div>
             </div>
 
-            <button className="btn-submit" type="submit">🏆 &nbsp; Submit &amp; Join</button>
+            <button className="btn-submit" type="submit">Submit &amp; Join</button>
           </form>
         </div>
       </main>
 
       <div className={`success-overlay${showSuccess ? ' show' : ''}`}>
         <div className="success-box">
-          <div className="success-icon">🎉</div>
+          <div className="success-icon"></div>
           <div className="success-title">You're In!</div>
           <div className="success-sub">
             {sel && (
               <>
                 <strong>{username}</strong> has been registered!<br /><br />
                 {sel.emoji} {sel.name}<br />
-                🎟️ {count} Ticket{count > 1 ? 's' : ''} · <strong style={{ color: 'var(--gold)' }}>${total}</strong><br /><br />
-                Good luck and may the best player win! 🏆
+                {count} Ticket{count > 1 ? 's' : ''} · <strong style={{ color: 'var(--gold)' }}>${total}</strong><br /><br />
+                Good luck and may the best player win!
               </>
             )}
           </div>
-          <button className="btn-close" onClick={() => setShowSuccess(false)}>Let's Go 🚀</button>
+          <button className="btn-close" onClick={() => setShowSuccess(false)}>Let's Go</button>
         </div>
       </div>
     </>

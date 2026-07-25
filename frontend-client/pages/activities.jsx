@@ -2,26 +2,27 @@ import { useEffect, useMemo, useState } from 'react'
 import Header from '../src/components/Header.jsx'
 import { useAuth } from '../src/auth.jsx'
 import { api } from './api.js'
+import { Icon, ICONS } from '../src/icons.jsx'
 import './activities.css'
 
 const REASONS = ['Change of plans', 'Double booking', 'Not available', 'Wrong date/time']
 
 const TYPE_META = {
-  'Ping Pong': { emoji: '🏓', cls: 'act-pp' },
-  'Billiard': { emoji: '🎱', cls: 'act-bil' },
-  'Baby Foot': { emoji: '⚽', cls: 'act-bf' },
-  'Reserve Bar': { emoji: '🥃', cls: 'act-bar' },
-  'Reserve Table': { emoji: '🍽️', cls: 'act-tbl' },
+  'Ping Pong': { icon: ICONS.ppIcon, cls: 'act-pp' },
+  'Billiard': { icon: ICONS.bilIcon, cls: 'act-bil' },
+  'Baby Foot': { icon: ICONS.bfIcon, cls: 'act-bf' },
+  'Reserve Bar': { icon: null, cls: 'act-bar' },
+  'Reserve Table': { icon: null, cls: 'act-tbl' },
 }
 
 function deriveActivity(b) {
   if (b.type === 'tournament') {
-    return { uid: b.id, type: b.activity, emoji: '🏆', cls: 'act-tour', ltn: 'Main Hall' }
+    return { uid: b.id, type: b.activity, icon: null, cls: 'act-tour', ltn: 'Main Hall' }
   }
   const [label, rest = ''] = b.activity.split(' – ')
   const ltn = rest.split(' · ')[0] || '—'
-  const meta = TYPE_META[label] || { emoji: '🎮', cls: 'act-pp' }
-  return { uid: b.id, type: label, emoji: meta.emoji, cls: meta.cls, ltn }
+  const meta = TYPE_META[label] || { icon: null, cls: 'act-pp' }
+  return { uid: b.id, type: label, icon: meta.icon, cls: meta.cls, ltn }
 }
 
 function formatDate(d) {
@@ -101,7 +102,7 @@ function Activities() {
     }
     setActivities((prev) => prev.filter((a) => a.id !== modalId))
     closeModal()
-    showToast(`🗑️ ${act.type} deleted – "${reason}"`)
+    showToast(`${act.type} deleted – "${reason}"`)
   }
 
   return (
@@ -119,37 +120,37 @@ function Activities() {
           </div>
           <div className="user-chip">
             <div className="user-dot"></div>
-            <div className="user-name">👤 {username}</div>
+            <div className="user-name">{username}</div>
           </div>
         </div>
 
         <div className="stats-row">
           <div className="stat-card">
-            <div className="stat-icon">📋</div>
+            <div className="stat-icon"></div>
             <div><div className="stat-val sv-all">{counts.all}</div><div className="stat-lbl">Total</div></div>
           </div>
           <div className="stat-card">
-            <div className="stat-icon">⏳</div>
+            <div className="stat-icon"></div>
             <div><div className="stat-val sv-pend">{counts.pending}</div><div className="stat-lbl">Pending</div></div>
           </div>
           <div className="stat-card">
-            <div className="stat-icon">✅</div>
+            <div className="stat-icon"></div>
             <div><div className="stat-val sv-acc">{counts.accepted}</div><div className="stat-lbl">Accepted</div></div>
           </div>
           <div className="stat-card">
-            <div className="stat-icon">❌</div>
+            <div className="stat-icon"></div>
             <div><div className="stat-val sv-rej">{counts.rejected}</div><div className="stat-lbl">Rejected</div></div>
           </div>
         </div>
 
         <div className="filters">
           <button className={`filter-btn${filter === 'all' ? ' active' : ''}`} onClick={() => setFilter('all')}>All</button>
-          <button className={`filter-btn f-pend${filter === 'pending' ? ' active' : ''}`} onClick={() => setFilter('pending')}>⏳ Pending</button>
-          <button className={`filter-btn f-acc${filter === 'accepted' ? ' active' : ''}`} onClick={() => setFilter('accepted')}>✅ Accepted</button>
-          <button className={`filter-btn f-rej${filter === 'rejected' ? ' active' : ''}`} onClick={() => setFilter('rejected')}>❌ Rejected</button>
+          <button className={`filter-btn f-pend${filter === 'pending' ? ' active' : ''}`} onClick={() => setFilter('pending')}>Pending</button>
+          <button className={`filter-btn f-acc${filter === 'accepted' ? ' active' : ''}`} onClick={() => setFilter('accepted')}>Accepted</button>
+          <button className={`filter-btn f-rej${filter === 'rejected' ? ' active' : ''}`} onClick={() => setFilter('rejected')}>Rejected</button>
           <div className="filter-spacer"></div>
           <div className="search-wrap">
-            <span className="search-icon">🔍</span>
+            <span className="search-icon"></span>
             <input className="search-input" type="text" placeholder="Search activities…" value={query} onChange={(e) => setQuery(e.target.value)} />
           </div>
         </div>
@@ -172,7 +173,7 @@ function Activities() {
                 {rows.map((a, i) => (
                   <tr key={a.id} style={{ animationDelay: `${i * 0.04}s` }}>
                     <td><span className="uid-badge">{a.uid}</span></td>
-                    <td><span className={`act-chip ${a.cls}`}>{a.emoji} {a.type}</span></td>
+                    <td><span className={`act-chip ${a.cls}`}>{a.icon && <Icon paths={a.icon} width="13" height="13" />}{a.type}</span></td>
                     <td className="date-cell">
                       <div className="date-main">{formatDate(a.date)}</div>
                       <div className="date-sub">{getDayName(a.date)}</div>
@@ -181,7 +182,7 @@ function Activities() {
                     <td><span className="ltn-badge">{a.ltn}</span></td>
                     <td>{statusBadge(a.status)}</td>
                     <td className="actions">
-                      <button className="btn-delete" onClick={() => openModal(a.id)}>🗑️ Delete</button>
+                      <button className="btn-delete" onClick={() => openModal(a.id)}>Delete</button>
                     </td>
                   </tr>
                 ))}
@@ -189,7 +190,7 @@ function Activities() {
             </table>
           ) : (
             <div className="empty-state">
-              <span>🎭</span>
+              <span></span>
               <p>No activities found.</p>
             </div>
           )}
@@ -198,10 +199,10 @@ function Activities() {
 
       <div className={`modal-overlay${modalId !== null ? ' show' : ''}`} onClick={(e) => { if (e.target === e.currentTarget) closeModal() }}>
         <div className="modal-box">
-          <div className="modal-icon">🗑️</div>
+          <div className="modal-icon"></div>
           <div className="modal-title">Delete Activity</div>
           <div className="modal-sub">
-            Are you sure you want to delete <strong>{modalActivity ? `[${modalActivity.uid}] ${modalActivity.emoji} ${modalActivity.type} – ${formatDate(modalActivity.date)}` : ''}</strong>?
+            Are you sure you want to delete <strong>{modalActivity ? `[${modalActivity.uid}] ${modalActivity.type} – ${formatDate(modalActivity.date)}` : ''}</strong>?
           </div>
 
           <span className="reason-label">Why do you want to cancel?</span>
@@ -222,7 +223,7 @@ function Activities() {
 
           <div className="modal-actions">
             <button className="btn-cancel" onClick={closeModal}>Cancel</button>
-            <button className="btn-confirm-del" onClick={confirmDelete}>🗑️ Delete</button>
+            <button className="btn-confirm-del" onClick={confirmDelete}>Delete</button>
           </div>
         </div>
       </div>

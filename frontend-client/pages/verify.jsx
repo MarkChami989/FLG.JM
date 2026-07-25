@@ -10,6 +10,7 @@ function Verify() {
   const [otp, setOtp] = useState(Array(6).fill(''))
   const [status, setStatus] = useState('idle') // idle | error | success
   const [errorMsg, setErrorMsg] = useState('')
+  const [warningMsg, setWarningMsg] = useState(location.state?.warning || '')
   const [countdown, setCountdown] = useState(0)
   const inputRefs = useRef([])
 
@@ -79,14 +80,15 @@ function Verify() {
       return
     }
     setStatus('success')
-    setTimeout(() => navigate('/login'), 800)
+    setTimeout(() => navigate('/face-setup', { state: { email } }), 800)
   }
 
   async function startResend(e) {
     e.preventDefault()
     if (countdown > 0) return
     try {
-      await api.auth.resend({ email })
+      const result = await api.auth.resend({ email })
+      setWarningMsg(result.emailWarning || '')
       setCountdown(30)
     } catch (err) {
       setErrorMsg(err.message || 'Could not resend code')
@@ -141,7 +143,7 @@ function Verify() {
 
           <div className="divider-line"></div>
 
-          <div className="verify-ring">✉️</div>
+          <div className="verify-ring"></div>
 
           <div className="verify-title">Verify Your Account</div>
           <div className="verify-sub">
@@ -150,6 +152,9 @@ function Verify() {
           </div>
           {status === 'error' && errorMsg && (
             <div style={{ color: '#f87171', fontSize: 13, textAlign: 'center', marginTop: 4 }}>{errorMsg}</div>
+          )}
+          {warningMsg && (
+            <div style={{ color: '#facc15', fontSize: 13, textAlign: 'center', marginTop: 4 }}>{warningMsg}</div>
           )}
 
           <div className="otp-wrap">
@@ -171,7 +176,7 @@ function Verify() {
             ))}
           </div>
 
-          <button className="btn-verify" onClick={submitOTP}>⚡ &nbsp;Verify</button>
+          <button className="btn-verify" onClick={submitOTP}>Verify</button>
 
           <div className="resend-wrap">
             Didn't receive the code?

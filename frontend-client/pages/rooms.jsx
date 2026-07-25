@@ -34,7 +34,7 @@ function Rooms() {
                     <div className="screen-content">
                       <div className="screen-scanline"></div>
                       <div className="screen-glow"></div>
-                      <div className="screen-game-icon">🖥️</div>
+                      <div className="screen-game-icon"></div>
                       <div className="screen-label">PC GAMING</div>
                     </div>
                     <div className="monitor-stand"></div>
@@ -51,18 +51,18 @@ function Rooms() {
                     <div className="led led-c"></div>
                     <div className="led led-b" style={{ animationDelay: '1.2s' }}></div>
                   </div>
-                  <div className="headset">🎧</div>
+                  <div className="headset"></div>
                 </div>
               </div>
             </div>
 
             <div className="card-body">
-              <div className="card-title">💻 PC Room</div>
+              <div className="card-title">PC Room</div>
               <div className="card-desc">Ultra-high performance rigs with RTX 4090, 4K monitors, mechanical keyboards and surround sound. Built for competitive gaming and immersive single-player experiences.</div>
               <div>
-                <span className="badge badge-blue">⚡ RTX 4090</span>
-                <span className="badge badge-blue">🖥️ 4K Display</span>
-                <span className="badge badge-green">✅ Available</span>
+                <span className="badge badge-blue">RTX 4090</span>
+                <span className="badge badge-blue">4K Display</span>
+                <span className="badge badge-green">Available</span>
               </div>
               <button className="btn-book" onClick={() => navigate('/pcroom')}>Book Now</button>
             </div>
@@ -80,7 +80,7 @@ function Rooms() {
                     <div className="tv-screen-content">
                       <div className="tv-scanline"></div>
                       <div className="tv-glow-inner"></div>
-                      <div className="tv-game-icon">🎮</div>
+                      <div className="tv-game-icon"></div>
                       <div className="tv-label">PS5 GAMING</div>
                     </div>
                     <div className="tv-stand"></div>
@@ -91,19 +91,19 @@ function Rooms() {
                   <div className="ps5-console">
                     <div className="disc-slot"></div>
                   </div>
-                  <div className="ps-ctrl">🕹️</div>
-                  <div style={{ fontSize: 20, filter: 'drop-shadow(0 0 8px rgba(59,130,246,.6))' }}>🎯</div>
+                  <div className="ps-ctrl"></div>
+                  <div style={{ fontSize: 20, filter: 'drop-shadow(0 0 8px rgba(59,130,246,.6))' }}></div>
                 </div>
               </div>
             </div>
 
             <div className="card-body">
-              <div className="card-title">🎮 PS Room</div>
+              <div className="card-title">PS Room</div>
               <div className="card-desc">PlayStation 5 stations with 4K OLED TVs, DualSense haptic controllers and premium surround sound. Enjoy the latest exclusives and multiplayer sessions.</div>
               <div>
-                <span className="badge badge-pink">🎮 PS5</span>
-                <span className="badge badge-pink">📺 4K OLED</span>
-                <span className="badge badge-green">✅ Available</span>
+                <span className="badge badge-pink">PS5</span>
+                <span className="badge badge-pink">4K OLED</span>
+                <span className="badge badge-green">Available</span>
               </div>
               <button className="btn-book" style={{ background: 'linear-gradient(135deg,#1d4ed8,#3b82f6)' }} onClick={() => navigate('/psroom')}>Book Now</button>
             </div>
@@ -124,22 +124,22 @@ function Rooms() {
                   <div className="mini-tv-screen">
                     <div className="movie-scanline"></div>
                     <div className="movie-glow"></div>
-                    <div className="movie-icon">🍿</div>
+                    <div className="movie-icon"></div>
                     <div className="movie-label">VIP STANDARD</div>
                   </div>
                   <div className="mini-tv-stand"></div>
                   <div className="mini-tv-base"></div>
                 </div>
               </div>
-              <div className="vip-badge vip-badge-green">👑 VIP</div>
+              <div className="vip-badge vip-badge-green">VIP</div>
             </div>
 
             <div className="card-body">
               <div className="card-title" style={{ fontSize: 18 }}>VIP Standard</div>
               <div className="card-desc">Private room with dedicated PC or PS5, mini-bar, lounge seating, and personal service. Perfect for a premium solo or duo gaming session.</div>
               <div>
-                <span className="badge badge-green">🔒 Private</span>
-                <span className="badge badge-green">🥤 Mini Bar</span>
+                <span className="badge badge-green">Private</span>
+                <span className="badge badge-green">Mini Bar</span>
               </div>
               <button className="btn-book" style={{ background: 'linear-gradient(135deg,#059669,#10b981)' }}>Book VIP</button>
             </div>
@@ -158,22 +158,22 @@ function Rooms() {
                   <div className="mini-tv-screen">
                     <div className="movie-scanline"></div>
                     <div className="movie-glow"></div>
-                    <div className="movie-icon">⚡</div>
+                    <div className="movie-icon"></div>
                     <div className="movie-label">VIP ELITE</div>
                   </div>
                   <div className="mini-tv-stand"></div>
                   <div className="mini-tv-base"></div>
                 </div>
               </div>
-              <div className="vip-badge vip-badge-blue">💠 ELITE</div>
+              <div className="vip-badge vip-badge-blue">ELITE</div>
             </div>
 
             <div className="card-body">
               <div className="card-title" style={{ fontSize: 18 }}>VIP Elite</div>
               <div className="card-desc">Full private lounge with dual-screen setup, gourmet snacks, priority booking, and a dedicated gaming host for groups up to 4 players.</div>
               <div>
-                <span className="badge badge-blue">👥 4 Players</span>
-                <span className="badge badge-blue">🎧 Host</span>
+                <span className="badge badge-blue">4 Players</span>
+                <span className="badge badge-blue">Host</span>
               </div>
               <button className="btn-book" style={{ background: 'linear-gradient(135deg,#1d4ed8,#3b82f6)' }}>Book Elite</button>
             </div>
@@ -192,22 +192,22 @@ function Rooms() {
                   <div className="mini-tv-screen">
                     <div className="movie-scanline"></div>
                     <div className="movie-glow"></div>
-                    <div className="movie-icon">👑</div>
+                    <div className="movie-icon"></div>
                     <div className="movie-label">VIP ROYAL</div>
                   </div>
                   <div className="mini-tv-stand"></div>
                   <div className="mini-tv-base"></div>
                 </div>
               </div>
-              <div className="vip-badge vip-badge-gold">🏆 ROYAL</div>
+              <div className="vip-badge vip-badge-gold">ROYAL</div>
             </div>
 
             <div className="card-body">
               <div className="card-title" style={{ fontSize: 18 }}>VIP Royal</div>
               <div className="card-desc">The ultimate experience — cinema-size screen, full bar service, cigar selection, luxury seating and a private tournament setup for up to 8 players.</div>
               <div>
-                <span className="badge badge-gold">🏆 Tournament</span>
-                <span className="badge badge-gold">🥃 Full Bar</span>
+                <span className="badge badge-gold">Tournament</span>
+                <span className="badge badge-gold">Full Bar</span>
               </div>
               <button className="btn-book" style={{ background: 'linear-gradient(135deg,#b45309,#f59e0b)', color: '#1a0a00' }}>Book Royal</button>
             </div>

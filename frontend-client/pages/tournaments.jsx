@@ -58,7 +58,7 @@ function Tournaments() {
                       <img src={t.image} alt={t.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     ) : (
                       <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(145deg,#0a0512,#150a24,#0a0512)' }}>
-                        <span style={{ fontSize: 52, filter: `drop-shadow(0 0 14px ${a.glow})` }}>🏆</span>
+                        <span style={{ fontSize: 52, filter: `drop-shadow(0 0 14px ${a.glow})` }}></span>
                       </div>
                     )}
                   </div>
@@ -68,7 +68,7 @@ function Tournaments() {
                       <div className="live-dot" style={{ background: a.var }}></div>
                       {isFull ? 'FULL' : 'LIVE NOW'}
                     </div>
-                    <div className="t-name">🏆 {t.name}</div>
+                    <div className="t-name">{t.name}</div>
                     <div className="t-desc">{t.description || 'Compete against the best. Join now to secure your spot.'}</div>
 
                     <div className="stats">
@@ -94,7 +94,7 @@ function Tournaments() {
                     </div>
 
                     <div className="prize-row" style={{ background: a.chipBg, borderColor: a.border }}>
-                      <div className="prize-icon">💵</div>
+                      <div className="prize-icon"></div>
                       <div className="prize-info">
                         <div className="prize-lbl">Entry Cost</div>
                         <div className="prize-val" style={{ color: a.var }}>${t.cost}</div>
@@ -107,7 +107,7 @@ function Tournaments() {
                       onClick={() => navigate('/join')}
                       disabled={isFull}
                     >
-                      🏆 &nbsp;{isFull ? 'FULL' : 'JOIN NOW'}
+                      {isFull ? 'FULL' : 'JOIN NOW'}
                     </button>
                   </div>
                 </div>

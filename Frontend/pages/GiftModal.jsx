@@ -14,11 +14,11 @@ function GiftModal({ user, onClose, onSend }) {
     <div className={`gift-modal${user ? ' show' : ''}`} onClick={(e) => { if (e.target === e.currentTarget) onClose() }}>
       {user && (
         <div className="gift-modal-box">
-          <div className="gift-modal-title">🎁 Send Message</div>
+          <div className="gift-modal-title">Send Message</div>
           <div className="gift-modal-sub">To: {user}</div>
           <textarea
             className="gift-textarea"
-            placeholder="e.g. Amazing performance! You crushed it. Here's your reward 🏆"
+            placeholder="e.g. Amazing performance! You crushed it. Here's your reward"
             value={msg}
             onChange={(e) => setMsg(e.target.value)}
             style={errored ? { borderColor: 'var(--red)' } : undefined}

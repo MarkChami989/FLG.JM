@@ -76,7 +76,7 @@ function StaffPanel() {
 
   return (
     <>
-      <div className="panel-head"><h2>🛡️ Staff Management</h2><button className="btn small" onClick={() => setShowAdd(true)}>+ Add Staff</button></div>
+      <div className="panel-head"><h2>Staff Management</h2><button className="btn small" onClick={() => setShowAdd(true)}>+ Add Staff</button></div>
       <div className="table-scroll">
       <table>
         <thead><tr><th>Name</th><th>Username</th><th>Email</th><th>Phone</th><th>Status</th><th>Actions</th></tr></thead>
@@ -105,7 +105,7 @@ function StaffPanel() {
       <div className={`gift-modal${showAdd ? ' show' : ''}`} onClick={(e) => { if (e.target === e.currentTarget) closeAdd() }}>
         {showAdd && (
           <div className="gift-modal-box" style={{ maxWidth: 460 }}>
-            <div className="gift-modal-title">➕ Add Staff</div>
+            <div className="gift-modal-title">Add Staff</div>
             <div className="gift-modal-sub">Creates real login credentials for this staff member</div>
             <form onSubmit={handleSubmit} style={{ display: 'grid', gap: 10 }}>
               <input className="r-modal-input" placeholder="Full name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
@@ -134,7 +134,7 @@ function StaffPanel() {
       <div className={`gift-modal${viewing ? ' show' : ''}`} onClick={(e) => { if (e.target === e.currentTarget) setViewing(null) }}>
         {viewing && (
           <div className="gift-modal-box">
-            <div className="gift-modal-title">🪪 {viewing.name}'s IDs</div>
+            <div className="gift-modal-title">{viewing.name}'s IDs</div>
             <div style={{ display: 'grid', gap: 10 }}>
               <img src={viewing.frontId} alt="Front ID" style={{ width: '100%', borderRadius: 10 }} />
               <img src={viewing.backId} alt="Back ID" style={{ width: '100%', borderRadius: 10 }} />

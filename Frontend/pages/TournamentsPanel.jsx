@@ -86,7 +86,7 @@ function TournamentsPanel() {
 
   return (
     <>
-      <div className="panel-head"><h2>🏆 Tournaments</h2></div>
+      <div className="panel-head"><h2>Tournaments</h2></div>
 
       {screen === 'main' && (
         <div className="t-grid">
@@ -232,7 +232,7 @@ function TournamentsPanel() {
           ) : tDB.map((tt) => (
             <div key={tt.id} onClick={() => goto('leaderboard', tt.id)} style={joinRowStyle}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                <span style={{ fontSize: 18 }}>🏆</span>
+                <Icon paths={ICONS.tournaments} width="18" height="18" stroke="#a78bfa" />
                 <div>
                   <div style={{ fontFamily: "'Rajdhani',sans-serif", fontSize: 14, fontWeight: 600, letterSpacing: 1 }}>{tt.name}</div>
                   <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginTop: 2 }}>{tt.clients.length} participants</div>
@@ -259,13 +259,13 @@ function TournamentsPanel() {
                 <div style={{ fontFamily: "'Rajdhani',sans-serif", fontSize: 10, letterSpacing: 2, color: 'rgba(255,255,255,0.25)', textTransform: 'uppercase', marginTop: 3 }}>{t.clients.length} players · Last → First</div>
               </div>
               <div style={{ display: 'flex', gap: 14, fontSize: 12 }}>
-                <span>🥇 Top 1</span><span>🥈 Top 2</span><span>🥉 Top 3</span>
+                <span>Top 1</span><span>Top 2</span><span>Top 3</span>
               </div>
             </div>
             <div style={{ maxHeight: 420, overflowY: 'auto', paddingRight: 4 }}>
               {[...t.clients].sort((a, b) => b.rank - a.rank).map((c) => {
                 const topClass = c.rank === 1 ? 'rank-top1' : c.rank === 2 ? 'rank-top2' : c.rank === 3 ? 'rank-top3' : ''
-                const crownEmoji = c.rank === 1 ? '🥇' : c.rank === 2 ? '🥈' : c.rank === 3 ? '🥉' : ''
+                const crownColor = c.rank === 1 ? '#fbbf24' : c.rank === 2 ? '#94a3b8' : c.rank === 3 ? '#cd7c3f' : null
                 const avatarStyle =
                   c.rank === 1 ? { background: 'rgba(245,158,11,0.2)', border: '1px solid rgba(245,158,11,0.4)', color: '#fbbf24' } :
                   c.rank === 2 ? { background: 'rgba(148,163,184,0.15)', border: '1px solid rgba(148,163,184,0.3)', color: '#94a3b8' } :
@@ -273,7 +273,7 @@ function TournamentsPanel() {
                   { background: 'rgba(124,58,237,0.12)', border: '1px solid rgba(124,58,237,0.2)', color: '#a78bfa' }
                 return (
                   <div key={c.uid} className={`rank-row ${topClass}`}>
-                    <span className="crown">{crownEmoji}</span>
+                    <span className="crown">{crownColor && <Icon paths={ICONS.crownIcon} width="16" height="16" stroke={crownColor} />}</span>
                     <div className="rank-avatar" style={avatarStyle}>{c.user.charAt(0)}</div>
                     <div className="rank-info">
                       <div className="rank-name">{c.user}</div>
@@ -291,7 +291,7 @@ function TournamentsPanel() {
                         onClick={(e) => e.target.select()}
                       />
                     </div>
-                    <button className="gift-btn" onClick={() => setGiftUser(c.user)}>🎁 Send Gift</button>
+                    <button className="gift-btn" onClick={() => setGiftUser(c.user)}>Send Gift</button>
                   </div>
                 )
               })}

@@ -33,14 +33,14 @@ function Register() {
     setError('')
     setSubmitting(true)
     try {
-      await api.auth.register({
+      const result = await api.auth.register({
         username,
         email,
         password,
         phone: phoneNum ? `${phoneCode} ${phoneNum}` : '',
         dob,
       })
-      navigate('/verify', { state: { email } })
+      navigate('/verify', { state: { email, warning: result.emailWarning || null } })
     } catch (err) {
       setError(err.message || 'Registration failed')
     } finally {

@@ -15,7 +15,7 @@ function ReportsPanel() {
 
   return (
     <>
-      <div className="panel-head"><h2>📊 Reports &amp; Analytics</h2><button className="btn ghost small">Export CSV</button></div>
+      <div className="panel-head"><h2>Reports &amp; Analytics</h2><button className="btn ghost small">Export CSV</button></div>
       <div className="stat-grid">
         {stats.map((s) => (
           <div className="stat-card" key={s.lbl}>

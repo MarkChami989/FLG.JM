@@ -6,6 +6,8 @@ const { connect } = require('./mongo');
 const bookingsRouter = require('./routes/bookings');
 const tournamentsRouter = require('./routes/tournaments');
 const resourcesRouter = require('./routes/resources');
+const roomRatesRouter = require('./routes/roomRates');
+const orderRatesRouter = require('./routes/orderRates');
 const staffRouter = require('./routes/staff');
 const staffAuthRouter = require('./routes/staffAuth');
 const reportsRouter = require('./routes/reports');
@@ -25,6 +27,8 @@ app.get('/api/health', (req, res) => {
 app.use('/api/bookings', bookingsRouter);
 app.use('/api/tournaments', tournamentsRouter);
 app.use('/api/resources', resourcesRouter);
+app.use('/api/room-rates', roomRatesRouter);
+app.use('/api/order-rates', orderRatesRouter);
 app.use('/api/staff', staffRouter);
 app.use('/api/staff-auth', staffAuthRouter);
 app.use('/api/reports', reportsRouter);

@@ -32,7 +32,7 @@ function OrdersPanel() {
   return (
     <>
       <div className="panel-head">
-        <h2>📋 Received Orders</h2>
+        <h2>Received Orders</h2>
         <div style={{ display: 'flex', gap: 10 }}>
           <button className="btn ghost small">Filter</button>
           <button className="btn small">Export</button>

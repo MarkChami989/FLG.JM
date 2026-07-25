@@ -5,6 +5,11 @@ import Home from '../pages/Home.jsx'
 import Login from '../pages/login.jsx'
 import Register from '../pages/register.jsx'
 import Verify from '../pages/verify.jsx'
+import FaceSetup from '../pages/facesetup.jsx'
+import FaceLogin from '../pages/facelogin.jsx'
+import ForgotPassword from '../pages/forgot-password.jsx'
+import ResetVerify from '../pages/reset-verify.jsx'
+import ResetPassword from '../pages/reset-password.jsx'
 import Activities from '../pages/activities.jsx'
 import Babyfoot from '../pages/babyfoot.jsx'
 import Billiard from '../pages/billiard.jsx'
@@ -27,6 +32,11 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/verify" element={<Verify />} />
+          <Route path="/face-setup" element={<FaceSetup />} />
+          <Route path="/face-login" element={<FaceLogin />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-verify" element={<ResetVerify />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/activities" element={<RequireAuth><Activities /></RequireAuth>} />
           <Route path="/babyfoot" element={<RequireAuth><Babyfoot /></RequireAuth>} />
           <Route path="/billiard" element={<RequireAuth><Billiard /></RequireAuth>} />

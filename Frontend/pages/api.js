@@ -37,6 +37,14 @@ export const api = {
     updateSlot: (id, slotId, data) => request(`/resources/${id}/slots/${slotId}`, { method: 'PATCH', body: JSON.stringify(data) }),
     deleteSlot: (id, slotId) => request(`/resources/${id}/slots/${slotId}`, { method: 'DELETE' }),
   },
+  roomRates: {
+    list: () => request('/room-rates'),
+    set: (category, data) => request(`/room-rates/${category}`, { method: 'PUT', body: JSON.stringify(data) }),
+  },
+  orderRates: {
+    list: () => request('/order-rates'),
+    set: (group, data) => request(`/order-rates/${group}`, { method: 'PUT', body: JSON.stringify(data) }),
+  },
   staff: {
     list: () => request('/staff'),
     get: (id) => request(`/staff/${id}`),

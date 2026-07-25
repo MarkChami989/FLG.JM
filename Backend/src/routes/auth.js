@@ -1,7 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const db = require('../db');
-const { sendVerificationEmail } = require('../mailer');
+const { sendVerificationEmail, sendPasswordResetEmail } = require('../mailer');
 
 const router = express.Router();
 const OTP_TTL_MS = 10 * 60 * 1000;
@@ -11,12 +11,20 @@ function genOtp() {
 }
 
 function publicClient(c) {
-  const { passwordHash, otpCode, otpExpiresAt, _id, ...pub } = c;
+  const { passwordHash, otpCode, otpExpiresAt, faceDescriptor, _id, ...pub } = c;
   return pub;
 }
 
 function byEmailCaseInsensitive(email) {
   return { $expr: { $eq: [{ $toLower: '$email' }, email.toLowerCase()] } };
+}
+
+const FACE_MATCH_THRESHOLD = 0.5;
+
+function euclideanDistance(a, b) {
+  let sum = 0;
+  for (let i = 0; i < a.length; i++) sum += (a[i] - b[i]) ** 2;
+  return Math.sqrt(sum);
 }
 
 router.post('/register', async (req, res) => {
@@ -42,13 +50,14 @@ router.post('/register', async (req, res) => {
   };
   await db.clients().insertOne(client);
 
+  let emailWarning = null;
   try {
     await sendVerificationEmail(email, otpCode);
   } catch (e) {
-    return res.status(502).json({ error: 'Account created but failed to send verification email', detail: e.message });
+    emailWarning = 'Account created, but the verification email could not be sent. Use "Resend code" on the next screen.';
   }
 
-  res.status(201).json(publicClient(client));
+  res.status(201).json({ ...publicClient(client), emailWarning });
 });
 
 router.post('/resend', async (req, res) => {
@@ -62,13 +71,14 @@ router.post('/resend', async (req, res) => {
   const otpExpiresAt = Date.now() + OTP_TTL_MS;
   await db.clients().updateOne({ id: client.id }, { $set: { otpCode, otpExpiresAt } });
 
+  let emailWarning = null;
   try {
     await sendVerificationEmail(client.email, otpCode);
   } catch (e) {
-    return res.status(502).json({ error: 'Failed to send verification email', detail: e.message });
+    emailWarning = 'Failed to send verification email. Please try again shortly.';
   }
 
-  res.json({ ok: true });
+  res.json({ ok: true, emailWarning });
 });
 
 router.post('/verify', async (req, res) => {
@@ -88,6 +98,100 @@ router.post('/verify', async (req, res) => {
   await db.clients().updateOne({ id: client.id }, { $set: update });
 
   res.json(publicClient({ ...client, ...update }));
+});
+
+router.post('/face/enroll', async (req, res) => {
+  const { email, descriptor } = req.body;
+  if (!email || !Array.isArray(descriptor) || descriptor.length !== 128) {
+    return res.status(400).json({ error: 'email and a 128-value face descriptor are required' });
+  }
+  const client = await db.clients().findOne(byEmailCaseInsensitive(email));
+  if (!client) return res.status(404).json({ error: 'Account not found' });
+
+  await db.clients().updateOne({ id: client.id }, { $set: { faceDescriptor: descriptor } });
+  res.json({ ok: true });
+});
+
+router.post('/face/login', async (req, res) => {
+  const { descriptor } = req.body;
+  if (!Array.isArray(descriptor) || descriptor.length !== 128) {
+    return res.status(400).json({ error: 'a 128-value face descriptor is required' });
+  }
+
+  const candidates = await db.clients().find({ faceDescriptor: { $exists: true } }).toArray();
+  let best = null;
+  let bestDistance = Infinity;
+  for (const c of candidates) {
+    const distance = euclideanDistance(c.faceDescriptor, descriptor);
+    if (distance < bestDistance) {
+      bestDistance = distance;
+      best = c;
+    }
+  }
+
+  if (!best || bestDistance > FACE_MATCH_THRESHOLD) {
+    return res.status(401).json({ error: 'Face not recognized' });
+  }
+  if (!best.verified) return res.status(403).json({ error: 'Account not verified' });
+
+  res.json(publicClient(best));
+});
+
+router.post('/forgot', async (req, res) => {
+  const { email } = req.body;
+  if (!email) return res.status(400).json({ error: 'email is required' });
+  const client = await db.clients().findOne(byEmailCaseInsensitive(email));
+  if (!client) return res.status(404).json({ error: 'No account found with this email' });
+
+  const resetCode = genOtp();
+  const resetCodeExpiresAt = Date.now() + OTP_TTL_MS;
+  await db.clients().updateOne({ id: client.id }, { $set: { resetCode, resetCodeExpiresAt } });
+
+  try {
+    await sendPasswordResetEmail(client.email, resetCode);
+  } catch (e) {
+    return res.status(502).json({ error: 'Could not send reset email', detail: e.message });
+  }
+
+  res.json({ ok: true });
+});
+
+router.post('/forgot/verify', async (req, res) => {
+  const { email, code } = req.body;
+  if (!email || !code) return res.status(400).json({ error: 'email and code are required' });
+  const client = await db.clients().findOne(byEmailCaseInsensitive(email));
+  if (!client) return res.status(404).json({ error: 'No account found with this email' });
+  if (!client.resetCode || Date.now() > client.resetCodeExpiresAt) {
+    return res.status(400).json({ error: 'Code expired, please request a new one' });
+  }
+  if (client.resetCode !== String(code)) {
+    return res.status(400).json({ error: 'Invalid code' });
+  }
+
+  res.json({ ok: true });
+});
+
+router.post('/forgot/reset', async (req, res) => {
+  const { email, code, password } = req.body;
+  if (!email || !code || !password) {
+    return res.status(400).json({ error: 'email, code and password are required' });
+  }
+  const client = await db.clients().findOne(byEmailCaseInsensitive(email));
+  if (!client) return res.status(404).json({ error: 'No account found with this email' });
+  if (!client.resetCode || Date.now() > client.resetCodeExpiresAt) {
+    return res.status(400).json({ error: 'Code expired, please request a new one' });
+  }
+  if (client.resetCode !== String(code)) {
+    return res.status(400).json({ error: 'Invalid code' });
+  }
+
+  const passwordHash = await bcrypt.hash(password, 10);
+  await db.clients().updateOne(
+    { id: client.id },
+    { $set: { passwordHash }, $unset: { resetCode: '', resetCodeExpiresAt: '' } }
+  );
+
+  res.json({ ok: true });
 });
 
 router.post('/login', async (req, res) => {

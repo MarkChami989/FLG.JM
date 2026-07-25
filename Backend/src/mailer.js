@@ -32,4 +32,26 @@ async function sendVerificationEmail(to, code) {
   });
 }
 
-module.exports = { sendVerificationEmail };
+async function sendPasswordResetEmail(to, code) {
+  if (!process.env.EMAIL_APP_PASSWORD) {
+    console.log(`[password reset code] ${to} -> ${code}`);
+    return { skipped: true };
+  }
+
+  return transporter.sendMail({
+    from: `"Fusion Luxury Game" <${SENDER_EMAIL}>`,
+    to,
+    subject: 'Your password reset code',
+    text: `Your Fusion Luxury Game password reset code is: ${code}\n\nThis code expires in 10 minutes. If you didn't request this, you can ignore this email.`,
+    html: `
+      <div style="font-family:Arial,sans-serif;max-width:420px;margin:auto;padding:24px;background:#0f0a1a;color:#f4f0ff;border-radius:12px;">
+        <h2 style="margin:0 0 12px;color:#f0abfc;">Fusion Luxury Game</h2>
+        <p>Your password reset code is:</p>
+        <div style="font-size:32px;font-weight:bold;letter-spacing:8px;color:#c084fc;margin:16px 0;">${code}</div>
+        <p style="color:#a3a3a3;font-size:13px;">This code expires in 10 minutes. If you didn't request this, you can ignore this email.</p>
+      </div>
+    `,
+  });
+}
+
+module.exports = { sendVerificationEmail, sendPasswordResetEmail };

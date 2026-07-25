@@ -8,14 +8,14 @@ const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 
 const DAYS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
 const BAR_IDS = { 'Bar 1': 'bar-1', 'Bar 2': 'bar-2', 'Bar 3': 'bar-3' }
 const BARS = [
-  { name: 'Bar 1', emoji: '🍸', sub: 'Main Lounge' },
-  { name: 'Bar 2', emoji: '🥃', sub: 'Whiskey Corner' },
-  { name: 'Bar 3', emoji: '🥂', sub: 'Champagne Room' },
+  { name: 'Bar 1', emoji: '', sub: 'Main Lounge' },
+  { name: 'Bar 2', emoji: '', sub: 'Whiskey Corner' },
+  { name: 'Bar 3', emoji: '', sub: 'Champagne Room' },
 ]
 const ORDERS = [
-  { key: 'low', name: 'Low Order', price: '$80', pay: 80, icon: '🥂', sub: 'Light drinks & snacks' },
-  { key: 'med', name: 'Medium Order', price: '$160', pay: 160, icon: '🥃', sub: 'Premium selection' },
-  { key: 'high', name: 'High Order', price: '$300', pay: 300, icon: '👑', sub: 'Full luxury package' },
+  { key: 'low', name: 'Low Order', price: '$80', pay: 80, icon: '', sub: 'Light drinks & snacks' },
+  { key: 'med', name: 'Medium Order', price: '$160', pay: 160, icon: '', sub: 'Premium selection' },
+  { key: 'high', name: 'High Order', price: '$300', pay: 300, icon: '', sub: 'Full luxury package' },
 ]
 
 function fmtKey(d) {
@@ -39,6 +39,18 @@ function Reserve() {
   const [takenHours, setTakenHours] = useState(new Set())
   const [showSuccess, setShowSuccess] = useState(false)
   const [confirmedDtStr, setConfirmedDtStr] = useState('—')
+  const [orders, setOrders] = useState(ORDERS)
+
+  useEffect(() => {
+    api.orderRates.list().then((list) => {
+      const rate = list.find((r) => r.group === 'bar')
+      if (!rate) return
+      setOrders(ORDERS.map((o) => {
+        const pay = rate[o.key]
+        return pay != null ? { ...o, pay, price: `$${pay}` } : o
+      }))
+    })
+  }, [])
 
   useEffect(() => {
     function onUp() { setDragMode(null) }
@@ -146,7 +158,7 @@ function Reserve() {
           <div className="corner bl"></div><div className="corner br"></div>
 
           <div className="form-header">
-            <div className="form-icon">🥃</div>
+            <div className="form-icon"></div>
             <div className="form-tag">Cigar Lounge</div>
             <div className="form-title">Reserve Your Bar</div>
           </div>
@@ -157,7 +169,7 @@ function Reserve() {
               <div className="block-label">Logged In As</div>
               <div className="input-wrap">
                 <input type="text" value={username} readOnly style={{ cursor: 'default', color: 'rgba(245,158,11,.9)', fontWeight: 600, paddingRight: 130 }} />
-                <span className="input-icon">👤</span>
+                <span className="input-icon"></span>
                 <div className="logged-badge"><div className="logged-dot"></div> Logged In</div>
               </div>
             </div>
@@ -179,7 +191,7 @@ function Reserve() {
             <div className="block">
               <div className="block-label">Order Level</div>
               <div className="order-grid">
-                {ORDERS.map((o) => (
+                {orders.map((o) => (
                   <div key={o.key} className={`order-option order-${o.key}${selOrder?.key === o.key ? ' selected' : ''}`} onClick={() => setSelOrder(o)}>
                     <div className="order-check">✓</div>
                     <span className="order-icon">{o.icon}</span>
@@ -225,9 +237,9 @@ function Reserve() {
             <div className="block">
               <div className="block-label">Select Time Slots</div>
               {!selBar ? (
-                <div className="no-date-notice"><span>🍸</span>Please choose a bar first</div>
+                <div className="no-date-notice"><span></span>Please choose a bar first</div>
               ) : !selDateKey ? (
-                <div className="no-date-notice"><span>📅</span>Please pick a date first</div>
+                <div className="no-date-notice"><span></span>Please pick a date first</div>
               ) : (
                 <>
                   <div className="time-legend">
@@ -258,29 +270,29 @@ function Reserve() {
             </div>
 
             <div className={`summary${showSummary ? ' show' : ''}`}>
-              <div className="summary-title">📋 Reservation Summary</div>
+              <div className="summary-title">Reservation Summary</div>
               <div className="summary-row"><span className="summary-key">Guest</span><span className="summary-val">{username}</span></div>
               <div className="summary-row"><span className="summary-key">Location</span><span className="summary-val">{selBar || '—'}</span></div>
               <div className="summary-row"><span className="summary-key">Order Level</span><span className="summary-val">{selOrder ? selOrder.name : '—'}</span></div>
               <div className="summary-row"><span className="summary-key">Date &amp; Time</span><span className="summary-val">{dtStr}</span></div>
             </div>
 
-            <button className="btn-submit" type="submit">🥃 &nbsp; Submit Order</button>
+            <button className="btn-submit" type="submit">Submit Order</button>
           </form>
         </div>
       </main>
 
       <div className={`success-overlay${showSuccess ? ' show' : ''}`}>
         <div className="success-box">
-          <div className="success-icon">🎉</div>
+          <div className="success-icon"></div>
           <div className="success-title">Reservation Confirmed!</div>
           <div className="success-sub">
             {selBar && selOrder ? (
               <>
                 Your reservation is confirmed!<br /><br />
-                🥃 {selBar} &nbsp;·&nbsp; {selOrder.name} ({selOrder.price})<br />
-                📅 {confirmedDtStr}<br /><br />
-                We look forward to seeing you. 🥂
+                {selBar} &nbsp;·&nbsp; {selOrder.name} ({selOrder.price})<br />
+                {confirmedDtStr}<br /><br />
+                We look forward to seeing you.
               </>
             ) : (
               <>Your table has been reserved.<br />We'll see you soon at Fusion Luxury Game.</>

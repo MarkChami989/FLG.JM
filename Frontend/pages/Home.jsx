@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import './Home.css'
 import { useAuth } from '../src/auth.jsx'
 import { SECTIONS } from './data.js'
+import { Icon, TAB_ICON_MAP } from './icons.jsx'
 import OrdersPanel from './OrdersPanel.jsx'
 import TournamentsPanel from './TournamentsPanel.jsx'
 import RoomsPanel from './RoomsPanel.jsx'
@@ -23,7 +24,7 @@ const PANEL_RENDERERS = {
 const NAV_MAP = { home: null, staffnav: 'staff', reportsnav: 'reports', settingsnav: null }
 
 function Home() {
-  const { user } = useAuth()
+  const { user, logout } = useAuth()
   const isAdmin = user?.role === 'admin'
   const displayName = isAdmin
     ? (user?.username ? user.username[0].toUpperCase() + user.username.slice(1) : 'Admin')
@@ -82,6 +83,7 @@ function Home() {
         <div className="brand">
           <div className="brand-mark">FLG</div>
           <div className="brand-text">Fusion <span>Luxury</span> Game · {isAdmin ? 'Admin' : 'Staff'}</div>
+          <button className="logout-btn" onClick={logout} title="Log out">⏻ Log Out</button>
         </div>
       </div>
 
@@ -102,7 +104,7 @@ function Home() {
               const s = SECTIONS[key]
               return (
                 <div key={key} className={`tabchip ${activeTab === key ? 'active' : ''}`} style={{ '--tabclr': s.clr }} onClick={() => openTab(key)}>
-                  <span className="dot"></span>{s.icon} {s.label}
+                  <span className="dot"></span><Icon paths={TAB_ICON_MAP[key]} width="12" height="12" />{s.label}
                   <span className="x" onClick={(e) => closeTab(key, e)}>✕</span>
                 </div>
               )
@@ -120,7 +122,7 @@ function Home() {
               {sections.map(([key, s], i) => (
                 <div key={key} className="launcher-card" style={{ '--clr': s.clr, animationDelay: `${i * 0.04}s` }} onClick={() => openTab(key)}>
                   {s.adminOnly && <div className="launcher-badge">ADMIN ONLY</div>}
-                  <div className="launcher-icon" style={{ color: s.clr }}>{s.icon}</div>
+                  <div className="launcher-icon" style={{ color: s.clr }}><Icon paths={TAB_ICON_MAP[key]} width="20" height="20" /></div>
                   <h3>{s.label}</h3>
                   <p>{s.desc}</p>
                 </div>

@@ -51,6 +51,15 @@ h1, h2, h3, .rajdhani { font-family: 'Rajdhani', sans-serif; font-weight: 700; l
 }
 .brand-text { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 15px; }
 .brand-text span { color: var(--pink); }
+.logout-btn {
+  display: flex; align-items: center; gap: 6px;
+  margin-left: 18px; padding: 7px 14px;
+  font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 13px; letter-spacing: .03em;
+  color: #f87171; background: rgba(248, 113, 113, .1);
+  border: 1px solid rgba(248, 113, 113, .35); border-radius: 8px;
+  cursor: pointer; transition: background .15s, border-color .15s;
+}
+.logout-btn:hover { background: rgba(248, 113, 113, .2); border-color: rgba(248, 113, 113, .6); }
 
 /* ===== SUB NAV ===== */
 .subnav {

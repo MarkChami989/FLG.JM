@@ -35,6 +35,8 @@ module.exports = {
   slotBookings: () => collection('slotBookings'),
   staff: () => collection('staff'),
   clients: () => collection('clients'),
+  roomRates: () => collection('roomRates'),
+  orderRates: () => collection('orderRates'),
   nextBookingId,
   nextClientId,
   nextTournamentId,

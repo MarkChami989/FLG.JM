@@ -19,6 +19,11 @@ export const api = {
     verify: (data) => request('/auth/verify', { method: 'POST', body: JSON.stringify(data) }),
     resend: (data) => request('/auth/resend', { method: 'POST', body: JSON.stringify(data) }),
     login: (data) => request('/auth/login', { method: 'POST', body: JSON.stringify(data) }),
+    faceEnroll: (data) => request('/auth/face/enroll', { method: 'POST', body: JSON.stringify(data) }),
+    faceLogin: (data) => request('/auth/face/login', { method: 'POST', body: JSON.stringify(data) }),
+    forgot: (data) => request('/auth/forgot', { method: 'POST', body: JSON.stringify(data) }),
+    forgotVerify: (data) => request('/auth/forgot/verify', { method: 'POST', body: JSON.stringify(data) }),
+    forgotReset: (data) => request('/auth/forgot/reset', { method: 'POST', body: JSON.stringify(data) }),
   },
   bookings: {
     list: (params) => request(`/bookings${params ? '?' + new URLSearchParams(params) : ''}`),
@@ -34,5 +39,11 @@ export const api = {
     list: (category) => request(`/resources${category ? '?category=' + category : ''}`),
     slots: (id, date) => request(`/resources/${id}/slots${date ? '?date=' + date : ''}`),
     bookSlot: (id, data) => request(`/resources/${id}/slots`, { method: 'POST', body: JSON.stringify(data) }),
+  },
+  roomRates: {
+    list: () => request('/room-rates'),
+  },
+  orderRates: {
+    list: () => request('/order-rates'),
   },
 }

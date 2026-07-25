@@ -13,15 +13,15 @@ function fmtKey(d) {
 }
 
 const TABLES = [
-  { name: 'Table 1', cap: '4 Persons', desc: 'Intimate dining · Lounge setting', chairs: ['top', 'bot', 'left', 'right'], icon: '🪑', size: 'sm' },
-  { name: 'Table 2', cap: '8 Persons', desc: 'Group gathering · VIP section', chairs: ['top2', 'bot2', 'left2', 'right2'], icon: '🍽️', size: 'lg' },
-  { name: 'Table 3', cap: '2 Persons', desc: 'Romantic · Private corner', chairs: ['top', 'bot'], icon: '🕯️', size: 'xs' },
-  { name: 'Table 4', cap: '6 Persons', desc: 'Social · Premium lounge', chairs: ['top2', 'bot2', 'left', 'right'], icon: '👥', size: 'md' },
+  { name: 'Table 1', cap: '4 Persons', desc: 'Intimate dining · Lounge setting', chairs: ['top', 'bot', 'left', 'right'], icon: '', size: 'sm' },
+  { name: 'Table 2', cap: '8 Persons', desc: 'Group gathering · VIP section', chairs: ['top2', 'bot2', 'left2', 'right2'], icon: '', size: 'lg' },
+  { name: 'Table 3', cap: '2 Persons', desc: 'Romantic · Private corner', chairs: ['top', 'bot'], icon: '', size: 'xs' },
+  { name: 'Table 4', cap: '6 Persons', desc: 'Social · Premium lounge', chairs: ['top2', 'bot2', 'left', 'right'], icon: '', size: 'md' },
 ]
 const ORDERS = [
-  { key: 'low', name: 'Low Order', price: '$60', pay: 60, icon: '🥗', sub: 'Light bites & soft drinks', tags: ['🥗 Salad', '🧃 Juices', '🍞 Bread'] },
-  { key: 'med', name: 'Medium Order', price: '$130', pay: 130, icon: '🍽️', sub: 'Full meal & premium drinks', tags: ['🥩 Steak', '🍷 Wine', '🍮 Dessert'] },
-  { key: 'high', name: 'High Order', price: '$280', pay: 280, icon: '👑', sub: 'Luxury feast & top spirits', tags: ['🦞 Lobster', '🥃 Macallan', '🚬 Cohiba'] },
+  { key: 'low', name: 'Low Order', price: '$60', pay: 60, icon: '', sub: 'Light bites & soft drinks', tags: ['Salad', 'Juices', 'Bread'] },
+  { key: 'med', name: 'Medium Order', price: '$130', pay: 130, icon: '', sub: 'Full meal & premium drinks', tags: ['Steak', 'Wine', 'Dessert'] },
+  { key: 'high', name: 'High Order', price: '$280', pay: 280, icon: '', sub: 'Luxury feast & top spirits', tags: ['Lobster', 'Macallan', 'Cohiba'] },
 ]
 
 function TableVisual({ size, chairs, icon }) {
@@ -68,6 +68,18 @@ function ReserveTable() {
   const [takenHours, setTakenHours] = useState(new Set())
   const [showSuccess, setShowSuccess] = useState(false)
   const [confirmedDtStr, setConfirmedDtStr] = useState('—')
+  const [orders, setOrders] = useState(ORDERS)
+
+  useEffect(() => {
+    api.orderRates.list().then((list) => {
+      const rate = list.find((r) => r.group === 'table')
+      if (!rate) return
+      setOrders(ORDERS.map((o) => {
+        const pay = rate[o.key]
+        return pay != null ? { ...o, pay, price: `$${pay}` } : o
+      }))
+    })
+  }, [])
 
   useEffect(() => {
     function onUp() { setDragMode(null) }
@@ -175,7 +187,7 @@ function ReserveTable() {
           <div className="corner bl"></div><div className="corner br"></div>
 
           <div className="form-header">
-            <div className="form-icon">🛋️</div>
+            <div className="form-icon"></div>
             <div className="form-tag">Cigar Lounge</div>
             <div className="form-title">Reserve Your Table</div>
           </div>
@@ -186,7 +198,7 @@ function ReserveTable() {
               <div className="block-label">Logged In As</div>
               <div className="input-wrap">
                 <input type="text" value={username} readOnly style={{ cursor: 'default', color: 'rgba(245,158,11,.9)', fontWeight: 600, paddingRight: 130 }} />
-                <span className="input-icon">👤</span>
+                <span className="input-icon"></span>
                 <div className="logged-badge"><div className="logged-dot"></div> Logged In</div>
               </div>
             </div>
@@ -199,7 +211,7 @@ function ReserveTable() {
                     <div className="table-check">✓</div>
                     <TableVisual size={t.size} chairs={t.chairs} icon={t.icon} />
                     <div className="table-num">{t.name.toUpperCase()}</div>
-                    <div className="table-cap">👥 {t.cap}</div>
+                    <div className="table-cap">{t.cap}</div>
                     <div className="table-desc">{t.desc}</div>
                   </div>
                 ))}
@@ -209,7 +221,7 @@ function ReserveTable() {
             <div className="block">
               <div className="block-label">Food &amp; Drinks Order</div>
               <div className="order-grid">
-                {ORDERS.map((o) => (
+                {orders.map((o) => (
                   <div key={o.key} className={`order-option order-${o.key}${selOrder?.key === o.key ? ' selected' : ''}`} onClick={() => setSelOrder(o)}>
                     <div className="order-check">✓</div>
                     <span className="order-icon">{o.icon}</span>
@@ -258,9 +270,9 @@ function ReserveTable() {
             <div className="block">
               <div className="block-label">Select Time Slots</div>
               {!selTable ? (
-                <div className="no-date-notice"><span>🛋️</span>Please choose a table first</div>
+                <div className="no-date-notice"><span></span>Please choose a table first</div>
               ) : !selDateKey ? (
-                <div className="no-date-notice"><span>📅</span>Please pick a date first</div>
+                <div className="no-date-notice"><span></span>Please pick a date first</div>
               ) : (
                 <>
                   <div className="time-legend">
@@ -291,7 +303,7 @@ function ReserveTable() {
             </div>
 
             <div className={`summary${showSummary ? ' show' : ''}`}>
-              <div className="summary-title">📋 Reservation Summary</div>
+              <div className="summary-title">Reservation Summary</div>
               <div className="summary-row"><span className="summary-key">Guest</span><span className="summary-val">{username}</span></div>
               <div className="summary-row"><span className="summary-key">Table</span><span className="summary-val">{selTable ? selTable.name : '—'}</span></div>
               <div className="summary-row"><span className="summary-key">Capacity</span><span className="summary-val">{selTable ? selTable.cap : '—'}</span></div>
@@ -303,23 +315,23 @@ function ReserveTable() {
               </div>
             </div>
 
-            <button className="btn-submit" type="submit">🛋️ &nbsp; Submit Order</button>
+            <button className="btn-submit" type="submit">Submit Order</button>
           </form>
         </div>
       </main>
 
       <div className={`success-overlay${showSuccess ? ' show' : ''}`}>
         <div className="success-box">
-          <div className="success-icon">🎉</div>
+          <div className="success-icon"></div>
           <div className="success-title">Table Reserved!</div>
           <div className="success-sub">
             {selTable && selOrder ? (
               <>
                 Your table is confirmed!<br /><br />
-                📍 {selTable.name} · {selTable.cap}<br />
-                🍽️ {selOrder.name} ({selOrder.price})<br />
-                📅 {confirmedDtStr}<br /><br />
-                We look forward to serving you. 🛋️
+                {selTable.name} · {selTable.cap}<br />
+                {selOrder.name} ({selOrder.price})<br />
+                {confirmedDtStr}<br /><br />
+                We look forward to serving you.
               </>
             ) : (
               <>Your table has been reserved.</>

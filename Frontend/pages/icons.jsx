@@ -34,4 +34,4 @@ export const ICONS = {
   tableIcon: `<rect x="3" y="8" width="18" height="10" rx="2"/><line x1="7" y1="8" x2="7" y2="18"/><line x1="17" y1="8" x2="17" y2="18"/><line x1="3" y1="13" x2="21" y2="13"/>`,
 }
 
-export const TAB_ICON_MAP = { orders: ICONS.orders, tournaments: ICONS.tournaments, rooms: ICONS.rooms, lounge: ICONS.lounge, tabletop: ICONS.tabletop, activities: ICONS.activities, report: ICONS.report, settings: ICONS.settings }
+export const TAB_ICON_MAP = { orders: ICONS.orders, tournaments: ICONS.tournaments, rooms: ICONS.rooms, lounge: ICONS.lounge, tabletop: ICONS.tabletop, staff: ICONS.userIcon, reports: ICONS.report, settings: ICONS.settings }

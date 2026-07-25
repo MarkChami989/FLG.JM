@@ -60,7 +60,7 @@ function Header({ active = '' }) {
       </button>
       {user ? (
         <div className="user-menu">
-          <span className="user-badge">👤 {user.username}</span>
+          <span className="user-badge">{user.username}</span>
           <button className="btn-logout-nav" onClick={handleLogout}>Sign Out</button>
         </div>
       ) : (

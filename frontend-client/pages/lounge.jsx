@@ -58,48 +58,48 @@ function Lounge() {
                 </div>
 
                 <div className="smoke">
-                  <div className="wisp wisp1">💨</div>
-                  <div className="wisp wisp2">💨</div>
-                  <div className="wisp wisp3">💨</div>
+                  <div className="wisp wisp1"></div>
+                  <div className="wisp wisp2"></div>
+                  <div className="wisp wisp3"></div>
                 </div>
 
                 <div className="bar-counter">
-                  <div className="counter-item">🥂</div>
-                  <div className="counter-item">🍸</div>
-                  <div className="counter-item">🥃</div>
-                  <div className="counter-item">🍹</div>
-                  <div className="counter-item">🍫</div>
+                  <div className="counter-item"></div>
+                  <div className="counter-item"></div>
+                  <div className="counter-item"></div>
+                  <div className="counter-item"></div>
+                  <div className="counter-item"></div>
                   <div className="counter-glow"></div>
                 </div>
               </div>
             </div>
 
             <div className="card-body">
-              <div className="c-title">🥂 The Bar</div>
+              <div className="c-title">The Bar</div>
               <div className="c-desc">A curated selection of premium spirits, champagnes, and signature cocktails. Our expert bartenders craft every drink to perfection in an intimate luxury setting.</div>
 
               <div className="menu-list">
                 <div className="menu-item">
-                  <div className="menu-left"><div className="menu-emoji">🥃</div><div><div className="menu-name">Macallan 18 Y.O.</div><div className="menu-sub">Single Malt Scotch · Scotland</div></div></div>
+                  <div className="menu-left"><div className="menu-emoji"></div><div><div className="menu-name">Macallan 18 Y.O.</div><div className="menu-sub">Single Malt Scotch · Scotland</div></div></div>
                   <div className="menu-price">$38</div>
                 </div>
                 <div className="menu-item">
-                  <div className="menu-left"><div className="menu-emoji">🥂</div><div><div className="menu-name">Dom Pérignon 2015</div><div className="menu-sub">Vintage Champagne · France</div></div></div>
+                  <div className="menu-left"><div className="menu-emoji"></div><div><div className="menu-name">Dom Pérignon 2015</div><div className="menu-sub">Vintage Champagne · France</div></div></div>
                   <div className="menu-price">$45</div>
                 </div>
                 <div className="menu-item">
-                  <div className="menu-left"><div className="menu-emoji">🍸</div><div><div className="menu-name">Signature Negroni</div><div className="menu-sub">Gin · Campari · Sweet Vermouth</div></div></div>
+                  <div className="menu-left"><div className="menu-emoji"></div><div><div className="menu-name">Signature Negroni</div><div className="menu-sub">Gin · Campari · Sweet Vermouth</div></div></div>
                   <div className="menu-price">$22</div>
                 </div>
               </div>
 
               <div className="avail-row">
                 <div className="av-chip av-open"><div className="av-dot"></div> Open Now</div>
-                <div className="av-chip av-gold">🕐 Until 3AM</div>
+                <div className="av-chip av-gold">Until 3AM</div>
                 <div className="av-chip av-pink">18+ Only</div>
               </div>
 
-              <button className="btn-reserve" onClick={() => navigate('/reserve')}>🥃 &nbsp; Reserve Now</button>
+              <button className="btn-reserve" onClick={() => navigate('/reserve')}>Reserve Now</button>
             </div>
           </div>
 
@@ -111,52 +111,52 @@ function Lounge() {
             <div className="c-visual">
               <div className="table-scene">
                 <div className="table-ambient"></div>
-                <div className="chair l">🪑</div>
+                <div className="chair l"></div>
                 <div style={{ position: 'relative' }}>
                   <div className="candle-wrap">
-                    <div className="candle-flame">🕯️</div>
+                    <div className="candle-flame"></div>
                   </div>
                   <div className="lounge-table">
                     <div className="table-surface-shine"></div>
-                    <div className="t-whiskey">🥃</div>
-                    <div className="t-glass">🍫</div>
-                    <div className="t-cigar">🚬</div>
-                    <div className="t-ashtray">🎫</div>
+                    <div className="t-whiskey"></div>
+                    <div className="t-glass"></div>
+                    <div className="t-cigar"></div>
+                    <div className="t-ashtray"></div>
                     <div className="table-leg l"></div>
                     <div className="table-leg r"></div>
                   </div>
                 </div>
-                <div className="chair r">🪑</div>
+                <div className="chair r"></div>
                 <div className="table-badge">TABLE VIP</div>
               </div>
             </div>
 
             <div className="card-body">
-              <div className="c-title">🛋️ Lounge Table</div>
+              <div className="c-title">Lounge Table</div>
               <div className="c-desc">Reserve your private lounge table for an exclusive evening. Enjoy premium cigars, fine spirits, and luxury seating in a fully private ambiance with personal service.</div>
 
               <div className="menu-list">
                 <div className="menu-item">
-                  <div className="menu-left"><div className="menu-emoji">🚬</div><div><div className="menu-name">Cohiba Behike 52</div><div className="menu-sub">Premium Cigar · Cuba</div></div></div>
+                  <div className="menu-left"><div className="menu-emoji"></div><div><div className="menu-name">Cohiba Behike 52</div><div className="menu-sub">Premium Cigar · Cuba</div></div></div>
                   <div className="menu-price">$28</div>
                 </div>
                 <div className="menu-item">
-                  <div className="menu-left"><div className="menu-emoji">🧀</div><div><div className="menu-name">Artisan Platter</div><div className="menu-sub">Cheese · Charcuterie · Truffle</div></div></div>
+                  <div className="menu-left"><div className="menu-emoji"></div><div><div className="menu-name">Artisan Platter</div><div className="menu-sub">Cheese · Charcuterie · Truffle</div></div></div>
                   <div className="menu-price">$35</div>
                 </div>
                 <div className="menu-item">
-                  <div className="menu-left"><div className="menu-emoji">☕</div><div><div className="menu-name">Arabic Coffee Service</div><div className="menu-sub">Premium Blend · Dates included</div></div></div>
+                  <div className="menu-left"><div className="menu-emoji"></div><div><div className="menu-name">Arabic Coffee Service</div><div className="menu-sub">Premium Blend · Dates included</div></div></div>
                   <div className="menu-price">$18</div>
                 </div>
               </div>
 
               <div className="avail-row">
                 <div className="av-chip av-open"><div className="av-dot"></div> Available</div>
-                <div className="av-chip av-gold">👑 VIP Table</div>
-                <div className="av-chip av-pink">🪑 2–6 Guests</div>
+                <div className="av-chip av-gold">VIP Table</div>
+                <div className="av-chip av-pink">2–6 Guests</div>
               </div>
 
-              <button className="btn-reserve" onClick={() => navigate('/reserve-table')}>🛋️ &nbsp; Reserve Now</button>
+              <button className="btn-reserve" onClick={() => navigate('/reserve-table')}>Reserve Now</button>
             </div>
           </div>
 

@@ -26,6 +26,14 @@ function RoomBooking({ resourceId, title, icon, tag }) {
   const [takenHours, setTakenHours] = useState(new Set())
   const [showSuccess, setShowSuccess] = useState(false)
   const [successMsg, setSuccessMsg] = useState(null)
+  const [pricePerHour, setPricePerHour] = useState(0)
+
+  useEffect(() => {
+    api.roomRates.list().then((rates) => {
+      const rate = rates.find((r) => r.category === resourceId)
+      setPricePerHour(rate ? rate.pricePerHour : 0)
+    })
+  }, [resourceId])
 
   useEffect(() => {
     function onUp() { setDragMode(null) }
@@ -88,7 +96,7 @@ function RoomBooking({ resourceId, title, icon, tag }) {
         date: selDateKey,
         time: sorted.map((h) => `${h}:00`).join(', '),
         resourceId,
-        pay: 0,
+        pay: pricePerHour * sorted.length,
         paid: false,
       })
     } catch (e) {
@@ -100,9 +108,9 @@ function RoomBooking({ resourceId, title, icon, tag }) {
       <>
         <strong>{username}</strong> — your {title} is booked!<br /><br />
         {icon} <strong>{title}</strong><br />
-        📅 {selDateLabel}<br />
-        ⏰ {sorted.map((h) => `${h}:00`).join(' · ')}<br />
-        ⏱️ {sorted.length} hour{sorted.length > 1 ? 's' : ''}<br /><br />
+        {selDateLabel}<br />
+        {sorted.map((h) => `${h}:00`).join(' · ')}<br />
+        {sorted.length} hour{sorted.length > 1 ? 's' : ''}<br /><br />
         See you at Fusion Luxury Game!
       </>
     )
@@ -143,7 +151,7 @@ function RoomBooking({ resourceId, title, icon, tag }) {
             <div className="block-label">Player</div>
             <div className="input-wrap">
               <input type="text" value={username} readOnly style={{ color: 'rgba(59,130,246,.9)', fontWeight: 600, paddingRight: 130 }} />
-              <span className="input-icon">👤</span>
+              <span className="input-icon"></span>
               <div className="logged-badge"><div className="logged-dot"></div> Logged In</div>
             </div>
           </div>
@@ -180,9 +188,12 @@ function RoomBooking({ resourceId, title, icon, tag }) {
           </div>
 
           <div className="block">
-            <div className="block-label">Select Time Slots</div>
+            <div className="block-label">
+              Select Time Slots
+              {pricePerHour > 0 && <span style={{ float: 'right', fontWeight: 600, color: '#fbbf24' }}>${pricePerHour} / hour</span>}
+            </div>
             {!selDateKey ? (
-              <div className="no-date-notice"><span>📅</span>Please pick a date first</div>
+              <div className="no-date-notice"><span></span>Please pick a date first</div>
             ) : (
               <>
                 <div className="time-legend">
@@ -213,12 +224,15 @@ function RoomBooking({ resourceId, title, icon, tag }) {
           </div>
 
           <div className={`summary${showSummary ? ' show' : ''}`}>
-            <div className="summary-title">📋 Reservation Summary</div>
+            <div className="summary-title">Reservation Summary</div>
             <div className="summary-row"><span className="summary-key">Player</span><span className="summary-val">{username}</span></div>
             <div className="summary-row"><span className="summary-key">Room</span><span className="summary-val">{title}</span></div>
             <div className="summary-row"><span className="summary-key">Date</span><span className="summary-val">{selDateLabel || '—'}</span></div>
             <div className="summary-row"><span className="summary-key">Time Slots</span><span className="summary-val">{summarySorted.length ? summarySorted.map((h) => `${h}:00`).join(', ') : '—'}</span></div>
             <div className="summary-row"><span className="summary-key">Duration</span><span className="summary-val">{summarySorted.length ? `${summarySorted.length} hour${summarySorted.length > 1 ? 's' : ''}` : '—'}</span></div>
+            {pricePerHour > 0 && (
+              <div className="summary-row"><span className="summary-key">Total</span><span className="summary-val" style={{ color: '#fbbf24', fontWeight: 700 }}>${(pricePerHour * summarySorted.length).toFixed(2)}</span></div>
+            )}
           </div>
 
           <button className="btn-submit" onClick={submitReserve}>{icon} &nbsp; Submit Reservation</button>
@@ -230,7 +244,7 @@ function RoomBooking({ resourceId, title, icon, tag }) {
           <div className="success-icon">{icon}</div>
           <div className="success-title">Room Reserved!</div>
           <div className="success-sub">{successMsg}</div>
-          <button className="btn-close" onClick={() => setShowSuccess(false)}>Let's Go 🚀</button>
+          <button className="btn-close" onClick={() => setShowSuccess(false)}>Let's Go</button>
         </div>
       </div>
     </>

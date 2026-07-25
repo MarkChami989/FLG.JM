@@ -131,7 +131,7 @@ function Login() {
                 </button>
               </div>
               <div className="forgot-wrap">
-                <a href="#" className="forgot-link" onClick={(e) => e.preventDefault()}>Forgot Password?</a>
+                <a href="#" className="forgot-link" onClick={(e) => { e.preventDefault(); navigate('/forgot-password') }}>Forgot Password?</a>
               </div>
             </div>
 
@@ -143,7 +143,11 @@ function Login() {
               {submitting ? 'Signing In…' : 'Sign In'}
             </button>
 
-            <button className="btn-create" type="button" onClick={() => navigate('/register')}>Create Account</button>
+            <div className="sep"><span>OR</span></div>
+
+            <button className="btn-create" type="button" onClick={() => navigate('/face-login')}>Sign In with Face ID</button>
+
+            <button className="btn-create" type="button" style={{ marginTop: 12 }} onClick={() => navigate('/register')}>Create Account</button>
           </form>
 
           <p className="footer-note">18+ · Play responsibly · © 2026 Fusion Luxury Game</p>
