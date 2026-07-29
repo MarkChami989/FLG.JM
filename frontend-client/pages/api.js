@@ -35,6 +35,19 @@ export const api = {
     list: () => request('/tournaments'),
     join: (id, data) => request(`/tournaments/${id}/clients`, { method: 'POST', body: JSON.stringify(data) }),
   },
+  clients: {
+    search: (q, excludeId) => request(`/clients?search=${encodeURIComponent(q)}&excludeId=${encodeURIComponent(excludeId || '')}`),
+  },
+  chat: {
+    requests: (userId, direction) => request(`/chat/requests?userId=${userId}${direction ? '&direction=' + direction : ''}`),
+    sendRequest: (data) => request('/chat/requests', { method: 'POST', body: JSON.stringify(data) }),
+    respondRequest: (id, data) => request(`/chat/requests/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+    conversations: (userId) => request(`/chat/conversations?userId=${userId}`),
+    createGroup: (data) => request('/chat/conversations/group', { method: 'POST', body: JSON.stringify(data) }),
+    messages: (convId, userId, before) => request(`/chat/conversations/${convId}/messages?userId=${userId}${before ? '&before=' + before : ''}`),
+    sendMessage: (convId, data) => request(`/chat/conversations/${convId}/messages`, { method: 'POST', body: JSON.stringify(data) }),
+    markRead: (convId, userId) => request(`/chat/conversations/${convId}/read`, { method: 'POST', body: JSON.stringify({ userId }) }),
+  },
   resources: {
     list: (category) => request(`/resources${category ? '?category=' + category : ''}`),
     slots: (id, date) => request(`/resources/${id}/slots${date ? '?date=' + date : ''}`),

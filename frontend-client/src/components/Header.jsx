@@ -1,10 +1,14 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth.jsx'
+import { useChat } from '../chat.jsx'
+import { Icon, ICONS } from '../icons.jsx'
 import './Header.css'
 
 function Header({ active = '' }) {
   const navigate = useNavigate()
   const { user, logout } = useAuth()
+  const { unreadTotal, pendingRequestCount } = useChat()
+  const notifCount = unreadTotal + pendingRequestCount
 
   function handleLogout() {
     logout()
@@ -61,6 +65,10 @@ function Header({ active = '' }) {
       {user ? (
         <div className="user-menu">
           <span className="user-badge">{user.username}</span>
+          <button className={`btn-messages-nav${active === 'messages' ? ' active-btn' : ''}`} onClick={() => navigate('/messages')} title="Messages">
+            <Icon paths={ICONS.chatIcon} width="18" height="18" />
+            {notifCount > 0 && <span className="messages-badge">{notifCount > 9 ? '9+' : notifCount}</span>}
+          </button>
           <button className="btn-logout-nav" onClick={handleLogout}>Sign Out</button>
         </div>
       ) : (

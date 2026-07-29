@@ -1,7 +1,9 @@
 require('dotenv').config({ quiet: true });
+const http = require('http');
 const express = require('express');
 const cors = require('cors');
 const { connect } = require('./mongo');
+const { initSockets } = require('./sockets');
 
 const bookingsRouter = require('./routes/bookings');
 const tournamentsRouter = require('./routes/tournaments');
@@ -13,6 +15,8 @@ const staffAuthRouter = require('./routes/staffAuth');
 const reportsRouter = require('./routes/reports');
 const authRouter = require('./routes/auth');
 const adminAuthRouter = require('./routes/adminAuth');
+const clientsRouter = require('./routes/clients');
+const chatRouter = require('./routes/chat');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -34,10 +38,14 @@ app.use('/api/staff-auth', staffAuthRouter);
 app.use('/api/reports', reportsRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/admin-auth', adminAuthRouter);
+app.use('/api/clients', clientsRouter);
+app.use('/api/chat', chatRouter);
 
 connect()
   .then(() => {
-    app.listen(PORT, () => {
+    const httpServer = http.createServer(app);
+    initSockets(httpServer);
+    httpServer.listen(PORT, () => {
       console.log(`Backend server running on http://localhost:${PORT}`);
     });
   })

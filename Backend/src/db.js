@@ -28,6 +28,21 @@ async function nextTournamentId() {
   return `T-${String(seq).padStart(3, '0')}`;
 }
 
+async function nextChatRequestId() {
+  const seq = await nextSeq('chatRequestSeq');
+  return `FR-${String(seq).padStart(4, '0')}`;
+}
+
+async function nextConversationId() {
+  const seq = await nextSeq('conversationSeq');
+  return `CV-${String(seq).padStart(4, '0')}`;
+}
+
+async function nextMessageId() {
+  const seq = await nextSeq('messageSeq');
+  return `MSG-${String(seq).padStart(6, '0')}`;
+}
+
 module.exports = {
   bookings: () => collection('bookings'),
   tournaments: () => collection('tournaments'),
@@ -37,7 +52,13 @@ module.exports = {
   clients: () => collection('clients'),
   roomRates: () => collection('roomRates'),
   orderRates: () => collection('orderRates'),
+  chatRequests: () => collection('chatRequests'),
+  conversations: () => collection('conversations'),
+  messages: () => collection('messages'),
   nextBookingId,
   nextClientId,
   nextTournamentId,
+  nextChatRequestId,
+  nextConversationId,
+  nextMessageId,
 };

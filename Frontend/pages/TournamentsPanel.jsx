@@ -18,6 +18,8 @@ function TournamentsPanel() {
   const descRef = useRef(null)
   const maxRef = useRef(null)
   const costRef = useRef(null)
+  const dateRef = useRef(null)
+  const timeRef = useRef(null)
   const fileInputRef = useRef(null)
 
   function reload() {
@@ -42,6 +44,8 @@ function TournamentsPanel() {
     descRef.current.value = ''
     maxRef.current.value = ''
     costRef.current.value = ''
+    dateRef.current.value = ''
+    timeRef.current.value = ''
     if (fileInputRef.current) fileInputRef.current.value = ''
     setImageData('')
   }
@@ -51,12 +55,14 @@ function TournamentsPanel() {
     const description = descRef.current.value.trim()
     const max = parseInt(maxRef.current.value)
     const cost = parseInt(costRef.current.value)
-    if (!name || !max || isNaN(cost)) {
+    const date = dateRef.current.value
+    const time = timeRef.current.value
+    if (!name || !max || isNaN(cost) || !date || !time) {
       setAddFeedback({ text: 'Fill all fields', bad: true })
       setTimeout(() => setAddFeedback(null), 1600)
       return
     }
-    api.tournaments.create({ name, max, cost, description, image: imageData }).then(() => {
+    api.tournaments.create({ name, max, cost, description, image: imageData, date, time }).then(() => {
       reload()
       setAddFeedback({ text: '✓ Tournament Created!', bad: false })
       setTimeout(() => { setAddFeedback(null); setScreen('main'); resetAddForm() }, 1400)
@@ -134,6 +140,16 @@ function TournamentsPanel() {
               <div style={{ fontFamily: "'Rajdhani',sans-serif", fontSize: 10, letterSpacing: 2, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', marginBottom: 7 }}>Cost per Client ($)</div>
               <input ref={costRef} type="number" placeholder="e.g. 25" min="0" style={inputStyle} />
             </div>
+            <div style={{ display: 'flex', gap: 14 }}>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontFamily: "'Rajdhani',sans-serif", fontSize: 10, letterSpacing: 2, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', marginBottom: 7 }}>Date</div>
+                <input ref={dateRef} type="date" style={inputStyle} />
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontFamily: "'Rajdhani',sans-serif", fontSize: 10, letterSpacing: 2, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', marginBottom: 7 }}>Time</div>
+                <input ref={timeRef} type="time" style={inputStyle} />
+              </div>
+            </div>
             <button
               onClick={tCreate}
               style={{
@@ -157,7 +173,10 @@ function TournamentsPanel() {
             <div key={tt.id} onClick={() => goto('joinDetail', tt.id)} style={joinRowStyle}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                 <span style={{ fontFamily: "'Rajdhani',sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: 1, padding: '3px 10px', borderRadius: 5, background: 'rgba(245,158,11,0.15)', color: 'var(--gold)' }}>{tt.id}</span>
-                <span style={{ fontFamily: "'Rajdhani',sans-serif", fontSize: 14, fontWeight: 600, letterSpacing: 1 }}>{tt.name}</span>
+                <div>
+                  <span style={{ fontFamily: "'Rajdhani',sans-serif", fontSize: 14, fontWeight: 600, letterSpacing: 1 }}>{tt.name}</span>
+                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginTop: 2 }}>{tt.date || 'No date'} · {tt.time || 'No time'}</div>
+                </div>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                 <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)' }}>{tt.clients.length} / {tt.max} players</span>
@@ -174,7 +193,7 @@ function TournamentsPanel() {
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
             <div>
               <div style={{ fontFamily: "'Rajdhani',sans-serif", fontSize: 15, fontWeight: 700, letterSpacing: 2, color: 'var(--gold)' }}>{t.name}</div>
-              <div style={{ fontFamily: "'Rajdhani',sans-serif", fontSize: 11, letterSpacing: 2, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', marginTop: 3 }}>{t.clients.length} / {t.max} players</div>
+              <div style={{ fontFamily: "'Rajdhani',sans-serif", fontSize: 11, letterSpacing: 2, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', marginTop: 3 }}>{t.clients.length} / {t.max} players · {t.date || 'No date'} {t.time || ''}</div>
             </div>
             <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)' }}>Cost: <span style={{ color: 'var(--green)', fontWeight: 600 }}>${t.cost}</span></div>
           </div>
@@ -209,7 +228,10 @@ function TournamentsPanel() {
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                   <span style={{ fontFamily: "'Rajdhani',sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: 1, padding: '3px 10px', borderRadius: 5, background: 'rgba(239,68,68,0.15)', color: 'var(--red)' }}>{tt.id}</span>
-                  <span style={{ fontFamily: "'Rajdhani',sans-serif", fontSize: 14, fontWeight: 600, letterSpacing: 1 }}>{tt.name}</span>
+                  <div>
+                    <span style={{ fontFamily: "'Rajdhani',sans-serif", fontSize: 14, fontWeight: 600, letterSpacing: 1 }}>{tt.name}</span>
+                    <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginTop: 2 }}>{tt.date || 'No date'} · {tt.time || 'No time'}</div>
+                  </div>
                 </div>
                 <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)' }}>{tt.clients.length} clients</span>
               </div>
@@ -235,7 +257,7 @@ function TournamentsPanel() {
                 <Icon paths={ICONS.tournaments} width="18" height="18" stroke="#a78bfa" />
                 <div>
                   <div style={{ fontFamily: "'Rajdhani',sans-serif", fontSize: 14, fontWeight: 600, letterSpacing: 1 }}>{tt.name}</div>
-                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginTop: 2 }}>{tt.clients.length} participants</div>
+                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginTop: 2 }}>{tt.clients.length} participants · {tt.date || 'No date'} {tt.time || ''}</div>
                 </div>
               </div>
               <Icon paths={ICONS.arrowIcon} width="15" height="15" stroke="rgba(255,255,255,0.25)" strokeWidth="2" />

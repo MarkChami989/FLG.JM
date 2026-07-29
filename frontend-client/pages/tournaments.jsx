@@ -93,6 +93,14 @@ function Tournaments() {
                       </div>
                     </div>
 
+                    <div className="prize-row" style={{ background: a.chipBg, borderColor: a.border, marginBottom: 10 }}>
+                      <div className="prize-icon">📅</div>
+                      <div className="prize-info">
+                        <div className="prize-lbl">Schedule</div>
+                        <div className="prize-val" style={{ color: a.var, fontSize: 15 }}>{t.date || 'TBA'} {t.time ? `· ${t.time}` : ''}</div>
+                      </div>
+                    </div>
+
                     <div className="prize-row" style={{ background: a.chipBg, borderColor: a.border }}>
                       <div className="prize-icon"></div>
                       <div className="prize-info">

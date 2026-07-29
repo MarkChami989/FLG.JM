@@ -9,7 +9,7 @@ router.get('/', async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
-  const { name, max, cost, description, image } = req.body;
+  const { name, max, cost, description, image, date, time } = req.body;
   if (!name || !max || cost === undefined) {
     return res.status(400).json({ error: 'name, max, cost are required' });
   }
@@ -21,6 +21,8 @@ router.post('/', async (req, res) => {
     cost: Number(cost),
     description: description || '',
     image: image || '',
+    date: date || '',
+    time: time || '',
     clients: [],
   };
   await db.tournaments().insertOne(tournament);
@@ -29,13 +31,15 @@ router.post('/', async (req, res) => {
 });
 
 router.patch('/:id', async (req, res) => {
-  const { name, max, cost, description, image } = req.body;
+  const { name, max, cost, description, image, date, time } = req.body;
   const update = {};
   if (name !== undefined) update.name = name;
   if (max !== undefined) update.max = Number(max);
   if (cost !== undefined) update.cost = Number(cost);
   if (description !== undefined) update.description = description;
   if (image !== undefined) update.image = image;
+  if (date !== undefined) update.date = date;
+  if (time !== undefined) update.time = time;
   const t = await db.tournaments().findOneAndUpdate(
     { id: req.params.id },
     { $set: update },

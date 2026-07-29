@@ -1,4 +1,5 @@
 import { createContext, useContext, useCallback, useState } from 'react'
+import { connectSocket, disconnectSocket } from './socket.js'
 
 const STORAGE_KEY = 'flg_user'
 const AuthContext = createContext(null)
@@ -13,16 +14,22 @@ function readStoredUser() {
 }
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(readStoredUser)
+  const [user, setUser] = useState(() => {
+    const u = readStoredUser()
+    if (u) connectSocket(u)
+    return u
+  })
 
   const login = useCallback((u) => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(u))
     setUser(u)
+    connectSocket(u)
   }, [])
 
   const logout = useCallback(() => {
     localStorage.removeItem(STORAGE_KEY)
     setUser(null)
+    disconnectSocket()
   }, [])
 
   return (
