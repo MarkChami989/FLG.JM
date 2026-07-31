@@ -152,7 +152,7 @@ function Reserve() {
 
       <Header active="lounge" />
 
-      <main>
+      <main className="reserve-main">
         <div className="reserve-card">
           <div className="corner tl"></div><div className="corner tr"></div>
           <div className="corner bl"></div><div className="corner br"></div>

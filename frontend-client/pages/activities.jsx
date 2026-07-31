@@ -112,7 +112,7 @@ function Activities() {
 
       <Header active="activities" />
 
-      <main>
+      <main className="activities-main">
         <div className="page-head">
           <div className="page-title-wrap">
             <div className="page-tag">Dashboard</div>

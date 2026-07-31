@@ -10,6 +10,7 @@ import LoungePanel from './LoungePanel.jsx'
 import TabletopPanel from './TabletopPanel.jsx'
 import StaffPanel from './StaffPanel.jsx'
 import ReportsPanel from './ReportsPanel.jsx'
+import SettingsPanel from './SettingsPanel.jsx'
 
 const PANEL_RENDERERS = {
   orders: OrdersPanel,
@@ -19,9 +20,10 @@ const PANEL_RENDERERS = {
   tabletop: TabletopPanel,
   staff: StaffPanel,
   reports: ReportsPanel,
+  settings: SettingsPanel,
 }
 
-const NAV_MAP = { home: null, staffnav: 'staff', reportsnav: 'reports', settingsnav: null }
+const NAV_MAP = { home: null, staffnav: 'staff', reportsnav: 'reports', settingsnav: 'settings' }
 
 function Home() {
   const { user, logout } = useAuth()
@@ -91,7 +93,7 @@ function Home() {
         <a className={activeNav === 'home' ? 'active' : ''} onClick={() => handleNavClick('home')}>Dashboard</a>
         {isAdmin && <a className={activeNav === 'staffnav' ? 'active' : ''} onClick={() => handleNavClick('staffnav')}>Staff</a>}
         {isAdmin && <a className={activeNav === 'reportsnav' ? 'active' : ''} onClick={() => handleNavClick('reportsnav')}>Reports</a>}
-        <a className={activeNav === 'settingsnav' ? 'active' : ''} onClick={() => handleNavClick('settingsnav')}>Settings</a>
+        {isAdmin && <a className={activeNav === 'settingsnav' ? 'active' : ''} onClick={() => handleNavClick('settingsnav')}>Settings</a>}
       </div>
 
       <div className="tabstrip">

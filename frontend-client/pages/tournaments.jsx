@@ -27,7 +27,7 @@ function Tournaments() {
 
       <Header active="tournaments" />
 
-      <main>
+      <main className="tournaments-main">
         <div className="page-hero">
           <div className="page-tag">Compete · Win · Dominate</div>
           <div className="page-title">TOURNAMENTS</div>

@@ -59,4 +59,8 @@ export const api = {
   orderRates: {
     list: () => request('/order-rates'),
   },
+  aiSupport: {
+    chat: (data) => request('/ai-support/chat', { method: 'POST', body: JSON.stringify(data) }),
+    confirmBooking: (data) => request('/ai-support/confirm-booking', { method: 'POST', body: JSON.stringify(data) }),
+  },
 }

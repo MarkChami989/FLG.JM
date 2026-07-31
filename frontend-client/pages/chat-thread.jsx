@@ -189,7 +189,7 @@ function ChatThread() {
 
       <Header active="messages" />
 
-      <main>
+      <main className="thread-main">
         <div className="thread-card">
           <div className="corner tl"></div><div className="corner tr"></div>
           <div className="corner bl"></div><div className="corner br"></div>

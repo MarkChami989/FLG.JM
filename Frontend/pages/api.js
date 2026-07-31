@@ -59,6 +59,10 @@ export const api = {
     login: (data) => request('/admin-auth/login', { method: 'POST', body: JSON.stringify(data) }),
     verify: (data) => request('/admin-auth/verify', { method: 'POST', body: JSON.stringify(data) }),
     resend: () => request('/admin-auth/resend', { method: 'POST', body: JSON.stringify({}) }),
+    sendPasswordCode: () => request('/admin-auth/settings/password/send-code', { method: 'POST', body: JSON.stringify({}) }),
+    changePassword: (data) => request('/admin-auth/settings/password/change', { method: 'POST', body: JSON.stringify(data) }),
+    sendProfileCode: () => request('/admin-auth/settings/profile/send-code', { method: 'POST', body: JSON.stringify({}) }),
+    updateProfile: (data) => request('/admin-auth/settings/profile/update', { method: 'POST', body: JSON.stringify(data) }),
   },
   staffAuth: {
     login: (data) => request('/staff-auth/login', { method: 'POST', body: JSON.stringify(data) }),

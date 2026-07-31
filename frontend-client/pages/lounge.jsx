@@ -13,7 +13,7 @@ function Lounge() {
 
       <Header active="lounge" />
 
-      <main>
+      <main className="lounge-main">
         <div className="page-hero">
           <div className="page-tag">Relax · Sip · Enjoy</div>
           <div className="page-title">CIGAR LOUNGE</div>

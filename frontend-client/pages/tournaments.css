@@ -29,7 +29,7 @@
 .orb5 { width:280px;height:200px;bottom:0;left:2%; background:radial-gradient(ellipse,rgba(180,83,9,.22),transparent 70%); filter:blur(60px); animation-delay:-5s; }
 @keyframes drift { from{transform:translate(0,0) scale(1)} to{transform:translate(18px,25px) scale(1.08)} }
 
-main { position:relative; z-index:1; padding:36px 40px 60px; }
+main.tournaments-main { position:relative; z-index:1; display:block; padding:36px 40px 60px; }
 .page-hero { margin-bottom:36px; }
 .page-tag { font-family:'Rajdhani',sans-serif; font-size:10px; font-weight:700; letter-spacing:5px; text-transform:uppercase; background:linear-gradient(90deg,var(--gold),#fbbf24); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin-bottom:8px; }
 .page-title { font-size:32px; font-weight:900; letter-spacing:2px; background:linear-gradient(90deg,#fff 40%,rgba(226,217,243,.6)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
@@ -163,12 +163,12 @@ main { position:relative; z-index:1; padding:36px 40px 60px; }
 .badge-purple { background:rgba(124,58,237,.15); border:1px solid rgba(124,58,237,.35); color:#a78bfa; }
 
 @media (max-width: 1024px) {
-  main { padding: 28px 24px 48px !important; }
+  main.tournaments-main { padding: 28px 24px 48px !important; }
 }
 
 @media (max-width: 768px) {
   .grid { grid-template-columns: 1fr !important; gap: 20px !important; }
-  main { padding: 24px 16px 40px !important; }
+  main.tournaments-main { padding: 24px 16px 40px !important; }
   .page-title { font-size: 26px !important; }
   .stats { flex-wrap: wrap !important; gap: 14px !important; }
 }

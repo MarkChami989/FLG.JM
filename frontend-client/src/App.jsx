@@ -25,6 +25,7 @@ import PsRoom from '../pages/psroom.jsx'
 import Tournaments from '../pages/tournaments.jsx'
 import Messages from '../pages/messages.jsx'
 import ChatThread from '../pages/chat-thread.jsx'
+import LiveSupport from '../pages/LiveSupport.jsx'
 
 function App() {
   return (
@@ -55,6 +56,7 @@ function App() {
             <Route path="/tournaments" element={<Tournaments />} />
             <Route path="/messages" element={<RequireAuth><Messages /></RequireAuth>} />
             <Route path="/messages/:id" element={<RequireAuth><ChatThread /></RequireAuth>} />
+            <Route path="/live-support" element={<RequireAuth><LiveSupport /></RequireAuth>} />
           </Routes>
         </BrowserRouter>
       </ChatProvider>

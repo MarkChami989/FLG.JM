@@ -14,10 +14,10 @@
 .orb2{width:700px;height:200px;border-radius:40%;top:-40px;left:50%;transform:translateX(-50%);background:radial-gradient(ellipse,rgba(124,58,237,.3),transparent 70%);filter:blur(60px);animation-delay:-3s;}
 @keyframes drift{from{transform:translate(0,0) scale(1)}to{transform:translate(18px,25px) scale(1.08)}}
 
-main{position:relative;z-index:1;padding:36px 40px 60px;display:flex;justify-content:center;}
+main.thread-main{position:relative;z-index:1;padding:36px 40px 60px;display:flex;justify-content:center;}
 
 .thread-card{
-  width:100%;max-width:640px;height:calc(100vh - 170px);min-height:480px;
+  width:100%;max-width:960px;height:calc(100vh - 170px);min-height:480px;
   background:rgba(8,3,20,.72);border:1px solid rgba(124,58,237,.3);border-radius:22px;
   backdrop-filter:blur(18px);box-shadow:0 30px 70px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.04) inset;
   position:relative;display:flex;flex-direction:column;overflow:hidden;
@@ -81,7 +81,7 @@ main{position:relative;z-index:1;padding:36px 40px 60px;display:flex;justify-con
 .thread-send-btn:hover{transform:translateY(-1px) scale(1.04);}
 
 @media (max-width: 640px) {
-  main{padding:16px 10px 30px !important;}
+  main.thread-main{padding:16px 10px 30px !important;}
   .thread-card{height:calc(100vh - 120px);border-radius:16px;}
   .bubble{max-width:82%;}
 }

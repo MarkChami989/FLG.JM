@@ -26,7 +26,7 @@ function Home() {
 
       <Header active="home" />
 
-      <main>
+      <main className="home-main">
         <div className="hero">
           <div className="hero-tag">Welcome to the Ultimate Gaming Experience</div>
           <div className="hero-title">FUSION LUXURY GAME</div>

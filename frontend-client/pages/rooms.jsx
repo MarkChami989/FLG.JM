@@ -12,7 +12,7 @@ function Rooms() {
 
       <Header active="rooms" />
 
-      <main>
+      <main className="rooms-main">
         <div className="page-hero">
           <div className="page-tag">Premium Gaming Experience</div>
           <div className="page-title">PC &amp; PS ROOMS</div>

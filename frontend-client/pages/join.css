@@ -19,7 +19,7 @@
 .orb3{width:300px;height:200px;bottom:0;right:5%;background:radial-gradient(ellipse,rgba(245,158,11,.2),transparent 70%);filter:blur(60px);animation-delay:-2s;}
 @keyframes drift{from{transform:translate(0,0) scale(1)}to{transform:translate(18px,25px) scale(1.08)}}
 
-main{position:relative;z-index:1;padding:36px 40px 60px;display:flex;justify-content:center;}
+main.join-main{position:relative;z-index:1;padding:36px 40px 60px;display:flex;justify-content:center;}
 
 .join-card{
   width:100%;max-width:580px;background:rgba(8,3,20,.72);
@@ -126,7 +126,7 @@ input:focus{border-color:rgba(217,70,239,.7);background:rgba(255,255,255,.07);bo
 .btn-close:hover{filter:brightness(1.1);transform:translateY(-1px);}
 
 @media (max-width: 640px) {
-  main { padding: 24px 16px 40px !important; }
+  main.join-main { padding: 24px 16px 40px !important; }
   .join-card { padding: 30px 22px 32px !important; }
   .ticket-wrap { flex-wrap: wrap !important; gap: 12px !important; }
   .success-overlay { padding: 20px !important; }

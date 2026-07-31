@@ -15,7 +15,7 @@
 .orb3{width:320px;height:220px;bottom:0;right:5%;background:radial-gradient(ellipse,rgba(124,58,237,.22),transparent 70%);filter:blur(60px);animation-delay:-2s;}
 @keyframes drift{from{transform:translate(0,0) scale(1)}to{transform:translate(18px,25px) scale(1.08)}}
 
-main{position:relative;z-index:1;padding:36px 40px 60px;display:flex;justify-content:center;}
+main.babyfoot-main{position:relative;z-index:1;padding:36px 40px 60px;display:flex;justify-content:center;}
 
 .reserve-card{
   width:100%;max-width:720px;background:rgba(8,3,20,.72);
@@ -157,7 +157,7 @@ input[type="text"]{width:100%;padding:13px 14px 13px 42px;background:rgba(255,25
 .vs-dash{width:1px;height:30px;background:rgba(255,255,255,.1);}
 
 @media (max-width: 768px) {
-  main { padding: 24px 12px 40px !important; }
+  main.babyfoot-main { padding: 24px 12px 40px !important; }
   .reserve-card { padding: 30px 18px 32px !important; }
   .table-grid { grid-template-columns: repeat(2,1fr) !important; }
 }

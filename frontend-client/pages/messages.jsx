@@ -160,11 +160,19 @@ function Messages() {
 
       <Header active="messages" />
 
-      <main>
+      <main className="messages-main">
         <div className="page-hero">
           <div className="page-tag">Connect · Chat · Compete</div>
           <div className="page-title">MESSAGES</div>
           <div className="page-line"></div>
+        </div>
+
+        <div className="support-tile" onClick={() => navigate('/live-support')}>
+          <div className="support-tile-icon"><Icon paths={ICONS.supportIcon} width="24" height="24" stroke="var(--gold)" /></div>
+          <div className="support-tile-main">
+            <div className="support-tile-title">Live Support</div>
+            <div className="support-tile-sub">Chat with our staff for help, anytime</div>
+          </div>
         </div>
 
         <div className="msg-tabs">

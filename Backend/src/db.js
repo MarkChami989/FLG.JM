@@ -50,6 +50,7 @@ module.exports = {
   slotBookings: () => collection('slotBookings'),
   staff: () => collection('staff'),
   clients: () => collection('clients'),
+  admin: () => collection('admin'),
   roomRates: () => collection('roomRates'),
   orderRates: () => collection('orderRates'),
   chatRequests: () => collection('chatRequests'),

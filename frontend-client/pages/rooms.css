@@ -29,7 +29,7 @@
 .orb5 { width:280px;height:200px;bottom:0;left:2%; background:radial-gradient(ellipse,rgba(180,83,9,.22),transparent 70%); filter:blur(60px); animation-delay:-5s; }
 @keyframes drift { from{transform:translate(0,0) scale(1)} to{transform:translate(18px,25px) scale(1.08)} }
 
-main { position:relative; z-index:1; padding:36px 40px 60px; }
+main.rooms-main { position:relative; z-index:1; display:block; padding:36px 40px 60px; }
 .page-hero { margin-bottom:32px; }
 .page-tag { font-family:'Rajdhani',sans-serif; font-size:10px; font-weight:700; letter-spacing:5px; text-transform:uppercase; background:linear-gradient(90deg,#3b82f6,#06b6d4) !important; -webkit-background-clip:text !important; -webkit-text-fill-color:transparent !important; background-clip:text !important; color:transparent !important; margin-bottom:8px; }
 .page-title { font-size:32px; font-weight:900; letter-spacing:2px; background:linear-gradient(90deg,#3b82f6 40%,#06b6d4) !important; -webkit-background-clip:text !important; -webkit-text-fill-color:transparent !important; background-clip:text !important; color:transparent !important; }
@@ -153,14 +153,14 @@ main { position:relative; z-index:1; padding:36px 40px 60px; }
 .btn-book:hover { transform:translateY(-1px); filter:brightness(1.1); box-shadow:0 4px 20px rgba(59,130,246,.5); }
 
 @media (max-width: 1024px) {
-  main { padding: 28px 24px 48px !important; }
+  main.rooms-main { padding: 28px 24px 48px !important; }
   .row-bottom { grid-template-columns: 1fr 1fr !important; }
 }
 
 @media (max-width: 768px) {
   .row-top { grid-template-columns: 1fr !important; gap: 20px !important; }
   .row-bottom { grid-template-columns: 1fr !important; gap: 16px !important; }
-  main { padding: 24px 16px 40px !important; }
+  main.rooms-main { padding: 24px 16px 40px !important; }
   .page-title { font-size: 26px !important; }
 }
 

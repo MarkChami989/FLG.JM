@@ -49,6 +49,7 @@ export const SECTIONS = {
   tabletop: { label: 'Tabletop Games', clr: 'var(--pink)', desc: 'Ping Pong, Billiard & Baby Foot table oversight.' },
   staff: { label: 'Staff Management', clr: 'var(--admin)', desc: 'Add, edit, and manage staff accounts and permissions.', adminOnly: true },
   reports: { label: 'Reports & Analytics', clr: 'var(--admin)', desc: 'Revenue, bookings, and performance across the venue.', adminOnly: true },
+  settings: { label: 'Settings', clr: 'var(--admin)', desc: 'Manage the admin login, email, and password.', adminOnly: true },
 }
 
 export const TOURNAMENT_ACTIONS = [
