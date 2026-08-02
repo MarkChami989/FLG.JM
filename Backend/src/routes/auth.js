@@ -10,6 +10,8 @@ function genOtp() {
   return String(Math.floor(100000 + Math.random() * 900000));
 }
 
+const settingsOtps = new Map(); // clientId -> { code, expiresAt }
+
 function publicClient(c) {
   const { passwordHash, otpCode, otpExpiresAt, faceDescriptor, _id, ...pub } = c;
   return pub;
@@ -202,6 +204,68 @@ router.post('/login', async (req, res) => {
   const ok = await bcrypt.compare(password, client.passwordHash);
   if (!ok) return res.status(401).json({ error: 'Invalid username or password' });
   if (!client.verified) return res.status(403).json({ error: 'Account not verified' });
+  res.json(publicClient(client));
+});
+
+// ---- Settings: change password (verify current password FIRST, then email a code) ----
+router.post('/settings/password/send-code', async (req, res) => {
+  const { clientId, currentPassword } = req.body;
+  if (!clientId || !currentPassword) return res.status(400).json({ error: 'clientId and currentPassword are required' });
+
+  const client = await db.clients().findOne({ id: clientId });
+  if (!client) return res.status(404).json({ error: 'Account not found' });
+  const ok = await bcrypt.compare(currentPassword, client.passwordHash);
+  if (!ok) return res.status(401).json({ error: 'Current password is incorrect' });
+
+  const code = genOtp();
+  settingsOtps.set(clientId, { code, expiresAt: Date.now() + OTP_TTL_MS });
+
+  try {
+    await sendVerificationEmail(client.email, code);
+  } catch (e) {
+    return res.status(502).json({ error: 'Failed to send verification email', detail: e.message });
+  }
+
+  res.json({ ok: true, email: client.email });
+});
+
+router.post('/settings/password/change', async (req, res) => {
+  const { clientId, code, newPassword, confirmPassword } = req.body;
+  if (!clientId || !code || !newPassword || !confirmPassword) {
+    return res.status(400).json({ error: 'clientId, code, newPassword and confirmPassword are required' });
+  }
+  const pending = settingsOtps.get(clientId);
+  if (!pending || Date.now() > pending.expiresAt) {
+    return res.status(400).json({ error: 'Code expired, please request a new one' });
+  }
+  if (pending.code !== String(code)) {
+    return res.status(400).json({ error: 'Invalid code' });
+  }
+  if (newPassword !== confirmPassword) {
+    return res.status(400).json({ error: 'New passwords do not match' });
+  }
+  if (newPassword.length < 6) {
+    return res.status(400).json({ error: 'New password must be at least 6 characters' });
+  }
+
+  const passwordHash = await bcrypt.hash(newPassword, 10);
+  await db.clients().updateOne({ id: clientId }, { $set: { passwordHash } });
+  settingsOtps.delete(clientId);
+
+  res.json({ ok: true });
+});
+
+// ---- Settings: profile picture ----
+router.post('/settings/profile-picture', async (req, res) => {
+  const { clientId, image } = req.body;
+  if (!clientId || !image) return res.status(400).json({ error: 'clientId and image are required' });
+
+  const client = await db.clients().findOneAndUpdate(
+    { id: clientId },
+    { $set: { profilePicture: image } },
+    { returnDocument: 'after' }
+  );
+  if (!client) return res.status(404).json({ error: 'Account not found' });
   res.json(publicClient(client));
 });
 

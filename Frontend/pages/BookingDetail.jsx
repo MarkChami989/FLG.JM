@@ -11,6 +11,11 @@ function BookingDetail({ item, onBack }) {
   const [modal, setModal] = useState(null) // { hour, hs, mode, name }
   const [slots, setSlots] = useState([])
 
+  const daysInMonth = new Date(y, mo, 0).getDate()
+  useEffect(() => {
+    if (d > daysInMonth) setD(daysInMonth)
+  }, [y, mo, daysInMonth, d])
+
   const ds = dateKey(y, mo, d)
   const isToday = y === now.getFullYear() && mo === now.getMonth() + 1 && d === now.getDate()
   const curH = now.getHours()
@@ -63,8 +68,14 @@ function BookingDetail({ item, onBack }) {
           {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'].map((mn, i) => <option key={mn} value={i + 1}>{mn}</option>)}
         </select>
         <select className="r-date-sel" value={d} onChange={(e) => setD(parseInt(e.target.value))}>
-          {Array.from({ length: 31 }, (_, i) => i + 1).map((dd) => <option key={dd} value={dd}>{dd}</option>)}
+          {Array.from({ length: daysInMonth }, (_, i) => i + 1).map((dd) => <option key={dd} value={dd}>{dd}</option>)}
         </select>
+        <button type="button" className="r-refresh-btn" onClick={loadSlots} title="Refresh">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <polyline points="23 4 23 10 17 10" /><polyline points="1 20 1 14 7 14" />
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
+          </svg>
+        </button>
       </div>
 
       <div style={{ maxHeight: 440, overflowY: 'auto', paddingRight: 4 }}>

@@ -24,6 +24,9 @@ export const api = {
     forgot: (data) => request('/auth/forgot', { method: 'POST', body: JSON.stringify(data) }),
     forgotVerify: (data) => request('/auth/forgot/verify', { method: 'POST', body: JSON.stringify(data) }),
     forgotReset: (data) => request('/auth/forgot/reset', { method: 'POST', body: JSON.stringify(data) }),
+    sendPasswordCode: (data) => request('/auth/settings/password/send-code', { method: 'POST', body: JSON.stringify(data) }),
+    changePassword: (data) => request('/auth/settings/password/change', { method: 'POST', body: JSON.stringify(data) }),
+    updateProfilePicture: (data) => request('/auth/settings/profile-picture', { method: 'POST', body: JSON.stringify(data) }),
   },
   bookings: {
     list: (params) => request(`/bookings${params ? '?' + new URLSearchParams(params) : ''}`),
@@ -60,6 +63,7 @@ export const api = {
     list: () => request('/order-rates'),
   },
   aiSupport: {
+    start: (data) => request('/ai-support/start', { method: 'POST', body: JSON.stringify(data) }),
     chat: (data) => request('/ai-support/chat', { method: 'POST', body: JSON.stringify(data) }),
     confirmBooking: (data) => request('/ai-support/confirm-booking', { method: 'POST', body: JSON.stringify(data) }),
   },

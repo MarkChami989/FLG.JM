@@ -175,6 +175,12 @@ function ChatThread() {
     return conversation.participantNames?.[otherId] || otherId
   }, [conversation, user])
 
+  const avatarPicture = useMemo(() => {
+    if (!conversation || conversation.type === 'group') return null
+    const otherId = conversation.participants.find((p) => p !== user.id)
+    return conversation.participantPictures?.[otherId] || null
+  }, [conversation, user])
+
   const subtitle = useMemo(() => {
     if (!conversation) return ''
     if (conversation.type === 'group') return `${conversation.participants.length} members`
@@ -198,7 +204,7 @@ function ChatThread() {
             <button className="thread-back" onClick={() => navigate('/messages')}>
               <Icon paths={ICONS.backIcon} width="18" height="18" />
             </button>
-            <div className="thread-avatar">{title?.charAt(0)?.toUpperCase()}</div>
+            <div className="thread-avatar">{avatarPicture ? <img src={avatarPicture} alt="" /> : title?.charAt(0)?.toUpperCase()}</div>
             <div className="thread-title-wrap">
               <div className="thread-title">{title || '…'}</div>
               <div className={`thread-subtitle${otherTyping ? ' typing' : ''}`}>{subtitle}</div>

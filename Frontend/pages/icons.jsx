@@ -32,6 +32,7 @@ export const ICONS = {
   crownIcon: `<path d="M2 20h20M6 20V10l6-8 6 8v10"/><path d="M10 20v-5h4v5"/>`,
   barIcon: `<path d="M17 8h1a4 4 0 010 8h-1"/><path d="M3 8h14v9a4 4 0 01-4 4H7a4 4 0 01-4-4V8z"/><line x1="6" y1="2" x2="6" y2="4"/><line x1="10" y1="2" x2="10" y2="4"/><line x1="14" y1="2" x2="14" y2="4"/>`,
   tableIcon: `<rect x="3" y="8" width="18" height="10" rx="2"/><line x1="7" y1="8" x2="7" y2="18"/><line x1="17" y1="8" x2="17" y2="18"/><line x1="3" y1="13" x2="21" y2="13"/>`,
+  support: `<path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1v-6h3z"/><path d="M3 19a2 2 0 0 0 2 2h1v-6H3z"/>`,
 }
 
-export const TAB_ICON_MAP = { orders: ICONS.orders, tournaments: ICONS.tournaments, rooms: ICONS.rooms, lounge: ICONS.lounge, tabletop: ICONS.tabletop, staff: ICONS.userIcon, reports: ICONS.report, settings: ICONS.settings }
+export const TAB_ICON_MAP = { orders: ICONS.orders, tournaments: ICONS.tournaments, rooms: ICONS.rooms, lounge: ICONS.lounge, tabletop: ICONS.tabletop, staff: ICONS.userIcon, reports: ICONS.report, settings: ICONS.settings, support: ICONS.support }

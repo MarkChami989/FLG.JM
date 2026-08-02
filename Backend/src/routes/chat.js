@@ -134,13 +134,20 @@ router.get('/conversations', async (req, res) => {
     { projection: { _id: 0 } }
   ).sort({ updatedAt: -1 }).toArray();
 
+  const otherIds = [...new Set(list.flatMap((c) => c.participants).filter((id) => id !== userId))];
+  const others = otherIds.length
+    ? await db.clients().find({ id: { $in: otherIds } }, { projection: { id: 1, profilePicture: 1 } }).toArray()
+    : [];
+  const pictureMap = Object.fromEntries(others.map((o) => [o.id, o.profilePicture || null]));
+
   const withUnread = await Promise.all(list.map(async (c) => {
     const unread = await db.messages().countDocuments({
       conversationId: c.id,
       fromId: { $ne: userId },
       readBy: { $ne: userId },
     });
-    return { ...c, unread };
+    const participantPictures = Object.fromEntries(c.participants.map((id) => [id, pictureMap[id] || null]));
+    return { ...c, unread, participantPictures };
   }));
 
   res.json(withUnread);

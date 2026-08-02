@@ -127,13 +127,8 @@ main.home-main { position:relative; z-index:1; padding: 42px 48px 70px; display:
 }
 
 /* Card description text */
-.card-desc {
-  font-size:13.5px; color:#93c5fd; line-height:1.9;
-  background: rgba(59,130,246,.28);
-  padding: 1px 6px;
-  border-radius: 3px;
-  box-decoration-break: clone;
-  -webkit-box-decoration-break: clone;
+.home-main .card-desc {
+  font-size:13.5px; color:var(--gold); line-height:1.9;
 }
 
 .badge { display:inline-flex; align-items:center; gap:5px; margin-top:12px; padding:6px 14px; border-radius:20px; font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; }
@@ -205,8 +200,8 @@ main.home-main { position:relative; z-index:1; padding: 42px 48px 70px; display:
 .tabletop-arrow { color:rgba(217,70,239,.5); font-size:19px; transition:transform .3s, color .3s; }
 .tabletop-item:hover .tabletop-arrow { transform:translateX(4px); color:var(--pink); }
 
-.card-cigar { grid-column:2; grid-row:2; min-height:420px; }
-.cigar-banner { height:210px; position:relative; overflow:hidden; background:linear-gradient(135deg,#1a0a00,#2d1500,#1a0800); }
+.card-cigar { grid-column:2; grid-row:2; min-height:420px; display:flex; flex-direction:column; }
+.cigar-banner { flex:1; position:relative; overflow:hidden; background:linear-gradient(135deg,#1a0a00,#2d1500,#1a0800); }
 .cigar-smoke { position:absolute; bottom:0; left:0; right:0; height:100%; background:linear-gradient(0deg,rgba(139,92,46,.15),rgba(245,158,11,.05),transparent); }
 .cigar-visual { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; gap:22px; }
 .cigar-stick { width:120px; height:16px; border-radius:8px; background:linear-gradient(90deg,#8b5e3c,#c8a06a,#8b5e3c); box-shadow:0 0 12px rgba(139,92,46,.5); position:relative; }
@@ -217,15 +212,6 @@ main.home-main { position:relative; z-index:1; padding: 42px 48px 70px; display:
 .smoke-puff:nth-child(2){animation-delay:.6s;font-size:28px;}
 .smoke-puff:nth-child(3){animation-delay:1.2s;font-size:23px;}
 .cigar-title-bar { position:absolute; bottom:0; left:0; right:0; padding:11px 22px; background:linear-gradient(0deg,rgba(26,8,0,.95),transparent); font-family:'Rajdhani',sans-serif; font-size:13px; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:var(--gold); }
-
-.menu-list { padding:22px 26px 26px; display:flex; flex-direction:column; gap:16px; }
-.menu-item { display:flex; align-items:center; justify-content:space-between; padding:16px 20px; border-radius:12px; background:rgba(245,158,11,.05); border:1px solid rgba(245,158,11,.15); transition:all .25s; cursor:pointer; }
-.menu-item:hover { background:rgba(245,158,11,.12); border-color:rgba(245,158,11,.4); transform:translateX(4px); }
-.menu-item-left { display:flex; align-items:center; gap:13px; }
-.menu-emoji { font-size:24px; }
-.menu-name { font-size:15px; font-weight:600; }
-.menu-origin { font-size:11.5px; color:var(--muted); margin-top:2px; }
-.menu-price { font-family:'Rajdhani',sans-serif; font-size:17px; font-weight:700; color:var(--gold); }
 
 .hero { text-align:center; padding:10px 0 36px; display:flex; flex-direction:column; align-items:center; width:100%; }
 

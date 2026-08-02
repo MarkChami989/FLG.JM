@@ -18,6 +18,8 @@ function StaffPanel() {
   const [form, setForm] = useState(EMPTY_FORM)
   const [frontId, setFrontId] = useState(null)
   const [backId, setBackId] = useState(null)
+  const [frontFileName, setFrontFileName] = useState('')
+  const [backFileName, setBackFileName] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
   const [viewing, setViewing] = useState(null)
@@ -46,12 +48,15 @@ function StaffPanel() {
     setForm(EMPTY_FORM)
     setFrontId(null)
     setBackId(null)
+    setFrontFileName('')
+    setBackFileName('')
     setError('')
   }
 
-  async function handleFile(setter, e) {
+  async function handleFile(setter, nameSetter, e) {
     const file = e.target.files?.[0]
     if (!file) return
+    nameSetter(file.name)
     setter(await fileToDataUrl(file))
   }
 
@@ -113,14 +118,22 @@ function StaffPanel() {
               <input className="r-modal-input" type="password" placeholder="Password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} />
               <input className="r-modal-input" type="email" placeholder="Email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
               <input className="r-modal-input" placeholder="Phone number" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
-              <label style={{ fontSize: 12, color: 'var(--txt-dim)' }}>
-                Front ID photo
-                <input type="file" accept="image/*" onChange={(e) => handleFile(setFrontId, e)} style={{ display: 'block', marginTop: 4 }} />
-              </label>
-              <label style={{ fontSize: 12, color: 'var(--txt-dim)' }}>
-                Back ID photo
-                <input type="file" accept="image/*" onChange={(e) => handleFile(setBackId, e)} style={{ display: 'block', marginTop: 4 }} />
-              </label>
+              <div>
+                <div style={{ fontSize: 12, color: 'var(--txt-dim)', marginBottom: 4 }}>Front ID photo</div>
+                <label className={`file-upload-btn${frontFileName ? ' has-file' : ''}`}>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" /></svg>
+                  <span>{frontFileName || 'Upload front ID photo'}</span>
+                  <input type="file" accept="image/*" onChange={(e) => handleFile(setFrontId, setFrontFileName, e)} />
+                </label>
+              </div>
+              <div>
+                <div style={{ fontSize: 12, color: 'var(--txt-dim)', marginBottom: 4 }}>Back ID photo</div>
+                <label className={`file-upload-btn${backFileName ? ' has-file' : ''}`}>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" /></svg>
+                  <span>{backFileName || 'Upload back ID photo'}</span>
+                  <input type="file" accept="image/*" onChange={(e) => handleFile(setBackId, setBackFileName, e)} />
+                </label>
+              </div>
               {error && <div style={{ color: 'var(--red)', fontSize: 12.5 }}>{error}</div>}
               <div className="gift-modal-actions">
                 <button type="button" className="gift-cancel-btn" onClick={closeAdd}>Cancel</button>

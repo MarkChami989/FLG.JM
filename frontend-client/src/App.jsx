@@ -26,6 +26,7 @@ import Tournaments from '../pages/tournaments.jsx'
 import Messages from '../pages/messages.jsx'
 import ChatThread from '../pages/chat-thread.jsx'
 import LiveSupport from '../pages/LiveSupport.jsx'
+import Settings from '../pages/Settings.jsx'
 
 function App() {
   return (
@@ -57,6 +58,7 @@ function App() {
             <Route path="/messages" element={<RequireAuth><Messages /></RequireAuth>} />
             <Route path="/messages/:id" element={<RequireAuth><ChatThread /></RequireAuth>} />
             <Route path="/live-support" element={<RequireAuth><LiveSupport /></RequireAuth>} />
+            <Route path="/settings" element={<RequireAuth><Settings /></RequireAuth>} />
           </Routes>
         </BrowserRouter>
       </ChatProvider>

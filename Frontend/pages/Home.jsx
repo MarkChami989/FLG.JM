@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react'
 import './Home.css'
 import { useAuth } from '../src/auth.jsx'
 import { SECTIONS } from './data.js'
-import { Icon, TAB_ICON_MAP } from './icons.jsx'
+import { Icon, ICONS, TAB_ICON_MAP } from './icons.jsx'
+import { api } from './api.js'
 import OrdersPanel from './OrdersPanel.jsx'
 import TournamentsPanel from './TournamentsPanel.jsx'
 import RoomsPanel from './RoomsPanel.jsx'
@@ -11,6 +12,7 @@ import TabletopPanel from './TabletopPanel.jsx'
 import StaffPanel from './StaffPanel.jsx'
 import ReportsPanel from './ReportsPanel.jsx'
 import SettingsPanel from './SettingsPanel.jsx'
+import SupportInboxPanel from './SupportInboxPanel.jsx'
 
 const PANEL_RENDERERS = {
   orders: OrdersPanel,
@@ -21,6 +23,7 @@ const PANEL_RENDERERS = {
   staff: StaffPanel,
   reports: ReportsPanel,
   settings: SettingsPanel,
+  support: SupportInboxPanel,
 }
 
 const NAV_MAP = { home: null, staffnav: 'staff', reportsnav: 'reports', settingsnav: 'settings' }
@@ -36,9 +39,17 @@ function Home() {
   const [openTabs, setOpenTabs] = useState([])
   const [activeTab, setActiveTab] = useState(null)
   const [activeNav, setActiveNav] = useState('home')
+  const [needsReplyCount, setNeedsReplyCount] = useState(0)
 
   useEffect(() => {
     const id = setInterval(() => setNow(new Date()), 1000)
+    return () => clearInterval(id)
+  }, [])
+
+  useEffect(() => {
+    function load() { api.supportInbox.list('escalated').then((list) => setNeedsReplyCount(list.length)).catch(() => {}) }
+    load()
+    const id = setInterval(load, 6000)
     return () => clearInterval(id)
   }, [])
 
@@ -75,7 +86,7 @@ function Home() {
 
       <div className="topbar">
         <div className="admin-id">
-          <div className="avatar">{displayName[0]}</div>
+          <div className="avatar">{user?.profilePicture ? <img src={user.profilePicture} alt="" /> : displayName[0]}</div>
           <div>
             <span className="admin-name">{displayName}</span>
             <span className="admin-badge">{isAdmin ? 'ADMIN' : 'STAFF'}</span>
@@ -93,7 +104,7 @@ function Home() {
         <a className={activeNav === 'home' ? 'active' : ''} onClick={() => handleNavClick('home')}>Dashboard</a>
         {isAdmin && <a className={activeNav === 'staffnav' ? 'active' : ''} onClick={() => handleNavClick('staffnav')}>Staff</a>}
         {isAdmin && <a className={activeNav === 'reportsnav' ? 'active' : ''} onClick={() => handleNavClick('reportsnav')}>Reports</a>}
-        {isAdmin && <a className={activeNav === 'settingsnav' ? 'active' : ''} onClick={() => handleNavClick('settingsnav')}>Settings</a>}
+        <a className={activeNav === 'settingsnav' ? 'active' : ''} onClick={() => handleNavClick('settingsnav')}>Settings</a>
       </div>
 
       <div className="tabstrip">
@@ -135,6 +146,13 @@ function Home() {
           <ActivePanel />
         )}
       </main>
+
+      {activeTab !== 'support' && (
+        <button className="chat-fab" onClick={() => openTab('support')} title="Support Inbox">
+          <Icon paths={ICONS.support} width="24" height="24" />
+          {needsReplyCount > 0 && <span className="chat-fab-badge">{needsReplyCount > 9 ? '9+' : needsReplyCount}</span>}
+        </button>
+      )}
     </>
   )
 }

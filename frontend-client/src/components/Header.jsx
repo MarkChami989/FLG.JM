@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth.jsx'
 import { useChat } from '../chat.jsx'
 import { Icon, ICONS } from '../icons.jsx'
@@ -6,6 +6,7 @@ import './Header.css'
 
 function Header({ active = '' }) {
   const navigate = useNavigate()
+  const location = useLocation()
   const { user, logout } = useAuth()
   const { unreadTotal, pendingRequestCount } = useChat()
   const notifCount = unreadTotal + pendingRequestCount
@@ -16,6 +17,7 @@ function Header({ active = '' }) {
   }
 
   return (
+    <>
     <header>
       <Link className="brand" to="/">
         <div className="brand-logo">
@@ -56,14 +58,17 @@ function Header({ active = '' }) {
         <Link to="/tournaments" className={active === 'tournaments' ? 'active' : ''}>Tournaments</Link>
         <Link to="/lounge" className={active === 'lounge' ? 'active' : ''}>Lounge</Link>
       </nav>
-      <button
-        className={`btn-activity-nav${active === 'activities' ? ' active-btn' : ''}`}
-        onClick={() => navigate('/activities')}
-      >
-        Activities
-      </button>
       {user ? (
         <div className="user-menu">
+          <button
+            className={`btn-activity-nav${active === 'activities' ? ' active-btn' : ''}`}
+            onClick={() => navigate('/activities')}
+          >
+            Activities
+          </button>
+          <button className={`user-avatar-btn${active === 'settings' ? ' active-btn' : ''}`} onClick={() => navigate('/settings')} title="Settings">
+            {user.profilePicture ? <img src={user.profilePicture} alt="" /> : <span>{user.username[0]?.toUpperCase()}</span>}
+          </button>
           <span className="user-badge">{user.username}</span>
           <button className={`btn-messages-nav${active === 'messages' ? ' active-btn' : ''}`} onClick={() => navigate('/messages')} title="Messages">
             <Icon paths={ICONS.chatIcon} width="18" height="18" />
@@ -77,6 +82,13 @@ function Header({ active = '' }) {
         </button>
       )}
     </header>
+
+    {user && location.pathname !== '/live-support' && (
+      <button className="chat-fab" onClick={() => navigate('/live-support')} title="Live Support">
+        <Icon paths={ICONS.sparkleIcon} width="24" height="24" fill="currentColor" />
+      </button>
+    )}
+    </>
   )
 }
 

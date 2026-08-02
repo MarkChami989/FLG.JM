@@ -17,7 +17,7 @@ const CATEGORY_LABELS = {
   other: 'General question',
 };
 
-const BOOKING_TOOLS = [
+const SUPPORT_TOOLS = [
   {
     function_declarations: [
       {
@@ -45,6 +45,18 @@ const BOOKING_TOOLS = [
           required: ['category', 'activityLabel', 'date', 'hours'],
         },
       },
+      {
+        name: 'request_human_handoff',
+        description:
+          "Call this when the customer explicitly asks to speak to a real person / staff member, OR when you cannot resolve their issue yourself (complaint, something outside your knowledge, a dispute, etc). This ends the AI conversation and connects them to staff — after calling this, tell the customer a staff member will take it from here.",
+        parameters: {
+          type: 'OBJECT',
+          properties: {
+            reason: { type: 'STRING', description: 'Short reason, e.g. "customer requested a human" or "billing complaint"' },
+          },
+          required: ['reason'],
+        },
+      },
     ],
   },
 ];
@@ -61,7 +73,8 @@ function systemPrompt(category) {
     + `If the customer wants to book something, gather: category (room / tabletop / lounge-table / bar), the specific room if category is room (PC Room=pc, PS Room=ps, VIP Standard=vip-standard, VIP Elite=vip-elite, VIP Royal=vip-royal), the date, and the hour(s) in 24-hour format. `
     + `Once you have enough details, call propose_booking — do not say the booking is confirmed yourself, the system shows the customer a card to confirm. `
     + `If propose_booking comes back unavailable, tell the customer that slot is taken and ask for a different date or time — never claim a taken slot is booked. `
-    + `For anything you can't fully resolve, tell the customer a staff member will follow up here. Keep replies short (2-4 sentences) unless asked for detail.`;
+    + `If the customer asks for a real person/staff, or you truly cannot help with something, call request_human_handoff — do not just say you're transferring them without calling it. `
+    + `Keep replies short (2-4 sentences) unless asked for detail.`;
 }
 
 async function callGemini(contents, category) {
@@ -70,7 +83,7 @@ async function callGemini(contents, category) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       system_instruction: { parts: [{ text: systemPrompt(category) }] },
-      tools: BOOKING_TOOLS,
+      tools: SUPPORT_TOOLS,
       contents,
     }),
   });
@@ -141,34 +154,120 @@ async function handleProposeBooking(args) {
   };
 }
 
+// ---- conversation persistence helpers ----
+
+function broadcast(conversationId, message) {
+  try { require('../sockets').getIO().to(`conv:${conversationId}`).emit('message:new', message); } catch {}
+}
+
+async function touchConversation(conversationId, message, extra) {
+  await db.conversations().updateOne(
+    { id: conversationId },
+    { $set: { lastMessage: { text: message.text, fromId: message.fromId, createdAt: message.createdAt }, updatedAt: message.createdAt, ...extra } }
+  );
+}
+
+async function saveMessage(conversationId, fromId, fromUsername, text) {
+  const msg = {
+    id: await db.nextMessageId(),
+    conversationId,
+    fromId,
+    fromUsername,
+    text,
+    createdAt: Date.now(),
+    readBy: fromId === 'ai' ? [] : [fromId],
+  };
+  await db.messages().insertOne(msg);
+  await touchConversation(conversationId, msg);
+  broadcast(conversationId, msg);
+  return msg;
+}
+
+async function getOrCreateConversation(clientId, clientUsername, category) {
+  let conv = await db.conversations().findOne({ type: 'support', clientId, status: { $ne: 'closed' } });
+  if (conv) {
+    const { _id, ...pub } = conv;
+    return pub;
+  }
+
+  const now = Date.now();
+  conv = {
+    id: await db.nextConversationId(),
+    type: 'support',
+    participants: [clientId],
+    clientId,
+    clientUsername,
+    category: category || null,
+    status: 'ai',
+    assignedStaffId: null,
+    assignedStaffName: null,
+    lastMessage: null,
+    createdAt: now,
+    updatedAt: now,
+  };
+  await db.conversations().insertOne(conv);
+  const greeting = await saveMessage(conv.id, 'ai', 'FLG Assistant', `Hey ${clientUsername}! I'm the FLG assistant. What can I help you with today?`);
+  conv.lastMessage = { text: greeting.text, fromId: 'ai', createdAt: greeting.createdAt };
+  conv.updatedAt = greeting.createdAt;
+
+  const { _id, ...pub } = conv;
+  return pub;
+}
+
+router.post('/start', async (req, res) => {
+  const { clientId, clientUsername, category } = req.body;
+  if (!clientId || !clientUsername) return res.status(400).json({ error: 'clientId and clientUsername are required' });
+
+  const conversation = await getOrCreateConversation(clientId, clientUsername, category);
+  const messages = await db.messages().find({ conversationId: conversation.id }, { projection: { _id: 0 } }).sort({ id: 1 }).toArray();
+  res.json({ conversation, messages });
+});
+
 router.post('/chat', async (req, res) => {
-  const { messages, category } = req.body;
-  if (!Array.isArray(messages) || messages.length === 0) {
-    return res.status(400).json({ error: 'messages array is required' });
+  const { conversationId, text, category } = req.body;
+  if (!conversationId || !text || !String(text).trim()) {
+    return res.status(400).json({ error: 'conversationId and text are required' });
+  }
+
+  const conversation = await db.conversations().findOne({ id: conversationId, type: 'support' });
+  if (!conversation) return res.status(404).json({ error: 'Conversation not found' });
+
+  await saveMessage(conversationId, conversation.clientId, conversation.clientUsername, String(text).trim());
+
+  if (conversation.status !== 'ai') {
+    return res.json({ reply: null, configured: true, escalated: conversation.status === 'escalated', bookingProposal: null });
   }
 
   if (!GEMINI_API_KEY) {
-    console.log('[ai-support] GEMINI_API_KEY not set — returning fallback reply');
-    return res.json({
-      reply: "Live support AI isn't configured yet on our end — a staff member will get back to you here as soon as possible.",
-      configured: false,
-    });
+    const fallback = await saveMessage(conversationId, 'ai', 'FLG Assistant', "Live support AI isn't configured yet on our end — a staff member will get back to you here as soon as possible.");
+    return res.json({ reply: fallback.text, configured: false, escalated: false, bookingProposal: null });
   }
 
-  const contents = messages.map((m) => ({
-    role: m.role === 'ai' ? 'model' : 'user',
+  const history = await db.messages().find({ conversationId }, { projection: { _id: 0 } }).sort({ id: 1 }).toArray();
+  const contents = history.map((m) => ({
+    role: m.fromId === 'ai' ? 'model' : 'user',
     parts: [{ text: m.text }],
   }));
+  const effectiveCategory = category || conversation.category;
 
   try {
-    let data = await callGemini(contents, category);
+    let data = await callGemini(contents, effectiveCategory);
     let parts = data.candidates?.[0]?.content?.parts || [];
     let bookingProposal = null;
+    let escalate = false;
 
     const functionCallPart = parts.find((p) => p.functionCall);
     if (functionCallPart) {
       const { name, args } = functionCallPart.functionCall;
-      const result = name === 'propose_booking' ? await handleProposeBooking(args) : { forModel: { error: 'unknown function' } };
+      let result;
+      if (name === 'propose_booking') {
+        result = await handleProposeBooking(args);
+      } else if (name === 'request_human_handoff') {
+        escalate = true;
+        result = { forModel: { status: 'handoff_started', message: 'Tell the customer a staff member will take it from here.' } };
+      } else {
+        result = { forModel: { error: 'unknown function' } };
+      }
       if (result.proposal) bookingProposal = result.proposal;
 
       const followUpContents = [
@@ -176,12 +275,18 @@ router.post('/chat', async (req, res) => {
         { role: 'model', parts: [functionCallPart] },
         { role: 'user', parts: [{ functionResponse: { name, response: result.forModel } }] },
       ];
-      data = await callGemini(followUpContents, category);
+      data = await callGemini(followUpContents, effectiveCategory);
       parts = data.candidates?.[0]?.content?.parts || [];
     }
 
-    const reply = parts.filter((p) => p.text).map((p) => p.text).join('') || "Sorry, I couldn't come up with a reply — could you rephrase that?";
-    res.json({ reply, configured: true, bookingProposal });
+    const replyText = parts.filter((p) => p.text).map((p) => p.text).join('') || "Sorry, I couldn't come up with a reply — could you rephrase that?";
+    await saveMessage(conversationId, 'ai', 'FLG Assistant', replyText);
+
+    if (escalate) {
+      await db.conversations().updateOne({ id: conversationId }, { $set: { status: 'escalated' } });
+    }
+
+    res.json({ reply: replyText, configured: true, bookingProposal, escalated: escalate });
   } catch (e) {
     console.error('[ai-support] request failed', e.message, e.detail || '');
     res.status(502).json({ error: 'AI support is temporarily unavailable' });
@@ -189,7 +294,7 @@ router.post('/chat', async (req, res) => {
 });
 
 router.post('/confirm-booking', async (req, res) => {
-  const { category, resourceId, activityLabel, date, hours, pay, clientUsername } = req.body;
+  const { category, resourceId, activityLabel, date, hours, pay, clientUsername, conversationId } = req.body;
   if (!category || !resourceId || !date || !Array.isArray(hours) || hours.length === 0 || !clientUsername) {
     return res.status(400).json({ error: 'Missing required booking fields' });
   }
@@ -218,6 +323,11 @@ router.post('/confirm-booking', async (req, res) => {
   };
   await db.bookings().insertOne(booking);
   const { _id, ...pub } = booking;
+
+  if (conversationId) {
+    await saveMessage(conversationId, 'ai', 'FLG Assistant', `✅ Booking confirmed — ${activityLabel} on ${date} (${hours.map((h) => `${h}:00`).join(', ')}). Reference ${booking.id}, pending staff approval.`);
+  }
+
   res.status(201).json(pub);
 });
 

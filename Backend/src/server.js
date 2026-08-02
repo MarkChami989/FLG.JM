@@ -18,6 +18,7 @@ const adminAuthRouter = require('./routes/adminAuth');
 const clientsRouter = require('./routes/clients');
 const chatRouter = require('./routes/chat');
 const aiSupportRouter = require('./routes/aiSupport');
+const supportInboxRouter = require('./routes/supportInbox');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -42,6 +43,7 @@ app.use('/api/admin-auth', adminAuthRouter);
 app.use('/api/clients', clientsRouter);
 app.use('/api/chat', chatRouter);
 app.use('/api/ai-support', aiSupportRouter);
+app.use('/api/support-inbox', supportInboxRouter);
 
 connect()
   .then(() => {

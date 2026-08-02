@@ -132,16 +132,7 @@ main.lounge-main { position:relative; z-index:1; display:block; padding:36px 40p
 
 .card-body { padding:24px 24px 28px; }
 .c-title { font-size:24px; font-weight:900; letter-spacing:.5px; margin-bottom:8px; }
-.c-desc { font-size:13px; color:var(--muted); line-height:1.75; margin-bottom:20px; }
-
-.menu-list { display:flex; flex-direction:column; gap:10px; margin-bottom:22px; }
-.menu-item { display:flex; align-items:center; justify-content:space-between; padding:11px 16px; border-radius:12px; background:rgba(245,158,11,.05); border:1px solid rgba(245,158,11,.15); transition:all .25s; cursor:default; }
-.menu-item:hover { background:rgba(245,158,11,.1); border-color:rgba(245,158,11,.35); transform:translateX(4px); }
-.menu-left { display:flex; align-items:center; gap:10px; }
-.menu-emoji { font-size:18px; }
-.menu-name { font-size:13px; font-weight:600; }
-.menu-sub { font-size:10px; color:var(--muted); margin-top:1px; }
-.menu-price { font-family:'Rajdhani',sans-serif; font-size:15px; font-weight:700; color:var(--gold); }
+.c-desc { font-size:13px; color:var(--gold); line-height:1.75; margin-bottom:20px; }
 
 .avail-row { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:22px; }
 .av-chip { display:inline-flex; align-items:center; gap:5px; padding:5px 13px; border-radius:20px; font-size:11px; font-weight:600; letter-spacing:.5px; }

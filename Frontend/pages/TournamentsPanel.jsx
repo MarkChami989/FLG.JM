@@ -14,6 +14,7 @@ function TournamentsPanel() {
   const [toast, setToast] = useState({ show: false, msg: '' })
   const [addFeedback, setAddFeedback] = useState(null)
   const [imageData, setImageData] = useState('')
+  const [imageFileName, setImageFileName] = useState('')
   const nameRef = useRef(null)
   const descRef = useRef(null)
   const maxRef = useRef(null)
@@ -34,6 +35,7 @@ function TournamentsPanel() {
   function handleImageChange(e) {
     const file = e.target.files[0]
     if (!file) return
+    setImageFileName(file.name)
     const reader = new FileReader()
     reader.onload = () => setImageData(reader.result)
     reader.readAsDataURL(file)
@@ -48,6 +50,7 @@ function TournamentsPanel() {
     timeRef.current.value = ''
     if (fileInputRef.current) fileInputRef.current.value = ''
     setImageData('')
+    setImageFileName('')
   }
 
   function tCreate() {
@@ -114,7 +117,11 @@ function TournamentsPanel() {
             </div>
             <div>
               <div style={{ fontFamily: "'Rajdhani',sans-serif", fontSize: 10, letterSpacing: 2, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', marginBottom: 7 }}>Tournament Image</div>
-              <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageChange} style={inputStyle} />
+              <label className={`file-upload-btn${imageFileName ? ' has-file' : ''}`}>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" /></svg>
+                <span>{imageFileName || 'Upload tournament image'}</span>
+                <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageChange} />
+              </label>
               {imageData && (
                 <img
                   src={imageData}

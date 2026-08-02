@@ -114,7 +114,7 @@ main.tournaments-main { position:relative; z-index:1; display:block; padding:36p
 .chip-open .live-dot { background:#10b981; }
 
 .t-name { font-size:24px; font-weight:900; letter-spacing:.5px; margin-bottom:6px; }
-.t-desc { font-size:13px; color:var(--muted); line-height:1.7; margin-bottom:18px; }
+.t-desc { font-size:13px; color:var(--gold); line-height:1.7; margin-bottom:18px; }
 
 .stats { display:flex; gap:20px; margin-bottom:20px; }
 .stat { text-align:center; }

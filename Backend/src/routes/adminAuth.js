@@ -25,6 +25,7 @@ async function getAdmin() {
       username: DEFAULT_ADMIN_USERNAME,
       email: DEFAULT_ADMIN_EMAIL,
       passwordHash: await bcrypt.hash(DEFAULT_ADMIN_PASSWORD, 10),
+      profilePicture: null,
     };
     await db.admin().insertOne(admin);
   }
@@ -32,7 +33,7 @@ async function getAdmin() {
 }
 
 function publicAdmin(a) {
-  return { username: a.username, email: a.email, role: 'admin' };
+  return { username: a.username, email: a.email, role: 'admin', profilePicture: a.profilePicture || null };
 }
 
 router.post('/login', async (req, res) => {
@@ -85,9 +86,15 @@ router.post('/verify', async (req, res) => {
   res.json(publicAdmin(admin));
 });
 
-// ---- Settings: change password ----
+// ---- Settings: change password (verify current password FIRST, then email a code) ----
 router.post('/settings/password/send-code', async (req, res) => {
+  const { currentPassword } = req.body;
+  if (!currentPassword) return res.status(400).json({ error: 'currentPassword is required' });
+
   const admin = await getAdmin();
+  const ok = await bcrypt.compare(currentPassword, admin.passwordHash);
+  if (!ok) return res.status(401).json({ error: 'Current password is incorrect' });
+
   const code = genOtp();
   settingsOtp = { code, expiresAt: Date.now() + OTP_TTL_MS };
 
@@ -101,9 +108,9 @@ router.post('/settings/password/send-code', async (req, res) => {
 });
 
 router.post('/settings/password/change', async (req, res) => {
-  const { code, currentPassword, newPassword, confirmPassword } = req.body;
-  if (!code || !currentPassword || !newPassword || !confirmPassword) {
-    return res.status(400).json({ error: 'code, currentPassword, newPassword and confirmPassword are required' });
+  const { code, newPassword, confirmPassword } = req.body;
+  if (!code || !newPassword || !confirmPassword) {
+    return res.status(400).json({ error: 'code, newPassword and confirmPassword are required' });
   }
   if (!settingsOtp || Date.now() > settingsOtp.expiresAt) {
     return res.status(400).json({ error: 'Code expired, please request a new one' });
@@ -117,10 +124,6 @@ router.post('/settings/password/change', async (req, res) => {
   if (newPassword.length < 6) {
     return res.status(400).json({ error: 'New password must be at least 6 characters' });
   }
-
-  const admin = await getAdmin();
-  const ok = await bcrypt.compare(currentPassword, admin.passwordHash);
-  if (!ok) return res.status(401).json({ error: 'Current password is incorrect' });
 
   const passwordHash = await bcrypt.hash(newPassword, 10);
   await db.admin().updateOne({ id: 'admin' }, { $set: { passwordHash } });
@@ -159,6 +162,16 @@ router.post('/settings/profile/update', async (req, res) => {
   await db.admin().updateOne({ id: 'admin' }, { $set: { username, email } });
   settingsOtp = null;
 
+  const admin = await getAdmin();
+  res.json(publicAdmin(admin));
+});
+
+// ---- Settings: profile picture ----
+router.post('/settings/profile-picture', async (req, res) => {
+  const { image } = req.body;
+  if (!image) return res.status(400).json({ error: 'image is required' });
+
+  await db.admin().updateOne({ id: 'admin' }, { $set: { profilePicture: image } });
   const admin = await getAdmin();
   res.json(publicAdmin(admin));
 });

@@ -200,11 +200,12 @@ function Messages() {
               conversations.map((c) => {
                 const otherId = c.type === 'direct' ? c.participants.find((p) => p !== user.id) : null
                 const name = c.type === 'group' ? c.name : (c.participantNames?.[otherId] || otherId)
+                const picture = c.type === 'direct' ? c.participantPictures?.[otherId] : null
                 const online = otherId && onlineIds.has(otherId)
                 return (
                   <div key={c.id} className="chat-row" onClick={() => openConversation(c.id)}>
                     <div className="chat-avatar">
-                      {name?.charAt(0)?.toUpperCase()}
+                      {picture ? <img src={picture} alt="" /> : name?.charAt(0)?.toUpperCase()}
                       {c.type === 'direct' && <span className={`presence-dot ${online ? 'online' : ''}`}></span>}
                     </div>
                     <div className="chat-row-main">

@@ -223,39 +223,6 @@ function Home() {
               </div>
               <div className="cigar-title-bar">Cigar Lounge &amp; Bar</div>
             </div>
-
-            <div className="menu-list">
-              <div className="menu-item">
-                <div className="menu-item-left">
-                  <div className="menu-emoji"></div>
-                  <div>
-                    <div className="menu-name">Dom Pérignon</div>
-                    <div className="menu-origin">Champagne · France</div>
-                  </div>
-                </div>
-                <div className="menu-price">$45</div>
-              </div>
-              <div className="menu-item">
-                <div className="menu-item-left">
-                  <div className="menu-emoji"></div>
-                  <div>
-                    <div className="menu-name">Macallan 18</div>
-                    <div className="menu-origin">Single Malt Scotch · Scotland</div>
-                  </div>
-                </div>
-                <div className="menu-price">$38</div>
-              </div>
-              <div className="menu-item">
-                <div className="menu-item-left">
-                  <div className="menu-emoji"></div>
-                  <div>
-                    <div className="menu-name">Cohiba Behike</div>
-                    <div className="menu-origin">Premium Cigar · Cuba</div>
-                  </div>
-                </div>
-                <div className="menu-price">$28</div>
-              </div>
-            </div>
           </div>
 
         </div>

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Header from '../src/components/Header.jsx'
 import { useAuth } from '../src/auth.jsx'
+import { getSocket } from '../src/socket.js'
 import { Icon, ICONS } from '../src/icons.jsx'
 import { api } from './api.js'
 import './LiveSupport.css'
@@ -14,7 +15,7 @@ const CATEGORIES = [
 ]
 
 let uid = 0
-function nextId() { return ++uid }
+function nextId() { return `local-${++uid}` }
 
 function formatHour(h) {
   const n = parseInt(h, 10)
@@ -33,10 +34,12 @@ function formatHours(hours) {
 function LiveSupport() {
   const navigate = useNavigate()
   const { user } = useAuth()
-  const [messages, setMessages] = useState(() => [
-    { id: nextId(), role: 'ai', text: `Hey ${user?.username || 'there'}! I'm the FLG assistant. What can I help you with today?` },
-  ])
+  const [conversationId, setConversationId] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [messages, setMessages] = useState([])
   const [category, setCategory] = useState(null)
+  const [escalated, setEscalated] = useState(false)
+  const [closed, setClosed] = useState(false)
   const [input, setInput] = useState('')
   const [sending, setSending] = useState(false)
   const [feedback, setFeedback] = useState({})
@@ -44,18 +47,51 @@ function LiveSupport() {
   const [confirming, setConfirming] = useState(false)
   const listRef = useRef(null)
 
+  function toLocal(m) {
+    const role = m.fromId === user.id ? 'user' : m.fromId === 'ai' ? 'ai' : 'staff'
+    return { id: m.id, role, text: m.text, fromUsername: m.fromUsername }
+  }
+
+  useEffect(() => {
+    if (!user) return
+    api.aiSupport.start({ clientId: user.id, clientUsername: user.username }).then(({ conversation, messages: history }) => {
+      setConversationId(conversation.id)
+      setCategory(conversation.category || null)
+      setEscalated(conversation.status === 'escalated')
+      setClosed(conversation.status === 'closed')
+      setMessages(history.map(toLocal))
+      setLoading(false)
+      getSocket()?.emit('conversation:join', { conversationId: conversation.id })
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user])
+
+  useEffect(() => {
+    const socket = getSocket()
+    if (!socket || !conversationId) return
+    const onMessage = (msg) => {
+      if (msg.conversationId !== conversationId) return
+      if (msg.fromId === user.id || msg.fromId === 'ai') return
+      setMessages((prev) => (prev.some((m) => m.id === msg.id) ? prev : [...prev, toLocal(msg)]))
+      setEscalated(true)
+    }
+    socket.on('message:new', onMessage)
+    return () => socket.off('message:new', onMessage)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [conversationId])
+
   useEffect(() => {
     if (listRef.current) listRef.current.scrollTop = listRef.current.scrollHeight
   }, [messages, sending])
 
-  async function askAI(history, cat) {
+  async function sendText(text) {
+    if (!conversationId || sending) return
+    setMessages((prev) => [...prev, { id: nextId(), role: 'user', text }])
     setSending(true)
     try {
-      const { reply, bookingProposal } = await api.aiSupport.chat({
-        messages: history.map(({ role, text }) => ({ role, text })),
-        category: cat,
-      })
-      setMessages((prev) => [...prev, { id: nextId(), role: 'ai', text: reply }])
+      const { reply, bookingProposal, escalated: esc } = await api.aiSupport.chat({ conversationId, text, category })
+      if (reply) setMessages((prev) => [...prev, { id: nextId(), role: 'ai', text: reply }])
+      if (esc) setEscalated(true)
       setProposal(bookingProposal || null)
     } catch (err) {
       setMessages((prev) => [...prev, { id: nextId(), role: 'ai', text: err.message || 'Something went wrong — please try again.' }])
@@ -76,6 +112,7 @@ function LiveSupport() {
         hours: proposal.hours,
         pay: proposal.pay,
         clientUsername: user?.username,
+        conversationId,
       })
       setProposal(null)
       setMessages((prev) => [...prev, { id: nextId(), role: 'ai', text: `Booking confirmed! Reference ${booking.id} — it's pending staff approval. See you then!` }])
@@ -94,29 +131,22 @@ function LiveSupport() {
   function pickCategory(cat) {
     if (sending) return
     setCategory(cat.id)
-    const next = [...messages, { id: nextId(), role: 'user', text: cat.label }]
-    setMessages(next)
-    askAI(next, cat.id)
+    sendText(cat.label)
   }
 
   function send(e) {
     e.preventDefault()
     const trimmed = input.trim()
-    if (!trimmed || sending) return
+    if (!trimmed) return
     setInput('')
-    const next = [...messages, { id: nextId(), role: 'user', text: trimmed }]
-    setMessages(next)
-    askAI(next, category)
+    sendText(trimmed)
   }
 
   function regenerate() {
     if (sending) return
-    const lastUserIdx = [...messages].reverse().findIndex((m) => m.role === 'user')
-    if (lastUserIdx === -1) return
-    const cutIndex = messages.length - 1 - lastUserIdx
-    const history = messages.slice(0, cutIndex + 1)
-    setMessages(history)
-    askAI(history, category)
+    const lastUser = [...messages].reverse().find((m) => m.role === 'user')
+    if (!lastUser) return
+    sendText(lastUser.text)
   }
 
   function copyText(text) {
@@ -146,50 +176,65 @@ function LiveSupport() {
             <div className="support-brand-icon"><Icon paths={ICONS.sparkleIcon} width="20" height="20" fill="currentColor" /></div>
             <div className="support-title-wrap">
               <div className="support-title">FLG Assistant</div>
-              <div className="support-subtitle">AI · Live Support</div>
+              <div className="support-subtitle">{escalated ? 'Connected with staff' : 'AI · Live Support'}</div>
             </div>
           </div>
 
           <div className="support-messages" ref={listRef}>
-            {messages.map((m, i) => (
-              <div key={m.id} className={`support-row${m.role === 'user' ? ' mine' : ''}`}>
-                <div className="support-bubble">
-                  <div className="support-bubble-text">{m.text}</div>
-                  {m.role === 'ai' && (
-                    <div className="support-bubble-actions">
-                      <button
-                        className={`sa-btn${feedback[m.id] === 'up' ? ' active' : ''}`}
-                        onClick={() => toggleFeedback(m.id, 'up')}
-                        aria-label="Good response"
-                      >
-                        <Icon paths={ICONS.thumbUpIcon} width="14" height="14" />
-                      </button>
-                      <button
-                        className={`sa-btn${feedback[m.id] === 'down' ? ' active' : ''}`}
-                        onClick={() => toggleFeedback(m.id, 'down')}
-                        aria-label="Bad response"
-                      >
-                        <Icon paths={ICONS.thumbDownIcon} width="14" height="14" />
-                      </button>
-                      {i === messages.length - 1 && (
-                        <button className="sa-btn" onClick={regenerate} aria-label="Regenerate">
-                          <Icon paths={ICONS.refreshIcon} width="14" height="14" />
+            {loading ? (
+              <div className="support-loading">Loading…</div>
+            ) : (
+              messages.map((m, i) => (
+                <div key={m.id} className={`support-row${m.role === 'user' ? ' mine' : ''}`}>
+                  <div className="support-bubble">
+                    {m.role === 'staff' && <div className="support-staff-label">{m.fromUsername || 'Staff'}</div>}
+                    <div className="support-bubble-text">{m.text}</div>
+                    {m.role === 'ai' && (
+                      <div className="support-bubble-actions">
+                        <button
+                          className={`sa-btn${feedback[m.id] === 'up' ? ' active' : ''}`}
+                          onClick={() => toggleFeedback(m.id, 'up')}
+                          aria-label="Good response"
+                        >
+                          <Icon paths={ICONS.thumbUpIcon} width="14" height="14" />
                         </button>
-                      )}
-                      <button className="sa-btn" onClick={() => copyText(m.text)} aria-label="Copy">
-                        <Icon paths={ICONS.copyIcon} width="14" height="14" />
-                      </button>
-                    </div>
-                  )}
+                        <button
+                          className={`sa-btn${feedback[m.id] === 'down' ? ' active' : ''}`}
+                          onClick={() => toggleFeedback(m.id, 'down')}
+                          aria-label="Bad response"
+                        >
+                          <Icon paths={ICONS.thumbDownIcon} width="14" height="14" />
+                        </button>
+                        {i === messages.length - 1 && !escalated && (
+                          <button className="sa-btn" onClick={regenerate} aria-label="Regenerate">
+                            <Icon paths={ICONS.refreshIcon} width="14" height="14" />
+                          </button>
+                        )}
+                        <button className="sa-btn" onClick={() => copyText(m.text)} aria-label="Copy">
+                          <Icon paths={ICONS.copyIcon} width="14" height="14" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
             {sending && (
               <div className="support-row">
                 <div className="support-bubble support-typing"><span></span><span></span><span></span></div>
               </div>
             )}
           </div>
+
+          {escalated && !closed && (
+            <div className="support-escalated-note">
+              <Icon paths={ICONS.checkIcon} width="14" height="14" />
+              You're connected with our support team — they'll reply here.
+            </div>
+          )}
+          {closed && (
+            <div className="support-escalated-note closed">This conversation has been closed.</div>
+          )}
 
           {proposal && (
             <div className="booking-proposal">
@@ -210,28 +255,30 @@ function LiveSupport() {
             </div>
           )}
 
-          <div className="support-categories">
-            {CATEGORIES.map((c) => (
-              <button
-                key={c.id}
-                type="button"
-                className={`support-chip${category === c.id ? ' active' : ''}`}
-                onClick={() => pickCategory(c)}
-              >
-                {c.label}
-              </button>
-            ))}
-          </div>
+          {!escalated && !closed && (
+            <div className="support-categories">
+              {CATEGORIES.map((c) => (
+                <button
+                  key={c.id}
+                  type="button"
+                  className={`support-chip${category === c.id ? ' active' : ''}`}
+                  onClick={() => pickCategory(c)}
+                >
+                  {c.label}
+                </button>
+              ))}
+            </div>
+          )}
 
           <form className="support-input-bar" onSubmit={send}>
             <input
               type="text"
-              placeholder="Ask FLG Support…"
+              placeholder={closed ? 'This conversation is closed' : 'Ask FLG Support…'}
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              disabled={sending}
+              disabled={sending || loading || closed}
             />
-            <button type="submit" className="support-send-btn" disabled={sending || !input.trim()}>
+            <button type="submit" className="support-send-btn" disabled={sending || loading || closed || !input.trim()}>
               <Icon paths={ICONS.sendIcon} width="17" height="17" />
             </button>
           </form>
